@@ -1,26 +1,25 @@
 package ru.joke.classpath.indexer.internal.factories;
 
-import ru.joke.classpath.ModuleResource;
+import ru.joke.classpath.PackageResource;
 import ru.joke.classpath.indexer.internal.ClassPathIndexingContext;
 
 import javax.lang.model.element.ElementKind;
-import javax.lang.model.element.ModuleElement;
-import java.util.EnumSet;
+import javax.lang.model.element.PackageElement;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
-final class ModuleResourceFactory extends ClassPathResourceFactory<ModuleResource, ModuleElement> {
+final class PackageResourceFactory extends ClassPathResourceFactory<PackageResource, PackageElement> {
 
-    ModuleResourceFactory(final ClassPathIndexingContext indexingContext) {
+    PackageResourceFactory(final ClassPathIndexingContext indexingContext) {
         super(indexingContext);
     }
 
     @Override
-    public ModuleResource doCreate(ModuleElement source) {
-        return new ModuleResource() {
+    public PackageResource doCreate(PackageElement source) {
+        return new PackageResource() {
             @Override
-            public Optional<Module> asModule() {
+            public Optional<Package> asPackage() {
                 throw new UnsupportedOperationException();
             }
 
@@ -49,18 +48,13 @@ final class ModuleResourceFactory extends ClassPathResourceFactory<ModuleResourc
 
             @Override
             public Set<Modifier> modifiers() {
-                final Set<Modifier> modifiers = new HashSet<>(mapModifiers(source.getModifiers()));
-                if (source.isOpen()) {
-                    modifiers.add(Modifier.OPENED);
-                }
-
-                return EnumSet.copyOf(modifiers);
+                return mapModifiers(source.getModifiers());
             }
         };
     }
 
     @Override
     protected Set<ElementKind> supportedTypes() {
-        return Set.of(ElementKind.MODULE);
+        return Set.of(ElementKind.PACKAGE);
     }
 }

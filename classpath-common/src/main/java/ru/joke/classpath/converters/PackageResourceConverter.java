@@ -1,19 +1,18 @@
 package ru.joke.classpath.converters;
 
 import ru.joke.classpath.ClassPathResource;
-import ru.joke.classpath.ModuleResource;
+import ru.joke.classpath.PackageResource;
 
 import java.util.Optional;
 import java.util.Set;
 
-public final class ModuleResourceConverter extends AbsClassPathResourceConverter<ModuleResource> implements ConcreteClassPathResourceConverter<ModuleResource> {
+public final class PackageResourceConverter extends AbsClassPathResourceConverter<PackageResource> implements ConcreteClassPathResourceConverter<PackageResource> {
 
     private static final int COMPONENTS_COUNT = 7;
 
-    public ModuleResourceConverter() {
+    public PackageResourceConverter() {
         super(COMPONENTS_COUNT);
     }
-
 
     @Override
     public ClassPathResource.Type supportedType() {
@@ -21,7 +20,7 @@ public final class ModuleResourceConverter extends AbsClassPathResourceConverter
     }
 
     @Override
-    protected ModuleResource from(
+    protected PackageResource from(
             final Set<ClassPathResource.Modifier> modifiers,
             final String module,
             final String packageName,
@@ -30,12 +29,11 @@ public final class ModuleResourceConverter extends AbsClassPathResourceConverter
             final Set<ClassPathResource.ClassReference<?>> annotations,
             final String[] parts
     ) {
-        return new ModuleResource() {
-
+        return new PackageResource() {
             @Override
-            public Optional<Module> asModule() {
+            public Optional<Package> asPackage() {
                 final var callerClass = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE).getCallerClass();
-                return callerClass.getModule().getLayer().findModule(module);
+                return Optional.of(callerClass.getClassLoader().getDefinedPackage(packageName));
             }
 
             @Override

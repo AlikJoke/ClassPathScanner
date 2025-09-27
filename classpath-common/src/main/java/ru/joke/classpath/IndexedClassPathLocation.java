@@ -3,7 +3,7 @@ package ru.joke.classpath;
 public interface IndexedClassPathLocation {
 
     String CONFIGURATION_DIR = "META-INF/classpath-indexing/";
-    String INDEXED_RESOURCES_FILE = CONFIGURATION_DIR + "indexed-resources.config";
+    String INDEXED_RESOURCES_FILE = CONFIGURATION_DIR + "indexed-resources.conf";
 
     String getLocation();
 

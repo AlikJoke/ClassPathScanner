@@ -1,17 +1,27 @@
 package ru.joke.classpath.converters;
 
-import ru.joke.classpath.ClassConstructorResource;
+import ru.joke.classpath.ClassFieldResource;
 import ru.joke.classpath.ClassPathResource;
 import ru.joke.classpath.ClassResource;
 
-import java.lang.reflect.Constructor;
-import java.util.List;
+import java.lang.reflect.Field;
 import java.util.Set;
 
-public final class ConstructorResourceConverter extends ExecutableClassMemberResourceConverter<ClassConstructorResource<?>> {
+public final class ClassFieldResourceConverter extends AbsClassPathResourceConverter<ClassFieldResource> implements ConcreteClassPathResourceConverter<ClassFieldResource> {
+
+    private static final int COMPONENTS_COUNT = 7;
+
+    public ClassFieldResourceConverter() {
+        super(COMPONENTS_COUNT);
+    }
 
     @Override
-    protected ClassConstructorResource<?> from(
+    public ClassPathResource.Type supportedType() {
+        return ClassPathResource.Type.FIELD;
+    }
+
+    @Override
+    protected ClassFieldResource from(
             final Set<ClassPathResource.Modifier> modifiers,
             final String module,
             final String packageName,
@@ -22,35 +32,25 @@ public final class ConstructorResourceConverter extends ExecutableClassMemberRes
     ) {
         final var nameParts = name.split(MEMBER_OF_CLASS_SEPARATOR);
         final var className = nameParts[0];
-        final var methodName = nameParts[1];
-        final var parameters = List.copyOf(extractRefs(nameParts[2]));
+        final var fieldName = nameParts[1];
 
         final var owner = new ClassReferenceImpl<>(packageName + ClassResource.ID_SEPARATOR + className);
-        final var methodSignature = createSignature(methodName, nameParts[2]);
 
-        return new ClassConstructorResource<>() {
+        return new ClassFieldResource() {
 
-            private volatile Constructor<Object> constructor;
-
-            @Override
-            public List<ClassReference<?>> parameters() {
-                return parameters;
-            }
+            private volatile Field field;
 
             @Override
-            public Constructor<Object> asConstructor() throws ClassNotFoundException, NoSuchMethodException {
-                if (this.constructor == null) {
+            public Field asField() throws NoSuchFieldException, ClassNotFoundException {
+                if (this.field == null) {
                     synchronized (this) {
-                        if (this.constructor == null) {
-                            final var parameterTypes = loadParameters(parameters);
-                            @SuppressWarnings("unchecked")
-                            final var constructor = (Constructor<Object>) owner().toClass().getDeclaredConstructor(parameterTypes);
-                            this.constructor = constructor;
+                        if (this.field == null) {
+                            this.field = owner().toClass().getDeclaredField(fieldName);
                         }
                     }
                 }
 
-                return this.constructor;
+                return this.field;
             }
 
             @Override
@@ -60,12 +60,12 @@ public final class ConstructorResourceConverter extends ExecutableClassMemberRes
 
             @Override
             public String name() {
-                return methodName;
+                return fieldName;
             }
 
             @Override
             public String id() {
-                return owner.canonicalName() + ID_SEPARATOR + methodSignature;
+                return owner.canonicalName() + ID_SEPARATOR + fieldName;
             }
 
             @Override
@@ -96,7 +96,8 @@ public final class ConstructorResourceConverter extends ExecutableClassMemberRes
     }
 
     @Override
-    public ClassPathResource.Type supportedType() {
-        return ClassPathResource.Type.CONSTRUCTOR;
+    protected String getResourceName(ClassFieldResource resource) {
+        final var ownerClassSimpleName = resource.owner().canonicalName().substring(resource.packageName().length() + 1);
+        return ownerClassSimpleName + MEMBER_OF_CLASS_SEPARATOR + resource.name();
     }
 }

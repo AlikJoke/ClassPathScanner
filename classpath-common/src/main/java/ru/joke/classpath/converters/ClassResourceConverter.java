@@ -1,50 +1,52 @@
 package ru.joke.classpath.converters;
 
 import ru.joke.classpath.ClassPathResource;
-import ru.joke.classpath.ConcreteClassPathResourceConverter;
+import ru.joke.classpath.ClassResource;
 
-import java.util.Optional;
 import java.util.Set;
 
-public final class ClassResourceConverter extends AbsClassPathResourceConverter<ClassPathResource.ClassResource<?>> implements ConcreteClassPathResourceConverter<ClassPathResource.ClassResource<?>> {
+import static ru.joke.classpath.ClassResource.ID_SEPARATOR;
+
+public final class ClassResourceConverter extends AbsClassPathResourceConverter<ClassResource<?>> implements ConcreteClassPathResourceConverter<ClassResource<?>> {
+
+    private static final int COMPONENTS_COUNT = 10;
+
+    public ClassResourceConverter() {
+        super(COMPONENTS_COUNT);
+    }
 
     @Override
-    public String toString(ClassPathResource.ClassResource<?> resource) {
+    public String toString(ClassResource<?> resource) {
         return super.toString(resource)
                 + BLOCK_SEPARATOR
                 + transform(resource.interfaces())
                 + BLOCK_SEPARATOR
-                + transform(resource.superClasses());
+                + transform(resource.superClasses())
+                + BLOCK_SEPARATOR
+                + resource.kind().alias();
     }
 
     @Override
-    public Optional<ClassPathResource.ClassResource<?>> fromString(String resource) {
-        final var parts = resource.split("\\" + BLOCK_SEPARATOR);
-        if (parts.length < 8) {
-            return Optional.empty();
-        }
+    protected ClassResource<?> from(
+            final Set<ClassPathResource.Modifier> modifiers,
+            final String module,
+            final String packageName,
+            final String name,
+            final Set<String> aliases,
+            final Set<ClassPathResource.ClassReference<?>> annotations,
+            final String[] parts
+    ) {
+        final var interfaces = extractRefs(parts[7]);
+        final var superClasses = extractRefs(parts[8]);
+        final var kind = ClassResource.Kind.from(parts[9]);
 
-        final var module = parts[1];
-        final var packageName = parts[2];
-        final var name = parts[3];
+        final var classRef = new ClassReferenceImpl<>(packageName + ID_SEPARATOR + name);
 
-        final var aliases = Set.of(parts[4].split(ELEMENTS_IN_BLOCK_DELIMITER));
-        final var annotations = extractRefs(parts[5]);
-
-        final var interfaces = extractRefs(parts[6]);
-        final var superClasses = extractRefs(parts[7]);
-
-        return Optional.of(new ClassPathResource.ClassResource<>() {
-
-            private volatile Class<Object> clazz;
+        return new ClassResource<>() {
 
             @Override
-            public synchronized Class<Object> asClass() throws ClassNotFoundException {
-                if (this.clazz == null) {
-                    return this.clazz = new ClassReferenceImpl<>(id()).toClass();
-                }
-
-                return this.clazz;
+            public Class<Object> asClass() throws ClassNotFoundException {
+                return classRef.toClass();
             }
 
             @Override
@@ -55,6 +57,11 @@ public final class ClassResourceConverter extends AbsClassPathResourceConverter<
             @Override
             public Set<ClassReference<?>> superClasses() {
                 return superClasses;
+            }
+
+            @Override
+            public Kind kind() {
+                return kind;
             }
 
             @Override
@@ -81,7 +88,12 @@ public final class ClassResourceConverter extends AbsClassPathResourceConverter<
             public String packageName() {
                 return packageName;
             }
-        });
+
+            @Override
+            public Set<Modifier> modifiers() {
+                return modifiers;
+            }
+        };
     }
 
     @Override

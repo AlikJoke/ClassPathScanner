@@ -10,10 +10,7 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <properties>
-        <maven.compiler.target>17</maven.compiler.target>
-        <maven.compiler.source>17</maven.compiler.source>
-    </properties>
-
     <artifactId>classpath-common</artifactId>
+    <description>ClassPath Scanner API and implementation</description>
+    <name>ClassPath Scanner Module</name>
 </project>

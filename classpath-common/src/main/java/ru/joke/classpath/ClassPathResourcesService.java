@@ -10,6 +10,6 @@ public interface ClassPathResourcesService {
     ClassPathResources read(IndexedClassPathLocation sourceLocation, Predicate<ClassPathResource> filter);
 
     static ClassPathResourcesService getInstance() {
-        return ServiceLoader.load(ClassPathResourcesService.class).findFirst().orElseThrow();
+        return ServiceLoader.load(ClassPathResourcesService.class, ClassPathResourcesService.class.getClassLoader()).findFirst().orElseThrow();
     }
 }

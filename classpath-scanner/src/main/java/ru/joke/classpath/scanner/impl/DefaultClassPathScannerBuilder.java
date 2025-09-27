@@ -1,28 +1,40 @@
 package ru.joke.classpath.scanner.impl;
 
 import ru.joke.classpath.ClassPathResource;
-import ru.joke.classpath.scanner.ClassPathQuery;
-import ru.joke.classpath.scanner.ClassPathQueryBuilder;
-import ru.joke.classpath.scanner.InvalidQuerySyntaxException;
+import ru.joke.classpath.ClassResource;
+import ru.joke.classpath.scanner.ClassPathScanner;
+import ru.joke.classpath.scanner.ClassPathScannerBuilder;
+import ru.joke.classpath.scanner.ClassPathScannerEngine;
+import ru.joke.classpath.scanner.InvalidRequestSyntaxException;
+import ru.joke.classpath.scanner.impl.engines.ExtendedClassPathScannerEngine;
 
 import java.lang.annotation.Annotation;
 import java.util.Set;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
-public final class ClassPathQueryBuilderImpl implements ClassPathQueryBuilder {
+public final class DefaultClassPathScannerBuilder implements ClassPathScannerBuilder {
+
+    private final ExtendedClassPathScannerEngine engine;
+
+    public DefaultClassPathScannerBuilder(final ClassPathScannerEngine engine) {
+        if (!(engine instanceof ExtendedClassPathScannerEngine)) {
+            throw new ClassCastException();
+        }
+
+        this.engine = (ExtendedClassPathScannerEngine) engine;
+    }
 
     @Override
     public Begin begin() {
         return new CompoundFilter(null);
     }
 
-    private static class CompoundFilter implements Begin, LogicalOperations, End {
+    private class CompoundFilter implements Begin, LogicalOperations, End {
 
         private final CompoundFilter parent;
 
         private Predicate<ClassPathResource> filter = r -> true;
-        private ClassPathQueryBuilder.Operator operator = ClassPathQueryBuilder.Operator.AND;
+        private ClassPathScannerBuilder.Operator operator = ClassPathScannerBuilder.Operator.AND;
         private boolean negate;
 
         private CompoundFilter(final CompoundFilter parent) {
@@ -46,7 +58,7 @@ public final class ClassPathQueryBuilderImpl implements ClassPathQueryBuilder {
 
         @Override
         public LogicalOperations annotatedBy(Class<? extends Annotation> annotation) {
-            return appendCondition(r -> r.annotations().stream().map(ClassPathResource.ClassReference::canonicalName).collect(Collectors.toSet()).contains(annotation.getCanonicalName()));
+            return appendCondition(r -> contains(r.annotations(), annotation));
         }
 
         @Override
@@ -57,7 +69,7 @@ public final class ClassPathQueryBuilderImpl implements ClassPathQueryBuilder {
         @Override
         public LogicalOperations implementsInterface(Class<?> interfaceClass) {
             return appendCondition(
-                    r -> r instanceof ClassPathResource.ClassResource<?> cr && contains(cr.interfaces(), interfaceClass)
+                    r -> r instanceof ClassResource<?> cr && contains(cr.interfaces(), interfaceClass)
             );
         }
 
@@ -83,7 +95,7 @@ public final class ClassPathQueryBuilderImpl implements ClassPathQueryBuilder {
         @Override
         public LogicalOperations subClassOf(Class<?> superClass) {
             return appendCondition(
-                    r -> r instanceof ClassPathResource.ClassResource<?> cr && contains(cr.superClasses(), superClass)
+                    r -> r instanceof ClassResource<?> cr && contains(cr.superClasses(), superClass)
             );
         }
 
@@ -96,14 +108,14 @@ public final class ClassPathQueryBuilderImpl implements ClassPathQueryBuilder {
         @Override
         public Begin and() {
             this.negate = false;
-            this.operator = ClassPathQueryBuilder.Operator.AND;
+            this.operator = ClassPathScannerBuilder.Operator.AND;
             return this;
         }
 
         @Override
         public Begin or() {
             this.negate = false;
-            this.operator = ClassPathQueryBuilder.Operator.OR;
+            this.operator = ClassPathScannerBuilder.Operator.OR;
             return this;
         }
 
@@ -115,12 +127,12 @@ public final class ClassPathQueryBuilderImpl implements ClassPathQueryBuilder {
         }
 
         @Override
-        public ClassPathQuery build() {
+        public ClassPathScanner build() {
             if (this.parent != null) {
-                throw new InvalidQuerySyntaxException("Query creation must be called after the end of the main begin expression");
+                throw new InvalidRequestSyntaxException("Query creation must be called after the end of the main begin expression");
             }
 
-            return new PredicateBasedClassPathQuery(this.negate ? this.filter.negate() : this.filter);
+            return new PredicateBasedClassPathScanner(this.negate ? this.filter.negate() : this.filter, engine);
         }
 
         private CompoundFilter appendCondition(final Predicate<ClassPathResource> condition) {

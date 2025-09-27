@@ -1,11 +1,11 @@
 package ru.joke.classpath.scanner;
 
 import ru.joke.classpath.ClassPathResource;
-import ru.joke.classpath.scanner.impl.ClassPathQueryBuilderImpl;
+import ru.joke.classpath.scanner.impl.DefaultClassPathScannerBuilder;
 
 import java.lang.annotation.Annotation;
 
-public interface ClassPathQueryBuilder {
+public interface ClassPathScannerBuilder {
 
     Begin begin();
 
@@ -41,7 +41,7 @@ public interface ClassPathQueryBuilder {
 
         LogicalOperations end();
 
-        ClassPathQuery build();
+        ClassPathScanner build();
     }
 
     enum Operator {
@@ -53,7 +53,11 @@ public interface ClassPathQueryBuilder {
         NOT
     }
 
-    static ClassPathQueryBuilder create() {
-        return new ClassPathQueryBuilderImpl();
+    static ClassPathScannerBuilder create() {
+        return new DefaultClassPathScannerBuilder(ClassPathScannerEngines.getDefaultEngine());
+    }
+
+    static ClassPathScannerBuilder create(ClassPathScannerEngine engine) {
+        return new DefaultClassPathScannerBuilder(engine);
     }
 }

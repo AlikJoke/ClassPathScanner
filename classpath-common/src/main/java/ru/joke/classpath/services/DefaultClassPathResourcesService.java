@@ -1,6 +1,7 @@
 package ru.joke.classpath.services;
 
 import ru.joke.classpath.*;
+import ru.joke.classpath.converters.ClassPathResourceConverter;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -15,12 +16,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-public final class DefaultSingletonClassPathResourcesService implements ClassPathResourcesService {
+public final class DefaultClassPathResourcesService implements ClassPathResourcesService {
 
     private final Map<String, ClassPathResources> resourcesByLocation;
     private final ClassPathResourceConverter<ClassPathResource> converter;
 
-    private DefaultSingletonClassPathResourcesService() {
+    public DefaultClassPathResourcesService() {
         this.resourcesByLocation = new ConcurrentHashMap<>();
         this.converter = findConverter();
     }
@@ -43,7 +44,7 @@ public final class DefaultSingletonClassPathResourcesService implements ClassPat
             Files.writeString(
                     targetPath,
                     outputData,
-                    StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE
+                    StandardOpenOption.WRITE, StandardOpenOption.APPEND, StandardOpenOption.CREATE
             );
         } catch (IOException ex) {
             throw new IndexedClassPathStorageException("Unable to write indexed class path resources to config file: " + targetPath, ex);
@@ -61,7 +62,7 @@ public final class DefaultSingletonClassPathResourcesService implements ClassPat
 
     @SuppressWarnings("unchecked")
     private ClassPathResourceConverter<ClassPathResource> findConverter() {
-        return ServiceLoader.load(ClassPathResourceConverter.class).findFirst().orElseThrow();
+        return ServiceLoader.load(ClassPathResourceConverter.class, ClassPathResourceConverter.class.getClassLoader()).findFirst().orElseThrow();
     }
 
     private ClassPathResources readAll(final String sourceLocation) {
@@ -92,11 +93,5 @@ public final class DefaultSingletonClassPathResourcesService implements ClassPat
         } catch (IOException e) {
             throw new IndexedClassPathStorageException("Unable to take indexed files", e);
         }
-    }
-
-    private static final ClassPathResourcesService instance = new DefaultSingletonClassPathResourcesService();
-
-    public static ClassPathResourcesService provider() {
-        return instance;
     }
 }

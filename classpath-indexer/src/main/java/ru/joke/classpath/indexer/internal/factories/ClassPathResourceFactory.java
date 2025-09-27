@@ -6,12 +6,10 @@ import ru.joke.classpath.indexer.internal.ClassPathIndexingContext;
 import ru.joke.classpath.indexer.internal.ScannedResources;
 import ru.joke.classpath.indexer.internal.config.ClassPathIndexingConfiguration;
 
-import javax.lang.model.element.AnnotationMirror;
-import javax.lang.model.element.Element;
-import javax.lang.model.element.ElementKind;
-import javax.lang.model.element.QualifiedNameable;
+import javax.lang.model.element.*;
 import javax.lang.model.type.DeclaredType;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public abstract class ClassPathResourceFactory<T extends ClassPathResource, E extends Element> {
 
@@ -38,7 +36,10 @@ public abstract class ClassPathResourceFactory<T extends ClassPathResource, E ex
         return enclosedElement instanceof QualifiedNameable q ? q.getQualifiedName().toString() : "";
     }
 
-    protected void collectAnnotations(final Element element, final Set<ClassPathResource.ClassReference<?>> annotations) {
+    protected void collectAnnotations(
+            final Element element,
+            final Set<ClassPathResource.ClassReference<?>> annotations
+    ) {
         element.getAnnotationMirrors()
                 .stream()
                 .map(AnnotationMirror::getAnnotationType)
@@ -47,7 +48,7 @@ public abstract class ClassPathResourceFactory<T extends ClassPathResource, E ex
                 .map(a -> (QualifiedNameable) a)
                 .map(QualifiedNameable::getQualifiedName)
                 .map(Object::toString)
-                .peek(a -> annotations.add(createClassRef(a)))
+                .filter(a -> annotations.add(createClassRef(a)))
                 .map(this.indexingContext.elementUtils()::getTypeElement)
                 .filter(Objects::nonNull)
                 .forEach(a -> collectAnnotations(a, annotations));
@@ -99,6 +100,34 @@ public abstract class ClassPathResourceFactory<T extends ClassPathResource, E ex
 
                 return className.equals(ref.canonicalName());
             }
+        };
+    }
+
+
+    protected Set<ClassPathResource.Modifier> mapModifiers(final Set<Modifier> modifiers) {
+        final var result = modifiers
+                            .stream()
+                            .map(this::mapModifier)
+                            .collect(Collectors.toSet());
+        return EnumSet.copyOf(result);
+    }
+
+    private ClassPathResource.Modifier mapModifier(final Modifier modifier) {
+        return switch (modifier) {
+            case PUBLIC -> ClassPathResource.Modifier.PUBLIC;
+            case PROTECTED -> ClassPathResource.Modifier.PROTECTED;
+            case PRIVATE -> ClassPathResource.Modifier.PRIVATE;
+            case ABSTRACT -> ClassPathResource.Modifier.ABSTRACT;
+            case DEFAULT -> ClassPathResource.Modifier.DEFAULT;
+            case STATIC -> ClassPathResource.Modifier.STATIC;
+            case SEALED -> ClassPathResource.Modifier.SEALED;
+            case NON_SEALED -> ClassPathResource.Modifier.NON_SEALED;
+            case FINAL -> ClassPathResource.Modifier.FINAL;
+            case TRANSIENT -> ClassPathResource.Modifier.TRANSIENT;
+            case VOLATILE -> ClassPathResource.Modifier.VOLATILE;
+            case SYNCHRONIZED -> ClassPathResource.Modifier.SYNCHRONIZED;
+            case NATIVE -> ClassPathResource.Modifier.NATIVE;
+            default -> null;
         };
     }
 }

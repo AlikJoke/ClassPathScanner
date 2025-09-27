@@ -1,4 +1,6 @@
-package ru.joke.classpath;
+package ru.joke.classpath.converters;
+
+import ru.joke.classpath.ClassPathResource;
 
 import java.util.Optional;
 

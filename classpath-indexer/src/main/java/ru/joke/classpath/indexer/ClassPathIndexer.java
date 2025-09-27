@@ -35,6 +35,10 @@ public class ClassPathIndexer extends AbstractProcessor {
 
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
+        if (roundEnv.getRootElements().isEmpty()) {
+            return false;
+        }
+
         final var outputConfigDirectory = findOrCreateOutputConfigDirectory();
         final var context = ClassPathIndexingContext.create(outputConfigDirectory, this.processingEnv, roundEnv);
 

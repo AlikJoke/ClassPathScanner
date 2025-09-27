@@ -10,10 +10,7 @@ import ru.joke.classpath.indexer.internal.factories.ClassPathResourceFactory;
 import javax.lang.model.element.*;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -86,6 +83,8 @@ public final class ClassPathResourcesCollector {
         return result
                     .stream()
                     .map(this.indexingContext.elementUtils()::getTypeElement)
+                    .filter(Objects::nonNull)
+                    .filter(e -> e.getKind() == ElementKind.ANNOTATION_TYPE)
                     .collect(Collectors.toSet());
     }
 

@@ -1,17 +1,22 @@
 package ru.joke.classpath.converters;
 
-import ru.joke.classpath.ClassConstructorResource;
+import ru.joke.classpath.ClassMethodResource;
 import ru.joke.classpath.ClassPathResource;
 import ru.joke.classpath.ClassResource;
 
-import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Set;
 
-public final class ConstructorResourceConverter extends ExecutableClassMemberResourceConverter<ClassConstructorResource<?>> {
+public final class ClassMethodResourceConverter extends ExecutableClassMemberResourceConverter<ClassMethodResource> {
 
     @Override
-    protected ClassConstructorResource<?> from(
+    public ClassPathResource.Type supportedType() {
+        return ClassPathResource.Type.METHOD;
+    }
+
+    @Override
+    protected ClassMethodResource from(
             final Set<ClassPathResource.Modifier> modifiers,
             final String module,
             final String packageName,
@@ -28,9 +33,9 @@ public final class ConstructorResourceConverter extends ExecutableClassMemberRes
         final var owner = new ClassReferenceImpl<>(packageName + ClassResource.ID_SEPARATOR + className);
         final var methodSignature = createSignature(methodName, nameParts[2]);
 
-        return new ClassConstructorResource<>() {
+        return new ClassMethodResource() {
 
-            private volatile Constructor<Object> constructor;
+            private volatile Method method;
 
             @Override
             public List<ClassReference<?>> parameters() {
@@ -38,19 +43,17 @@ public final class ConstructorResourceConverter extends ExecutableClassMemberRes
             }
 
             @Override
-            public Constructor<Object> asConstructor() throws ClassNotFoundException, NoSuchMethodException {
-                if (this.constructor == null) {
+            public Method asMethod() throws ClassNotFoundException, NoSuchMethodException {
+                if (this.method == null) {
                     synchronized (this) {
-                        if (this.constructor == null) {
+                        if (this.method == null) {
                             final var parameterTypes = loadParameters(parameters);
-                            @SuppressWarnings("unchecked")
-                            final var constructor = (Constructor<Object>) owner().toClass().getDeclaredConstructor(parameterTypes);
-                            this.constructor = constructor;
+                            this.method = owner().toClass().getDeclaredMethod(methodName, parameterTypes);
                         }
                     }
                 }
 
-                return this.constructor;
+                return this.method;
             }
 
             @Override
@@ -93,10 +96,5 @@ public final class ConstructorResourceConverter extends ExecutableClassMemberRes
                 return modifiers;
             }
         };
-    }
-
-    @Override
-    public ClassPathResource.Type supportedType() {
-        return ClassPathResource.Type.CONSTRUCTOR;
     }
 }

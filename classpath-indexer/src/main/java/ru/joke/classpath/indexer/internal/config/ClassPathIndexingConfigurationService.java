@@ -11,7 +11,7 @@ import java.util.Optional;
 
 public final class ClassPathIndexingConfigurationService {
 
-    private static final String CONFIG_LOCATION = "META-INF/classpath-indexing/scanning-resources.config";
+    private static final String CONFIG_LOCATION = "META-INF/classpath-indexing/scanning-resources.conf";
 
     private final Filer filer;
     private final Messager messager;

@@ -1,7 +1,4 @@
-package ru.joke.classpath.services;
-
-import ru.joke.classpath.ClassPathResource;
-import ru.joke.classpath.ClassPathResources;
+package ru.joke.classpath;
 
 import java.util.ArrayList;
 import java.util.Optional;

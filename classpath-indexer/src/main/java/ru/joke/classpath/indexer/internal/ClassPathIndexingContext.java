@@ -3,7 +3,7 @@ package ru.joke.classpath.indexer.internal;
 import ru.joke.classpath.ClassPathResources;
 import ru.joke.classpath.indexer.internal.config.ClassPathIndexingConfiguration;
 import ru.joke.classpath.indexer.internal.config.ClassPathIndexingConfigurationService;
-import ru.joke.classpath.services.IndexedClassPathResources;
+import ru.joke.classpath.IndexedClassPathResources;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
@@ -100,7 +100,7 @@ public final class ClassPathIndexingContext {
                         .stream()
                         .filter(e -> e instanceof ModuleElement)
                         .map(e -> (ModuleElement) e)
-                        .map(ModuleElement::getSimpleName)
+                        .map(ModuleElement::getQualifiedName)
                         .map(Object::toString)
                         .findAny()
                         .orElse("");

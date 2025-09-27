@@ -1,6 +1,6 @@
 package ru.joke.classpath.indexer.internal.factories;
 
-import ru.joke.classpath.ClassPathResource;
+import ru.joke.classpath.ClassFieldResource;
 import ru.joke.classpath.indexer.internal.ClassPathIndexingContext;
 
 import javax.lang.model.element.ElementKind;
@@ -10,15 +10,15 @@ import java.lang.reflect.Field;
 import java.util.HashSet;
 import java.util.Set;
 
-final class FieldResourceFactory extends ClassPathResourceFactory<ClassPathResource.FieldResource, VariableElement> {
+final class FieldResourceFactory extends ClassPathResourceFactory<ClassFieldResource, VariableElement> {
 
     FieldResourceFactory(final ClassPathIndexingContext indexingContext) {
         super(indexingContext);
     }
 
     @Override
-    public ClassPathResource.FieldResource doCreate(VariableElement source) {
-        return new ClassPathResource.FieldResource() {
+    public ClassFieldResource doCreate(VariableElement source) {
+        return new ClassFieldResource() {
             @Override
             public Field asField() {
                 throw new UnsupportedOperationException();
@@ -60,11 +60,16 @@ final class FieldResourceFactory extends ClassPathResourceFactory<ClassPathResou
             public String packageName() {
                 return findPackageName(source);
             }
+
+            @Override
+            public Set<Modifier> modifiers() {
+                return mapModifiers(source.getModifiers());
+            }
         };
     }
 
     @Override
     protected Set<ElementKind> supportedTypes() {
-        return Set.of(ElementKind.FIELD);
+        return Set.of(ElementKind.FIELD, ElementKind.ENUM_CONSTANT);
     }
 }

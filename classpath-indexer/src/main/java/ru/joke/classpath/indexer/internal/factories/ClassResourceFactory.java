@@ -1,6 +1,6 @@
 package ru.joke.classpath.indexer.internal.factories;
 
-import ru.joke.classpath.ClassPathResource;
+import ru.joke.classpath.ClassResource;
 import ru.joke.classpath.indexer.internal.ClassPathIndexingContext;
 
 import javax.lang.model.element.ElementKind;
@@ -12,15 +12,15 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-final class ClassResourceFactory extends ClassPathResourceFactory<ClassPathResource.ClassResource<?>, TypeElement> {
+final class ClassResourceFactory extends ClassPathResourceFactory<ClassResource<?>, TypeElement> {
 
     ClassResourceFactory(final ClassPathIndexingContext context) {
         super(context);
     }
 
     @Override
-    public ClassPathResource.ClassResource<?> doCreate(TypeElement source) {
-        return new ClassPathResource.ClassResource<>() {
+    public ClassResource<?> doCreate(TypeElement source) {
+        return new ClassResource<>() {
             @Override
             public Class<Object> asClass() {
                 throw new UnsupportedOperationException();
@@ -50,8 +50,27 @@ final class ClassResourceFactory extends ClassPathResourceFactory<ClassPathResou
             }
 
             @Override
+            public Kind kind() {
+                return switch (source.getKind()) {
+                    case CLASS -> Kind.CLASS;
+                    case ENUM -> Kind.ENUM;
+                    case RECORD -> Kind.RECORD;
+                    case INTERFACE -> Kind.INTERFACE;
+                    case ANNOTATION_TYPE -> Kind.ANNOTATION;
+                    default -> throw new UnsupportedOperationException();
+                };
+            }
+
+            @Override
             public String name() {
-                return source.getQualifiedName().toString();
+                var name = source.getSimpleName().toString();
+                var enclosedElement = source.getEnclosingElement();
+                while (enclosedElement != null && enclosedElement.getKind() != ElementKind.PACKAGE) {
+                    name = enclosedElement.getSimpleName() + ID_SEPARATOR + name;
+                    enclosedElement = enclosedElement.getEnclosingElement();
+                }
+
+                return name;
             }
 
             @Override
@@ -77,10 +96,17 @@ final class ClassResourceFactory extends ClassPathResourceFactory<ClassPathResou
                 return findPackageName(source);
             }
 
+            @Override
+            public Set<Modifier> modifiers() {
+                return mapModifiers(source.getModifiers());
+            }
+
             private void collectInterfaces(final Set<ClassReference<?>> interfaces, final TypeElement type) {
                 type.getInterfaces()
                         .stream()
-                        .filter(i -> i instanceof DeclaredType iMirror && iMirror.asElement() instanceof QualifiedNameable)
+                        .filter(i -> i instanceof DeclaredType)
+                        .map(i -> ((DeclaredType) i).asElement())
+                        .filter(i -> i instanceof QualifiedNameable)
                         .map(i -> (QualifiedNameable) i)
                         .map(QualifiedNameable::getQualifiedName)
                         .map(Object::toString)

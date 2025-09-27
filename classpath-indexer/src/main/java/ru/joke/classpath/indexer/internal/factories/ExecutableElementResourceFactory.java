@@ -1,6 +1,6 @@
 package ru.joke.classpath.indexer.internal.factories;
 
-import ru.joke.classpath.ClassPathResource;
+import ru.joke.classpath.ClassMethodResource;
 import ru.joke.classpath.indexer.internal.ClassPathIndexingContext;
 
 import javax.lang.model.element.ElementKind;
@@ -14,15 +14,15 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-final class ExecutableElementResourceFactory extends ClassPathResourceFactory<ClassPathResource.MethodResource, ExecutableElement> {
+final class ExecutableElementResourceFactory extends ClassPathResourceFactory<ClassMethodResource, ExecutableElement> {
 
     ExecutableElementResourceFactory(final ClassPathIndexingContext indexingContext) {
         super(indexingContext);
     }
 
     @Override
-    public ClassPathResource.MethodResource doCreate(ExecutableElement source) {
-        return new ClassPathResource.MethodResource() {
+    public ClassMethodResource doCreate(ExecutableElement source) {
+        return new ClassMethodResource() {
 
             @Override
             public List<ClassReference<?>> parameters() {
@@ -47,7 +47,12 @@ final class ExecutableElementResourceFactory extends ClassPathResourceFactory<Cl
 
             @Override
             public Type type() {
-                return name().equals("<cinit>") ? Type.CONSTRUCTOR : Type.METHOD;
+                return source.getKind() == ElementKind.CONSTRUCTOR ? Type.CONSTRUCTOR : Type.METHOD;
+            }
+
+            @Override
+            public Set<Modifier> modifiers() {
+                return mapModifiers(source.getModifiers());
             }
 
             @Override
