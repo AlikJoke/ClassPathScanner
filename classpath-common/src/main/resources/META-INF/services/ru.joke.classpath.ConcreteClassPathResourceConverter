@@ -1,0 +1,3 @@
+ru.joke.classpath.converters.ClassResourceConverter
+ru.joke.classpath.converters.ModuleResourceConverter
+ru.joke.classpath.converters.FieldResourceConverter
