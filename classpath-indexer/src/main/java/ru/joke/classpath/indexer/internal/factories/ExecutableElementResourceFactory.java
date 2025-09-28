@@ -11,6 +11,7 @@ import javax.lang.model.type.DeclaredType;
 import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -53,6 +54,21 @@ final class ExecutableElementResourceFactory extends ClassPathResourceFactory<Cl
             @Override
             public Set<Modifier> modifiers() {
                 return mapModifiers(source.getModifiers());
+            }
+
+            @Override
+            public int hashCode() {
+                return Objects.hash(id());
+            }
+
+            @Override
+            public boolean equals(Object obj) {
+                return obj instanceof Executable f && f.id().equals(id());
+            }
+
+            @Override
+            public String toString() {
+                return type().name() + ":" + id();
             }
 
             @Override

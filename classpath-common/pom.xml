@@ -11,6 +11,6 @@
     </parent>
 
     <artifactId>classpath-common</artifactId>
-    <description>ClassPath Scanner API and implementation</description>
-    <name>ClassPath Scanner Module</name>
+    <description>ClassPath Common API and implementation</description>
+    <name>ClassPath Common Module</name>
 </project>

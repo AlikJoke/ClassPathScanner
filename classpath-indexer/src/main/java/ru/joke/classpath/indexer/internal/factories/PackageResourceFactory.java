@@ -6,6 +6,7 @@ import ru.joke.classpath.indexer.internal.ClassPathIndexingContext;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.PackageElement;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -49,6 +50,21 @@ final class PackageResourceFactory extends ClassPathResourceFactory<PackageResou
             @Override
             public Set<Modifier> modifiers() {
                 return mapModifiers(source.getModifiers());
+            }
+
+            @Override
+            public int hashCode() {
+                return Objects.hash(id());
+            }
+
+            @Override
+            public boolean equals(Object obj) {
+                return obj instanceof PackageResource f && f.id().equals(id());
+            }
+
+            @Override
+            public String toString() {
+                return type().name() + ":" + id();
             }
         };
     }

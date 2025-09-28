@@ -5,6 +5,7 @@ import ru.joke.classpath.ClassPathResource;
 import ru.joke.classpath.ClassResource;
 
 import java.lang.reflect.Field;
+import java.util.Objects;
 import java.util.Set;
 
 public final class ClassFieldResourceConverter extends AbsClassPathResourceConverter<ClassFieldResource> implements ConcreteClassPathResourceConverter<ClassFieldResource> {
@@ -91,6 +92,21 @@ public final class ClassFieldResourceConverter extends AbsClassPathResourceConve
             @Override
             public Set<Modifier> modifiers() {
                 return modifiers;
+            }
+
+            @Override
+            public int hashCode() {
+                return Objects.hash(id());
+            }
+
+            @Override
+            public boolean equals(Object obj) {
+                return obj instanceof ClassFieldResource f && f.id().equals(id());
+            }
+
+            @Override
+            public String toString() {
+                return type().name() + ":" + id();
             }
         };
     }

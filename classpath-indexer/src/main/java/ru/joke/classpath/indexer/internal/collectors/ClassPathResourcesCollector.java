@@ -121,7 +121,7 @@ public final class ClassPathResourcesCollector {
         elements
                 .stream()
                 .filter(e -> e instanceof TypeElement)
-                .filter(e -> e.getKind() == ElementKind.INTERFACE || e.getKind() == ElementKind.CLASS || e.getKind() == ElementKind.ENUM || e.getKind() == ElementKind.RECORD)
+                .filter(e -> e.getKind() == ElementKind.INTERFACE || e.getKind().isClass())
                 .map(e -> (TypeElement) e)
                 .filter(e -> toQualifiedNames(e.getInterfaces()).anyMatch(interfaces::contains))
                 .peek(e -> this.resourceFactory.create(e).ifPresent(this.indexingContext.collectedResources()::add))
@@ -153,7 +153,7 @@ public final class ClassPathResourcesCollector {
         elements
                 .stream()
                 .filter(e -> e instanceof TypeElement)
-                .filter(e -> e.getKind() == ElementKind.CLASS || e.getKind() == ElementKind.ENUM || e.getKind() == ElementKind.RECORD)
+                .filter(e -> e.getKind().isClass())
                 .map(e -> (TypeElement) e)
                 .filter(e -> e.getSuperclass() instanceof DeclaredType s && s.asElement() instanceof QualifiedNameable q && classes.contains(q.getQualifiedName().toString()))
                 .peek(e -> this.resourceFactory.create(e).ifPresent(this.indexingContext.collectedResources()::add))
@@ -175,10 +175,12 @@ public final class ClassPathResourcesCollector {
                         .stream()
                         .filter(e -> e instanceof TypeElement te && te.getKind() == ElementKind.ANNOTATION_TYPE)
                         .map(a -> (TypeElement) a)
+                        .filter(this.indexingContext.processingFilter())
                         .collect(Collectors.toSet());
 
         annotatedElements
                 .stream()
+                .filter(this.indexingContext.processingFilter())
                 .map(this.resourceFactory::create)
                 .flatMap(Optional::stream)
                 .forEach(this.indexingContext.collectedResources()::add);
@@ -214,6 +216,7 @@ public final class ClassPathResourcesCollector {
         foundElements
                 .stream()
                 .filter(filter)
+                .filter(this.indexingContext.processingFilter())
                 .filter(e -> e instanceof QualifiedNameable)
                 .map(e -> (QualifiedNameable) e)
                 .map(QualifiedNameable::getQualifiedName)

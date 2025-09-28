@@ -6,6 +6,7 @@ import ru.joke.classpath.ClassResource;
 
 import java.lang.reflect.Constructor;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 public final class ConstructorResourceConverter extends ExecutableClassMemberResourceConverter<ClassConstructorResource<?>> {
@@ -91,6 +92,21 @@ public final class ConstructorResourceConverter extends ExecutableClassMemberRes
             @Override
             public Set<Modifier> modifiers() {
                 return modifiers;
+            }
+
+            @Override
+            public int hashCode() {
+                return Objects.hash(id());
+            }
+
+            @Override
+            public boolean equals(Object obj) {
+                return obj instanceof ClassConstructorResource<?> f && f.id().equals(id());
+            }
+
+            @Override
+            public String toString() {
+                return type().name() + ":" + id();
             }
         };
     }

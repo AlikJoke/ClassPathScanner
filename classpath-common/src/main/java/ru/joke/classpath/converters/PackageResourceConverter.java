@@ -3,6 +3,7 @@ package ru.joke.classpath.converters;
 import ru.joke.classpath.ClassPathResource;
 import ru.joke.classpath.PackageResource;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -59,6 +60,21 @@ public final class PackageResourceConverter extends AbsClassPathResourceConverte
             @Override
             public Set<Modifier> modifiers() {
                 return modifiers;
+            }
+
+            @Override
+            public int hashCode() {
+                return Objects.hash(id());
+            }
+
+            @Override
+            public boolean equals(Object obj) {
+                return obj instanceof PackageResource f && f.id().equals(id());
+            }
+
+            @Override
+            public String toString() {
+                return type().name() + ":" + id();
             }
         };
     }

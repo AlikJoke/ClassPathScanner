@@ -28,10 +28,28 @@
     </modules>
 
     <scm>
-        <url>https://github.com/AlikJoke/ClassPathScanner.git</url>
+        <url>https://github.com/AlikJoke/ClassPathScanner</url>
         <connection>scm:git:https://github.com/AlikJoke/ClassPathScanner.git</connection>
         <developerConnection>scm:git:https://github.com/AlikJoke/ClassPathScanner.git</developerConnection>
     </scm>
+
+    <inceptionYear>2025</inceptionYear>
+
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <id>Alik</id>
+            <name>Alik</name>
+            <email>typicaljprogrammer@gmail.com</email>
+        </developer>
+    </developers>
 
     <dependencies>
 
@@ -57,19 +75,12 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.11.0</version>
+                    <version>3.14.1</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
-                    <version>3.3.0</version>
-                    <executions>
-                        <execution>
-                            <goals>
-                                <goal>test-jar</goal>
-                            </goals>
-                        </execution>
-                    </executions>
+                    <version>3.4.2</version>
                     <configuration>
                         <archive>
                             <manifest>
@@ -85,8 +96,13 @@
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-dependency-plugin</artifactId>
+                    <version>3.8.1</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-install-plugin</artifactId>
-                    <version>3.1.1</version>
+                    <version>3.1.4</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -101,13 +117,10 @@
                             </goals>
                         </execution>
                     </executions>
-                    <configuration>
-                        <skipSource>true</skipSource>
-                    </configuration>
                 </plugin>
                 <plugin>
                     <artifactId>maven-clean-plugin</artifactId>
-                    <version>3.3.1</version>
+                    <version>3.5.0</version>
                     <configuration>
                         <excludeDefaultDirectories>true</excludeDefaultDirectories>
                         <filesets>
@@ -124,7 +137,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>3.1.2</version>
+                    <version>3.5.4</version>
                     <configuration>
                         <properties>
                             <configurationParameters>
@@ -134,22 +147,12 @@
                         </properties>
                     </configuration>
                 </plugin>
-
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-resources-plugin</artifactId>
-                    <version>3.3.1</version>
-                </plugin>
             </plugins>
         </pluginManagement>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-resources-plugin</artifactId>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -163,11 +166,11 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.5.0</version>
+                <version>3.12.0</version>
                 <inherited>true</inherited>
                 <configuration>
                     <overview>${project.basedir}/overview.html</overview>
-                    <failOnError>false</failOnError>
+                    <failOnError>true</failOnError>
                 </configuration>
                 <executions>
                     <execution>
@@ -182,7 +185,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
-                <version>3.6.0</version>
             </plugin>
         </plugins>
     </build>

@@ -47,13 +47,51 @@ public final class DefaultClassPathScannerBuilder implements ClassPathScannerBui
         }
 
         @Override
-        public LogicalOperations inPackage(String packageName) {
-            return appendCondition(r -> r.packageName().startsWith(packageName));
+        public LogicalOperations includeResourcesInPackage(boolean exactMatch, String packageName) {
+            return appendCondition(
+                    r -> exactMatch
+                            ? r.packageName().equals(packageName)
+                            : r.packageName().startsWith(packageName)
+            );
         }
 
         @Override
-        public LogicalOperations inModule(String moduleName) {
+        public LogicalOperations includeResourcesInPackages(boolean exactMatch, String... packageNames) {
+            return appendCondition(r -> contains(r.packageName(), exactMatch, packageNames));
+        }
+
+        @Override
+        public LogicalOperations excludeResourcesInPackage(boolean exactMatch, String packageName) {
+            return appendCondition(
+                    r -> exactMatch
+                            ? !r.packageName().startsWith(packageName)
+                            : !r.packageName().equals(packageName)
+            );
+        }
+
+        @Override
+        public LogicalOperations excludeResourcesInPackages(boolean exactMatch, String... packageNames) {
+            return appendCondition(r -> !contains(r.packageName(), exactMatch, packageNames));
+        }
+
+        @Override
+        public LogicalOperations includeResourcesInModule(String moduleName) {
             return appendCondition(r -> r.module().equals(moduleName));
+        }
+
+        @Override
+        public LogicalOperations includeResourcesInModules(String... moduleNames) {
+            return appendCondition(r -> contains(r.module(), true, moduleNames));
+        }
+
+        @Override
+        public LogicalOperations excludeResourcesInModule(String moduleName) {
+            return appendCondition(r -> !r.module().equals(moduleName));
+        }
+
+        @Override
+        public LogicalOperations excludeResourcesInModules(String... moduleNames) {
+            return appendCondition(r -> !contains(r.module(), true, moduleNames));
         }
 
         @Override
@@ -62,8 +100,30 @@ public final class DefaultClassPathScannerBuilder implements ClassPathScannerBui
         }
 
         @Override
+        @SafeVarargs
+        public final LogicalOperations annotatedByAnyOf(Class<? extends Annotation>... annotations) {
+            return appendCondition(r -> containsAny(r.annotations(), annotations));
+        }
+
+        @Override
+        @SafeVarargs
+        public final LogicalOperations annotatedByAllOf(Class<? extends Annotation>... annotations) {
+            return appendCondition(r -> containsAll(r.annotations(), annotations));
+        }
+
+        @Override
         public LogicalOperations withAlias(String alias) {
             return appendCondition(r -> r.aliases().contains(alias));
+        }
+
+        @Override
+        public LogicalOperations withAnyOfAliases(String... aliases) {
+            return appendCondition(r -> containsAny(r.aliases(), aliases));
+        }
+
+        @Override
+        public LogicalOperations withAllOfAliases(String... aliases) {
+            return appendCondition(r -> containsAll(r.aliases(), aliases));
         }
 
         @Override
@@ -74,7 +134,26 @@ public final class DefaultClassPathScannerBuilder implements ClassPathScannerBui
         }
 
         @Override
-        public LogicalOperations targetTypes(ClassPathResource.Type... types) {
+        public LogicalOperations implementsAnyOfInterfaces(Class<?>... interfaceClasses) {
+            return appendCondition(
+                    r -> r instanceof ClassResource<?> cr && containsAny(cr.interfaces(), interfaceClasses)
+            );
+        }
+
+        @Override
+        public LogicalOperations implementsAllOfInterfaces(Class<?>... interfaceClasses) {
+            return appendCondition(
+                    r -> r instanceof ClassResource<?> cr && containsAll(cr.interfaces(), interfaceClasses)
+            );
+        }
+
+        @Override
+        public LogicalOperations includeResourceType(ClassPathResource.Type type) {
+            return appendCondition(r -> r.type() == type);
+        }
+
+        @Override
+        public LogicalOperations includeResourceTypes(ClassPathResource.Type... types) {
             return appendCondition(
                     r -> {
                         if (types == null || types.length == 0) {
@@ -93,10 +172,109 @@ public final class DefaultClassPathScannerBuilder implements ClassPathScannerBui
         }
 
         @Override
-        public LogicalOperations subClassOf(Class<?> superClass) {
+        public LogicalOperations excludeResourceType(ClassPathResource.Type type) {
+            return appendCondition(r -> r.type() != type);
+        }
+
+        @Override
+        public LogicalOperations excludeResourceTypes(ClassPathResource.Type... types) {
+            return appendCondition(
+                    r -> {
+                        if (types == null) {
+                            return true;
+                        }
+
+                        for (var type : types) {
+                            if (type == r.type()) {
+                                return false;
+                            }
+                        }
+
+                        return true;
+                    }
+            );
+        }
+
+        @Override
+        public LogicalOperations extendsBy(Class<?> superClass) {
             return appendCondition(
                     r -> r instanceof ClassResource<?> cr && contains(cr.superClasses(), superClass)
             );
+        }
+
+        @Override
+        public LogicalOperations extendsByAnyOf(Class<?>... superClasses) {
+            return appendCondition(
+                    r -> r instanceof ClassResource<?> cr && containsAny(cr.superClasses(), superClasses)
+            );
+        }
+
+        @Override
+        public LogicalOperations hasModifier(ClassPathResource.Modifier modifier) {
+            return appendCondition(r -> r.modifiers().contains(modifier));
+        }
+
+        @Override
+        public LogicalOperations hasAllOfModifiers(ClassPathResource.Modifier... modifiers) {
+            return appendCondition(r -> containsAll(r.modifiers(), modifiers));
+        }
+
+        @Override
+        public LogicalOperations hasAnyOfModifiers(ClassPathResource.Modifier... modifiers) {
+            return appendCondition(r -> containsAny(r.modifiers(), modifiers));
+        }
+
+        @Override
+        public LogicalOperations excludeClassKind(ClassResource.Kind kind) {
+            return appendCondition(
+                    r -> r instanceof ClassResource<?> cr && cr.kind() != kind
+            );
+        }
+
+        @Override
+        public LogicalOperations includeClassKind(ClassResource.Kind kind) {
+            return appendCondition(
+                    r -> r instanceof ClassResource<?> cr && cr.kind() == kind
+            );
+        }
+
+        @Override
+        public LogicalOperations excludeClassKinds(ClassResource.Kind... kinds) {
+            return appendCondition(
+                    r -> {
+                        if (r instanceof ClassResource<?> cr) {
+                            for (ClassResource.Kind kind : kinds) {
+                                if (cr.kind() == kind) {
+                                    return false;
+                                }
+                            }
+                        }
+
+                        return true;
+                    }
+            );
+        }
+
+        @Override
+        public LogicalOperations includeClassKinds(ClassResource.Kind... kinds) {
+            return appendCondition(
+                    r -> {
+                        if (r instanceof ClassResource<?> cr) {
+                            for (ClassResource.Kind kind : kinds) {
+                                if (cr.kind() == kind) {
+                                    return true;
+                                }
+                            }
+                        }
+
+                        return false;
+                    }
+            );
+        }
+
+        @Override
+        public LogicalOperations filter(Predicate<ClassPathResource> filter) {
+            return appendCondition(filter);
         }
 
         @Override
@@ -144,9 +322,88 @@ public final class DefaultClassPathScannerBuilder implements ClassPathScannerBui
             return this;
         }
 
-        private boolean contains(final Set<ClassPathResource.ClassReference<?>> refs, final Class<?> type) {
+        private boolean contains(
+                final Set<ClassPathResource.ClassReference<?>> refs,
+                final Class<?> type
+        ) {
             for (final var ref : refs) {
                 if (ref.canonicalName().equals(type.getCanonicalName())) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private boolean containsAll(
+                final Set<ClassPathResource.ClassReference<?>> refs,
+                final Class<?>... types
+        ) {
+            for (final var type : types) {
+                if (!contains(refs, type)) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        private boolean containsAny(
+                final Set<ClassPathResource.ClassReference<?>> refs,
+                final Class<?>... types
+        ) {
+            if (types.length == 0) {
+                return true;
+            }
+
+            for (final var type : types) {
+                if (contains(refs, type)) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        @SafeVarargs
+        private <E> boolean containsAll(
+                final Set<E> items,
+                final E... targetItems
+        ) {
+            for (final var targetItem : targetItems) {
+                if (!items.contains(targetItem)) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        @SafeVarargs
+        private <E> boolean containsAny(
+                final Set<E> items,
+                final E... targetItems
+        ) {
+            if (targetItems.length == 0) {
+                return true;
+            }
+
+            for (final var targetItem : targetItems) {
+                if (items.contains(targetItem)) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private boolean contains(
+                final String targetItem,
+                final boolean exactMatch,
+                final String... items
+        ) {
+            for (final var item : items) {
+                if (exactMatch && targetItem.equals(item) || !exactMatch && targetItem.startsWith(item)) {
                     return true;
                 }
             }

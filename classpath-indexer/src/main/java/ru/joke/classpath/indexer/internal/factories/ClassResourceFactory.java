@@ -1,5 +1,6 @@
 package ru.joke.classpath.indexer.internal.factories;
 
+import ru.joke.classpath.ClassFieldResource;
 import ru.joke.classpath.ClassResource;
 import ru.joke.classpath.indexer.internal.ClassPathIndexingContext;
 
@@ -99,6 +100,21 @@ final class ClassResourceFactory extends ClassPathResourceFactory<ClassResource<
             @Override
             public Set<Modifier> modifiers() {
                 return mapModifiers(source.getModifiers());
+            }
+
+            @Override
+            public int hashCode() {
+                return Objects.hash(id());
+            }
+
+            @Override
+            public boolean equals(Object obj) {
+                return obj instanceof ClassFieldResource f && f.id().equals(id());
+            }
+
+            @Override
+            public String toString() {
+                return type().name() + ":" + id();
             }
 
             private void collectInterfaces(final Set<ClassReference<?>> interfaces, final TypeElement type) {

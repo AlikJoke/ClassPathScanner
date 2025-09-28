@@ -1,9 +1,9 @@
 package ru.joke.classpath.indexer.internal;
 
 import ru.joke.classpath.ClassPathResources;
+import ru.joke.classpath.IndexedClassPathResources;
 import ru.joke.classpath.indexer.internal.config.ClassPathIndexingConfiguration;
 import ru.joke.classpath.indexer.internal.config.ClassPathIndexingConfigurationService;
-import ru.joke.classpath.IndexedClassPathResources;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
@@ -14,6 +14,8 @@ import java.io.File;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public final class ClassPathIndexingContext {
 
@@ -26,6 +28,7 @@ public final class ClassPathIndexingContext {
     private final Set<Element> elements;
     private final ClassPathResources collectedResources;
     private final Elements elementUtils;
+    private final Predicate<Element> processingFilter;
 
     private ClassPathIndexingContext(
             final ScannedResources currentScannedResources,
@@ -35,7 +38,8 @@ public final class ClassPathIndexingContext {
             final RoundEnvironment roundEnvironment,
             final Set<Element> elements,
             final ClassPathResources collectedResources,
-            final Elements elementUtils
+            final Elements elementUtils,
+            final Predicate<Element> processingFilter
     ) {
         this.currentScannedResources = currentScannedResources;
         this.prevScannedResources = scannedResourcesConfigurationService.deserializeAllAvailable();
@@ -46,6 +50,7 @@ public final class ClassPathIndexingContext {
         this.elements = elements;
         this.collectedResources = collectedResources;
         this.elementUtils = elementUtils;
+        this.processingFilter = processingFilter;
     }
 
     public void flushCurrentScannedResources() {
@@ -86,10 +91,15 @@ public final class ClassPathIndexingContext {
         return elementUtils;
     }
 
+    public Predicate<Element> processingFilter() {
+        return processingFilter;
+    }
+
     public static ClassPathIndexingContext create(
             final File targetOutputConfigDir,
             final ProcessingEnvironment processingEnvironment,
-            final RoundEnvironment roundEnvironment
+            final RoundEnvironment roundEnvironment,
+            final Predicate<Element> processingFilter
     ) {
         final var scannedResourcesConfigurationService = new ScannedResourcesConfigurationService(
                 targetOutputConfigDir,
@@ -115,15 +125,22 @@ public final class ClassPathIndexingContext {
         final Set<Element> elements = new HashSet<>();
         roundEnvironment.getRootElements().forEach(e -> collectElements(e, elements));
 
+        final Set<Element> filteredElements =
+                elements
+                        .stream()
+                        .filter(processingFilter)
+                        .collect(Collectors.toSet());
+
         return new ClassPathIndexingContext(
                 new ScannedResources(),
                 moduleName,
                 indexingConfiguration,
                 scannedResourcesConfigurationService,
                 roundEnvironment,
-                elements,
+                filteredElements,
                 new IndexedClassPathResources(),
-                processingEnvironment.getElementUtils()
+                processingEnvironment.getElementUtils(),
+                processingFilter
         );
     }
 

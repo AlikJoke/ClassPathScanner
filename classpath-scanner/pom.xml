@@ -11,6 +11,8 @@
     </parent>
 
     <artifactId>classpath-scanner</artifactId>
+    <name>ClassPath Scanner Module</name>
+    <description>ClassPath Scanner API and implementation</description>
 
     <dependencies>
         <dependency>

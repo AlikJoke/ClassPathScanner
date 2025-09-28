@@ -6,6 +6,7 @@ import ru.joke.classpath.ClassResource;
 
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 public final class ClassMethodResourceConverter extends ExecutableClassMemberResourceConverter<ClassMethodResource> {
@@ -94,6 +95,21 @@ public final class ClassMethodResourceConverter extends ExecutableClassMemberRes
             @Override
             public Set<Modifier> modifiers() {
                 return modifiers;
+            }
+
+            @Override
+            public int hashCode() {
+                return Objects.hash(id());
+            }
+
+            @Override
+            public boolean equals(Object obj) {
+                return obj instanceof ClassMethodResource f && f.id().equals(id());
+            }
+
+            @Override
+            public String toString() {
+                return type().name() + ":" + id();
             }
         };
     }

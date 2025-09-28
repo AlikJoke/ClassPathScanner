@@ -5,10 +5,7 @@ import ru.joke.classpath.indexer.internal.ClassPathIndexingContext;
 
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ModuleElement;
-import java.util.EnumSet;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 final class ModuleResourceFactory extends ClassPathResourceFactory<ModuleResource, ModuleElement> {
 
@@ -55,6 +52,21 @@ final class ModuleResourceFactory extends ClassPathResourceFactory<ModuleResourc
                 }
 
                 return EnumSet.copyOf(modifiers);
+            }
+
+            @Override
+            public int hashCode() {
+                return Objects.hash(id());
+            }
+
+            @Override
+            public boolean equals(Object obj) {
+                return obj instanceof ModuleResource f && f.id().equals(id());
+            }
+
+            @Override
+            public String toString() {
+                return type().name() + ":" + id();
             }
         };
     }

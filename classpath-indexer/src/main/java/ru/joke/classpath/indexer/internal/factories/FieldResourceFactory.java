@@ -8,6 +8,7 @@ import javax.lang.model.element.QualifiedNameable;
 import javax.lang.model.element.VariableElement;
 import java.lang.reflect.Field;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 final class FieldResourceFactory extends ClassPathResourceFactory<ClassFieldResource, VariableElement> {
@@ -64,6 +65,21 @@ final class FieldResourceFactory extends ClassPathResourceFactory<ClassFieldReso
             @Override
             public Set<Modifier> modifiers() {
                 return mapModifiers(source.getModifiers());
+            }
+
+            @Override
+            public int hashCode() {
+                return Objects.hash(id());
+            }
+
+            @Override
+            public boolean equals(Object obj) {
+                return obj instanceof ClassFieldResource f && f.id().equals(id());
+            }
+
+            @Override
+            public String toString() {
+                return type().name() + ":" + id();
             }
         };
     }
