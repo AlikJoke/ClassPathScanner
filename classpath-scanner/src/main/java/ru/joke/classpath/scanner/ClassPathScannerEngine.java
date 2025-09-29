@@ -1,8 +1,10 @@
 package ru.joke.classpath.scanner;
 
+import ru.joke.classpath.ClassPathResources;
+
 public interface ClassPathScannerEngine {
 
-    ClassPathScannerBuilder createScanner();
+    ClassPathResources scan(ClassPathScanner scanner);
 
     ClassPathScannerEngineConfiguration configuration();
 }

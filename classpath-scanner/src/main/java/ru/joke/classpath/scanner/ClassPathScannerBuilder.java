@@ -6,10 +6,15 @@ import ru.joke.classpath.scanner.impl.DefaultClassPathScannerBuilder;
 
 import java.lang.annotation.Annotation;
 import java.util.function.Predicate;
+import java.util.regex.Pattern;
 
 public interface ClassPathScannerBuilder {
 
-    Begin begin();
+    default Begin begin() {
+        return begin(false);
+    }
+
+    Begin begin(boolean overrideDefaultEngineScope);
 
     interface Begin {
 
@@ -23,6 +28,8 @@ public interface ClassPathScannerBuilder {
 
         LogicalOperations excludeResourcesInPackages(boolean exactMatch, String... packageNames);
 
+        LogicalOperations excludeResourcesInPackages(Pattern packagesPattern);
+
         default LogicalOperations excludeResourcesInPackages(String... packageNames) {
             return excludeResourcesInPackages(false, packageNames);
         }
@@ -32,6 +39,8 @@ public interface ClassPathScannerBuilder {
         default LogicalOperations includeResourcesInPackage(String packageName) {
             return includeResourcesInPackage(false, packageName);
         }
+
+        LogicalOperations includeResourcesInPackages(Pattern packagesPattern);
 
         LogicalOperations includeResourcesInPackages(boolean exactMatch, String... packageNames);
 
@@ -43,9 +52,13 @@ public interface ClassPathScannerBuilder {
 
         LogicalOperations excludeResourcesInModules(String... moduleNames);
 
+        LogicalOperations excludeResourcesInModules(Pattern modulesPattern);
+
         LogicalOperations includeResourcesInModule(String moduleName);
 
         LogicalOperations includeResourcesInModules(String... moduleNames);
+
+        LogicalOperations includeResourcesInModules(Pattern modulesPattern);
 
         LogicalOperations annotatedBy(Class<? extends Annotation> annotation);
 
@@ -56,6 +69,10 @@ public interface ClassPathScannerBuilder {
         LogicalOperations annotatedByAllOf(Class<? extends Annotation>... annotations);
 
         LogicalOperations withAlias(String alias);
+
+        LogicalOperations withAnyOfAliases(Pattern aliasesPattern);
+
+        LogicalOperations withAllOfAliases(Pattern aliasesPattern);
 
         LogicalOperations withAnyOfAliases(String... aliases);
 
@@ -122,10 +139,6 @@ public interface ClassPathScannerBuilder {
     }
 
     static ClassPathScannerBuilder create() {
-        return new DefaultClassPathScannerBuilder(ClassPathScannerEngines.getDefaultEngine());
-    }
-
-    static ClassPathScannerBuilder create(ClassPathScannerEngine engine) {
-        return new DefaultClassPathScannerBuilder(engine);
+        return new DefaultClassPathScannerBuilder();
     }
 }

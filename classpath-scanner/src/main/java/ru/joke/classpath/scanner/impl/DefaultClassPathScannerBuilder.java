@@ -4,41 +4,36 @@ import ru.joke.classpath.ClassPathResource;
 import ru.joke.classpath.ClassResource;
 import ru.joke.classpath.scanner.ClassPathScanner;
 import ru.joke.classpath.scanner.ClassPathScannerBuilder;
-import ru.joke.classpath.scanner.ClassPathScannerEngine;
 import ru.joke.classpath.scanner.InvalidRequestSyntaxException;
-import ru.joke.classpath.scanner.impl.engines.ExtendedClassPathScannerEngine;
 
 import java.lang.annotation.Annotation;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.regex.Pattern;
 
 public final class DefaultClassPathScannerBuilder implements ClassPathScannerBuilder {
 
-    private final ExtendedClassPathScannerEngine engine;
-
-    public DefaultClassPathScannerBuilder(final ClassPathScannerEngine engine) {
-        if (!(engine instanceof ExtendedClassPathScannerEngine)) {
-            throw new ClassCastException();
-        }
-
-        this.engine = (ExtendedClassPathScannerEngine) engine;
-    }
-
     @Override
-    public Begin begin() {
-        return new CompoundFilter(null);
+    public Begin begin(boolean overrideDefaultEngineScope) {
+        return new CompoundFilter(null, overrideDefaultEngineScope);
     }
 
-    private class CompoundFilter implements Begin, LogicalOperations, End {
+    private static class CompoundFilter implements Begin, LogicalOperations, End {
 
         private final CompoundFilter parent;
+        private final boolean overrideDefaultEngineScope;
 
         private Predicate<ClassPathResource> filter = r -> true;
         private ClassPathScannerBuilder.Operator operator = ClassPathScannerBuilder.Operator.AND;
         private boolean negate;
 
-        private CompoundFilter(final CompoundFilter parent) {
+        private CompoundFilter(final CompoundFilter parent, final boolean overrideDefaultEngineScope) {
             this.parent = parent;
+            this.overrideDefaultEngineScope = overrideDefaultEngineScope;
+        }
+
+        private CompoundFilter(final CompoundFilter parent) {
+            this(parent, false);
         }
 
         @Override
@@ -53,6 +48,11 @@ public final class DefaultClassPathScannerBuilder implements ClassPathScannerBui
                             ? r.packageName().equals(packageName)
                             : r.packageName().startsWith(packageName)
             );
+        }
+
+        @Override
+        public LogicalOperations includeResourcesInPackages(Pattern packagesPattern) {
+            return appendCondition(r -> packagesPattern.matcher(r.packageName()).matches());
         }
 
         @Override
@@ -75,6 +75,11 @@ public final class DefaultClassPathScannerBuilder implements ClassPathScannerBui
         }
 
         @Override
+        public LogicalOperations excludeResourcesInPackages(Pattern packagesPattern) {
+            return appendCondition(r -> !packagesPattern.matcher(r.packageName()).matches());
+        }
+
+        @Override
         public LogicalOperations includeResourcesInModule(String moduleName) {
             return appendCondition(r -> r.module().equals(moduleName));
         }
@@ -85,6 +90,11 @@ public final class DefaultClassPathScannerBuilder implements ClassPathScannerBui
         }
 
         @Override
+        public LogicalOperations includeResourcesInModules(Pattern modulesPattern) {
+            return appendCondition(r -> modulesPattern.matcher(r.module()).matches());
+        }
+
+        @Override
         public LogicalOperations excludeResourcesInModule(String moduleName) {
             return appendCondition(r -> !r.module().equals(moduleName));
         }
@@ -92,6 +102,11 @@ public final class DefaultClassPathScannerBuilder implements ClassPathScannerBui
         @Override
         public LogicalOperations excludeResourcesInModules(String... moduleNames) {
             return appendCondition(r -> !contains(r.module(), true, moduleNames));
+        }
+
+        @Override
+        public LogicalOperations excludeResourcesInModules(Pattern modulesPattern) {
+            return appendCondition(r -> !modulesPattern.matcher(r.module()).matches());
         }
 
         @Override
@@ -114,6 +129,16 @@ public final class DefaultClassPathScannerBuilder implements ClassPathScannerBui
         @Override
         public LogicalOperations withAlias(String alias) {
             return appendCondition(r -> r.aliases().contains(alias));
+        }
+
+        @Override
+        public LogicalOperations withAnyOfAliases(Pattern aliasesPattern) {
+            return appendCondition(r -> r.aliases().stream().anyMatch(a -> aliasesPattern.matcher(a).matches()));
+        }
+
+        @Override
+        public LogicalOperations withAllOfAliases(Pattern aliasesPattern) {
+            return appendCondition(r -> r.aliases().stream().allMatch(a -> aliasesPattern.matcher(a).matches()));
         }
 
         @Override
@@ -310,7 +335,19 @@ public final class DefaultClassPathScannerBuilder implements ClassPathScannerBui
                 throw new InvalidRequestSyntaxException("Query creation must be called after the end of the main begin expression");
             }
 
-            return new PredicateBasedClassPathScanner(this.negate ? this.filter.negate() : this.filter, engine);
+            final var resultFilter = this.negate ? this.filter.negate() : this.filter;
+            return new PredicateBasedClassPathScanner() {
+
+                @Override
+                public boolean overrideDefaultEngineScope() {
+                    return overrideDefaultEngineScope;
+                }
+
+                @Override
+                public boolean test(ClassPathResource resource) {
+                    return resultFilter.test(resource);
+                }
+            };
         }
 
         private CompoundFilter appendCondition(final Predicate<ClassPathResource> condition) {
