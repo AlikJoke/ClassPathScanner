@@ -303,6 +303,11 @@ public final class DefaultClassPathScannerBuilder implements ClassPathScannerBui
         }
 
         @Override
+        public LogicalOperations all() {
+            return appendCondition(r -> true);
+        }
+
+        @Override
         public Begin not() {
             this.negate = true;
             return this;

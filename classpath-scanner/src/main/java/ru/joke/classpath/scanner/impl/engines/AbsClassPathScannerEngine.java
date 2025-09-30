@@ -24,13 +24,13 @@ abstract sealed class AbsClassPathScannerEngine implements ClassPathScannerEngin
 
     protected Predicate<ClassPathResource> buildFinalFilter(ClassPathScanner scanner) {
         return this.configuration.defaultScopeFilter()
-                                    .filter(Predicate.not(ClassPathScanner::overrideDefaultEngineScope))
+                                    .filter(f -> !scanner.overrideDefaultEngineScope() || this.configuration.disableDefaultScopeOverride())
                                     .map(this::checkScanner)
                                     .map(checkScanner(scanner)::and)
                                     .orElse(checkScanner(scanner));
     }
 
-    private PredicateBasedClassPathScanner checkScanner(ClassPathScanner scanner) {
+    protected PredicateBasedClassPathScanner checkScanner(ClassPathScanner scanner) {
         if (!(scanner instanceof PredicateBasedClassPathScanner ps)) {
             throw new ClassCastException();
         }

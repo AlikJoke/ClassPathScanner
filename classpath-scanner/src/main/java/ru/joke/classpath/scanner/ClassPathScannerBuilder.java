@@ -112,6 +112,8 @@ public interface ClassPathScannerBuilder {
 
         LogicalOperations filter(Predicate<ClassPathResource> filter);
 
+        LogicalOperations all();
+
         Begin not();
     }
 
