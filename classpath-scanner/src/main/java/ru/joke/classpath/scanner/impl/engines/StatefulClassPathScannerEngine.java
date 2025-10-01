@@ -17,6 +17,9 @@ public final class StatefulClassPathScannerEngine extends AbsClassPathScannerEng
     public StatefulClassPathScannerEngine(final ClassPathScannerEngineConfiguration configuration) {
         super(configuration);
         this.scannedResourcesAccessor = new DefaultEngineScopeLoader();
+        if (configuration.enableEagerStatefulEngineInitialization()) {
+            this.scannedResourcesAccessor.get();
+        }
     }
 
     @Override

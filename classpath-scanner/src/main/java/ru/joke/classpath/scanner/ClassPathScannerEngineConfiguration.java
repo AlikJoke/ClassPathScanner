@@ -5,11 +5,12 @@ import java.util.Optional;
 public record ClassPathScannerEngineConfiguration(
         boolean stateful,
         Optional<ClassPathScanner> defaultScopeFilter,
-        boolean disableDefaultScopeOverride
+        boolean disableDefaultScopeOverride,
+        boolean enableEagerStatefulEngineInitialization
 ) {
 
     public static ClassPathScannerEngineConfiguration defaultConfig() {
-        return new ClassPathScannerEngineConfiguration(false, Optional.empty(), false);
+        return new ClassPathScannerEngineConfiguration(false, Optional.empty(), false, false);
     }
 
     public static Builder builder() {
@@ -21,6 +22,7 @@ public record ClassPathScannerEngineConfiguration(
         private boolean stateful;
         private ClassPathScanner defaultScopeFilter;
         private boolean disableDefaultScopeOverride;
+        private boolean enableEagerStatefulEngineInitialization;
 
         public Builder stateful() {
             this.stateful = true;
@@ -47,11 +49,22 @@ public record ClassPathScannerEngineConfiguration(
             return this;
         }
 
+        public Builder enableEagerStatefulEngineInitialization() {
+            this.enableEagerStatefulEngineInitialization = true;
+            return this;
+        }
+
+        public Builder disableEagerStatefulEngineInitialization() {
+            this.enableEagerStatefulEngineInitialization = false;
+            return this;
+        }
+
         public ClassPathScannerEngineConfiguration build() {
             return new ClassPathScannerEngineConfiguration(
                     this.stateful,
                     Optional.ofNullable(this.defaultScopeFilter),
-                    this.disableDefaultScopeOverride
+                    this.disableDefaultScopeOverride,
+                    this.enableEagerStatefulEngineInitialization
             );
         }
     }
