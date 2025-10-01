@@ -2,6 +2,7 @@ package ru.joke.classpath.services;
 
 import ru.joke.classpath.*;
 import ru.joke.classpath.converters.ClassPathResourceConverter;
+import ru.joke.classpath.converters.Dictionary;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -17,6 +18,8 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public final class DefaultClassPathResourcesService implements ClassPathResourcesService {
+
+    private static final String DICTIONARY_SEPARATOR = "#####";
 
     private final Map<String, ClassPathResources> resourcesByLocation;
     private final ClassPathResourceConverter<ClassPathResource> converter;
@@ -34,16 +37,24 @@ public final class DefaultClassPathResourcesService implements ClassPathResource
 
         final var targetPath = Path.of(targetLocation.getLocation());
 
-        final var outputData =
+        final var dictionary = new AutoFillingDictionary(new MapDictionary(new HashMap<>()));
+
+        final var resourcesOutputData =
                 resources
                         .stream()
-                        .map(this.converter::toString)
+                        .map(resource -> this.converter.toString(resource, dictionary))
                         .collect(Collectors.joining(System.lineSeparator()));
+
+        final var result =
+                Dictionary.toString(dictionary, System.lineSeparator())
+                        + DICTIONARY_SEPARATOR
+                        + System.lineSeparator()
+                        + resourcesOutputData;
 
         try {
             Files.writeString(
                     targetPath,
-                    outputData,
+                    result,
                     StandardOpenOption.WRITE, StandardOpenOption.APPEND, StandardOpenOption.CREATE
             );
         } catch (IOException ex) {
@@ -74,9 +85,21 @@ public final class DefaultClassPathResourcesService implements ClassPathResource
             try (final var configStream = resourceUrl.openStream();
                  final var configReader = new BufferedReader(new InputStreamReader(configStream, StandardCharsets.UTF_8))) {
 
+                final Set<String> dictionaryMappings = new HashSet<>();
+
                 var line = configReader.readLine();
+                while (line != null && !line.equals(DICTIONARY_SEPARATOR)) {
+                    dictionaryMappings.add(line);
+                    line = configReader.readLine();
+                }
+
+                final var sourceDictionary = new MapDictionary(new HashMap<>());
+                sourceDictionary.fill(dictionaryMappings);
+
+                final var reversedDictionary = sourceDictionary.reverseDictionary();
+
                 while (line != null) {
-                    this.converter.fromString(line).ifPresent(result::add);
+                    this.converter.fromString(line, reversedDictionary).ifPresent(result::add);
                     line = configReader.readLine();
                 }
             } catch (IOException e) {

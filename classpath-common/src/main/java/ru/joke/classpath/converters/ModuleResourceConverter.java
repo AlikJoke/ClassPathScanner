@@ -29,7 +29,8 @@ public final class ModuleResourceConverter extends AbsClassPathResourceConverter
             final String name,
             final Set<String> aliases,
             final Set<ClassPathResource.ClassReference<?>> annotations,
-            final String[] parts
+            final String[] parts,
+            final Dictionary dictionary
     ) {
         return new ModuleResource() {
 

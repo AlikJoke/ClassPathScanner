@@ -24,12 +24,13 @@ public final class ClassMethodResourceConverter extends ExecutableClassMemberRes
             final String name,
             final Set<String> aliases,
             final Set<ClassPathResource.ClassReference<?>> annotations,
-            final String[] parts
+            final String[] parts,
+            final Dictionary dictionary
     ) {
         final var nameParts = name.split(MEMBER_OF_CLASS_SEPARATOR);
-        final var className = nameParts[0];
-        final var methodName = nameParts[1];
-        final var parameters = List.copyOf(extractRefs(nameParts[2]));
+        final var className = dictionary.map(nameParts[0]);
+        final var methodName = dictionary.map(nameParts[1]);
+        final var parameters = List.copyOf(extractRefs(nameParts[2], dictionary));
 
         final var owner = new ClassReferenceImpl<>(packageName + ClassResource.ID_SEPARATOR + className);
         final var methodSignature = createSignature(methodName, nameParts[2]);

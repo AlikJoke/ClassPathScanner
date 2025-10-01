@@ -20,15 +20,15 @@ public final class DelegateClassPathResourceConverter extends AbsClassPathResour
     }
 
     @Override
-    public Optional<ClassPathResource> fromString(String resource) {
+    public Optional<ClassPathResource> fromString(String resource, Dictionary dictionary) {
         return detectType(resource)
                 .map(this.converters::get)
-                .flatMap(c -> c.fromString(resource));
+                .flatMap(c -> c.fromString(resource, dictionary));
     }
 
     @Override
-    public String toString(ClassPathResource resource) {
-        return this.converters.get(resource.type()).toString(resource);
+    public String toString(ClassPathResource resource, Dictionary dictionary) {
+        return this.converters.get(resource.type()).toString(resource, dictionary);
     }
 
     private Optional<ClassPathResource.Type> detectType(final String resource) {

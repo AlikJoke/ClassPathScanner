@@ -17,7 +17,7 @@ public final class PackageResourceConverter extends AbsClassPathResourceConverte
 
     @Override
     public ClassPathResource.Type supportedType() {
-        return ClassPathResource.Type.MODULE;
+        return ClassPathResource.Type.PACKAGE;
     }
 
     @Override
@@ -28,7 +28,8 @@ public final class PackageResourceConverter extends AbsClassPathResourceConverte
             final String name,
             final Set<String> aliases,
             final Set<ClassPathResource.ClassReference<?>> annotations,
-            final String[] parts
+            final String[] parts,
+            final Dictionary dictionary
     ) {
         return new PackageResource() {
             @Override

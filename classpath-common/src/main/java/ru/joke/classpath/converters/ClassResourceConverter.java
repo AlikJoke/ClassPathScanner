@@ -17,12 +17,12 @@ public final class ClassResourceConverter extends AbsClassPathResourceConverter<
     }
 
     @Override
-    public String toString(ClassResource<?> resource) {
-        return super.toString(resource)
+    public String toString(ClassResource<?> resource, Dictionary dictionary) {
+        return super.toString(resource, dictionary)
                 + BLOCK_SEPARATOR
-                + transform(resource.interfaces())
+                + transform(resource.interfaces(), dictionary)
                 + BLOCK_SEPARATOR
-                + transform(resource.superClasses())
+                + transform(resource.superClasses(), dictionary)
                 + BLOCK_SEPARATOR
                 + resource.kind().alias();
     }
@@ -35,10 +35,11 @@ public final class ClassResourceConverter extends AbsClassPathResourceConverter<
             final String name,
             final Set<String> aliases,
             final Set<ClassPathResource.ClassReference<?>> annotations,
-            final String[] parts
+            final String[] parts,
+            final Dictionary dictionary
     ) {
-        final var interfaces = extractRefs(parts[7]);
-        final var superClasses = extractRefs(parts[8]);
+        final var interfaces = extractRefs(parts[7], dictionary);
+        final var superClasses = extractRefs(parts[8], dictionary);
         final var kind = ClassResource.Kind.from(parts[9]);
 
         final var classRef = new ClassReferenceImpl<>(packageName + ID_SEPARATOR + name);

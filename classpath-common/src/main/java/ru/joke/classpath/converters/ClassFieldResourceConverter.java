@@ -29,11 +29,12 @@ public final class ClassFieldResourceConverter extends AbsClassPathResourceConve
             final String name,
             final Set<String> aliases,
             final Set<ClassPathResource.ClassReference<?>> annotations,
-            final String[] parts
+            final String[] parts,
+            final Dictionary dictionary
     ) {
         final var nameParts = name.split(MEMBER_OF_CLASS_SEPARATOR);
-        final var className = nameParts[0];
-        final var fieldName = nameParts[1];
+        final var className = dictionary.map(nameParts[0]);
+        final var fieldName = dictionary.map(nameParts[1]);
 
         final var owner = new ClassReferenceImpl<>(packageName + ClassResource.ID_SEPARATOR + className);
 
@@ -112,8 +113,13 @@ public final class ClassFieldResourceConverter extends AbsClassPathResourceConve
     }
 
     @Override
-    protected String getResourceName(ClassFieldResource resource) {
+    protected String getResourceName(ClassFieldResource resource, Dictionary dictionary) {
         final var ownerClassSimpleName = resource.owner().canonicalName().substring(resource.packageName().length() + 1);
-        return ownerClassSimpleName + MEMBER_OF_CLASS_SEPARATOR + resource.name();
+        return dictionary.map(ownerClassSimpleName) + MEMBER_OF_CLASS_SEPARATOR + dictionary.map(resource.name());
+    }
+
+    @Override
+    protected String getResourceName(String resourceNameStr, Dictionary dictionary) {
+        return resourceNameStr;
     }
 }

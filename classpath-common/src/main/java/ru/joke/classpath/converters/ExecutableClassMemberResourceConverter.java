@@ -28,17 +28,23 @@ abstract class ExecutableClassMemberResourceConverter<T extends ClassMemberResou
     }
     
     @Override
-    protected String getResourceName(ClassMemberResource.Executable resource) {
+    protected String getResourceName(ClassMemberResource.Executable resource, Dictionary dictionary) {
         final var parameters =
                 resource.parameters()
                         .stream()
                         .map(ClassPathResource.ClassReference::canonicalName)
+                        .map(dictionary::map)
                         .collect(Collectors.joining(ELEMENTS_IN_BLOCK_DELIMITER));
         final var ownerClassSimpleName = resource.owner().canonicalName().substring(resource.packageName().length() + 1);
-        return ownerClassSimpleName
+        return dictionary.map(ownerClassSimpleName)
                 + MEMBER_OF_CLASS_SEPARATOR
-                + resource.name()
+                + dictionary.map(resource.name())
                 + MEMBER_OF_CLASS_SEPARATOR
                 + parameters;
+    }
+
+    @Override
+    protected String getResourceName(String resourceNameStr, Dictionary dictionary) {
+        return resourceNameStr;
     }
 }

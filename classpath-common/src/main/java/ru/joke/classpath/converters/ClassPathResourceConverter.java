@@ -6,7 +6,7 @@ import java.util.Optional;
 
 public interface ClassPathResourceConverter<T extends ClassPathResource> {
 
-    String toString(T resource);
+    String toString(T resource, Dictionary dictionary);
 
-    Optional<T> fromString(String resource);
+    Optional<T> fromString(String resource, Dictionary dictionary);
 }
