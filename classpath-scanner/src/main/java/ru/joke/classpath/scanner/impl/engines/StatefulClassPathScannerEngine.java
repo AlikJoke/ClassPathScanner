@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 
 public final class StatefulClassPathScannerEngine extends AbsClassPathScannerEngine {
 
-    private final Supplier<ClassPathResources> scannedResourcesAccessor;
+    private final DefaultEngineScopeLoader scannedResourcesAccessor;
 
     public StatefulClassPathScannerEngine(final ClassPathScannerEngineConfiguration configuration) {
         super(configuration);
@@ -32,21 +32,29 @@ public final class StatefulClassPathScannerEngine extends AbsClassPathScannerEng
                 .collect(Collectors.toCollection(IndexedClassPathResources::new));
     }
 
+    @Override
+    public void reload() {
+        synchronized (this.scannedResourcesAccessor) {
+            this.scannedResourcesAccessor.resources = null;
+        }
+    }
+
     private class DefaultEngineScopeLoader implements Supplier<ClassPathResources> {
 
         private volatile ClassPathResources resources;
 
         @Override
         public ClassPathResources get() {
-            if (this.resources == null) {
+            ClassPathResources result;
+            if ((result = this.resources) == null) {
                 synchronized (this) {
-                    if (this.resources == null) {
-                        this.resources = findResourcesInDefaultScope();
+                    if ((result = this.resources) == null) {
+                        this.resources = result = findResourcesInDefaultScope();
                     }
                 }
             }
 
-            return resources;
+            return result;
         }
 
         private ClassPathResources findResourcesInDefaultScope() {
@@ -56,7 +64,10 @@ public final class StatefulClassPathScannerEngine extends AbsClassPathScannerEng
                             .filter(f -> configuration.disableDefaultScopeOverride())
                             .orElseGet(this::buildScannerForAllResources);
 
-            return resourcesService.read(IndexedClassPathLocation.relativeLocation(), checkScanner(initScopeFilter));
+            return resourcesService.read(
+                    IndexedClassPathLocation.relativeLocation(configuration.targetClassLoaders()),
+                    checkScanner(initScopeFilter)
+            );
         }
 
         private ClassPathScanner buildScannerForAllResources() {

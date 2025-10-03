@@ -8,7 +8,12 @@ public interface ModuleResource extends ClassPathResource {
         return name();
     }
 
-    Optional<Module> asModule();
+    default Optional<Module> asModule() {
+        final var callerClass = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE).getCallerClass();
+        return asModule(callerClass.getModule().getLayer());
+    }
+
+    Optional<Module> asModule(ModuleLayer layer);
 
     @Override
     default Type type() {

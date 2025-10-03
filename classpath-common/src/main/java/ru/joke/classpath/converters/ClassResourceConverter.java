@@ -47,8 +47,8 @@ public final class ClassResourceConverter extends AbsClassPathResourceConverter<
         return new ClassResource<>() {
 
             @Override
-            public Class<Object> asClass() throws ClassNotFoundException {
-                return classRef.toClass();
+            public Class<Object> asClass(ClassLoader loader) throws ClassNotFoundException {
+                return classRef.toClass(loader);
             }
 
             @Override

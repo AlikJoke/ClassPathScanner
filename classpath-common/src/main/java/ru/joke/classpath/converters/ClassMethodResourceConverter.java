@@ -45,12 +45,12 @@ public final class ClassMethodResourceConverter extends ExecutableClassMemberRes
             }
 
             @Override
-            public Method asMethod() throws ClassNotFoundException, NoSuchMethodException {
+            public Method asMethod(ClassLoader loader) throws ClassNotFoundException, NoSuchMethodException {
                 if (this.method == null) {
                     synchronized (this) {
                         if (this.method == null) {
-                            final var parameterTypes = loadParameters(parameters);
-                            this.method = owner().toClass().getDeclaredMethod(methodName, parameterTypes);
+                            final var parameterTypes = loadParameters(parameters, loader);
+                            this.method = owner().toClass(loader).getDeclaredMethod(methodName, parameterTypes);
                         }
                     }
                 }

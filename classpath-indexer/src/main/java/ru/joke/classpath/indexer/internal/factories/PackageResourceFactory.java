@@ -20,7 +20,7 @@ final class PackageResourceFactory extends ClassPathResourceFactory<PackageResou
     public PackageResource doCreate(PackageElement source) {
         return new PackageResource() {
             @Override
-            public Optional<Package> asPackage() {
+            public Optional<Package> asPackage(ClassLoader loader) {
                 throw new UnsupportedOperationException();
             }
 

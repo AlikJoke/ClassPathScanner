@@ -22,6 +22,9 @@ abstract sealed class AbsClassPathScannerEngine implements ClassPathScannerEngin
         return this.configuration;
     }
 
+    public void reload() {
+    }
+
     protected Predicate<ClassPathResource> buildFinalFilter(ClassPathScanner scanner) {
         return this.configuration.defaultScopeFilter()
                                     .filter(f -> !scanner.overrideDefaultEngineScope() || this.configuration.disableDefaultScopeOverride())

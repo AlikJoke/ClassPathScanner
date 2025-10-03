@@ -21,7 +21,7 @@ final class FieldResourceFactory extends ClassPathResourceFactory<ClassFieldReso
     public ClassFieldResource doCreate(VariableElement source) {
         return new ClassFieldResource() {
             @Override
-            public Field asField() {
+            public Field asField(ClassLoader loader) {
                 throw new UnsupportedOperationException();
             }
 

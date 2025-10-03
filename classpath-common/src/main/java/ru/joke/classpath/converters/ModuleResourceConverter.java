@@ -35,9 +35,8 @@ public final class ModuleResourceConverter extends AbsClassPathResourceConverter
         return new ModuleResource() {
 
             @Override
-            public Optional<Module> asModule() {
-                final var callerClass = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE).getCallerClass();
-                return callerClass.getModule().getLayer().findModule(module);
+            public Optional<Module> asModule(ModuleLayer layer) {
+                return layer.findModule(module);
             }
 
             @Override

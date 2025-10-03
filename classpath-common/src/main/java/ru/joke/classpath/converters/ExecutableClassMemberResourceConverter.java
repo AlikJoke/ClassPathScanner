@@ -18,10 +18,13 @@ abstract class ExecutableClassMemberResourceConverter<T extends ClassMemberResou
         return elementName + "(" + String.join(",", parametersStr) + ")";
     }
     
-    protected Class<?>[] loadParameters(final List<ClassPathResource.ClassReference<?>> parameters) throws ClassNotFoundException {
+    protected Class<?>[] loadParameters(
+            final List<ClassPathResource.ClassReference<?>> parameters,
+            final ClassLoader loader
+    ) throws ClassNotFoundException {
         final var parameterTypes = new Class[parameters.size()];
         for (int i = 0; i < parameters.size(); i++) {
-            parameterTypes[i] = parameters.get(i).toClass();
+            parameterTypes[i] = parameters.get(i).toClass(loader);
         }
         
         return parameterTypes;

@@ -17,7 +17,7 @@ final class ModuleResourceFactory extends ClassPathResourceFactory<ModuleResourc
     public ModuleResource doCreate(ModuleElement source) {
         return new ModuleResource() {
             @Override
-            public Optional<Module> asModule() {
+            public Optional<Module> asModule(ModuleLayer layer) {
                 throw new UnsupportedOperationException();
             }
 

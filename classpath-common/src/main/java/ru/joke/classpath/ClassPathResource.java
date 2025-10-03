@@ -24,7 +24,12 @@ public interface ClassPathResource {
 
         String canonicalName();
 
-        Class<T> toClass() throws ClassNotFoundException;
+        default Class<T> toClass() throws ClassNotFoundException {
+            final var callerClass = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE).getCallerClass();
+            return toClass(callerClass.getClassLoader());
+        }
+
+        Class<T> toClass(ClassLoader loader) throws ClassNotFoundException;
     }
 
     enum Type implements AliasedEnum {

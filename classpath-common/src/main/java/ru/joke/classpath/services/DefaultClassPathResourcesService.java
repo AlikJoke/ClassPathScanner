@@ -64,7 +64,7 @@ public final class DefaultClassPathResourcesService implements ClassPathResource
 
     @Override
     public ClassPathResources read(IndexedClassPathLocation sourceLocation, Predicate<ClassPathResource> filter) {
-        final ClassPathResources allResources = this.resourcesByLocation.computeIfAbsent(sourceLocation.getLocation(), this::readAll);
+        final ClassPathResources allResources = this.resourcesByLocation.computeIfAbsent(sourceLocation.getLocation(), k -> this.readAll(sourceLocation));
         return allResources
                 .stream()
                 .filter(filter)
@@ -76,12 +76,11 @@ public final class DefaultClassPathResourcesService implements ClassPathResource
         return ServiceLoader.load(ClassPathResourceConverter.class, ClassPathResourceConverter.class.getClassLoader()).findFirst().orElseThrow();
     }
 
-    private ClassPathResources readAll(final String sourceLocation) {
+    private ClassPathResources readAll(final IndexedClassPathLocation location) {
         final var result = new IndexedClassPathResources();
 
-        final var configsUrls = readConfigsFromClassPath(sourceLocation);
-        while (configsUrls.hasMoreElements()) {
-            final var resourceUrl = configsUrls.nextElement();
+        final var configsUrls = readConfigsFromClassPath(location);
+        for (final var resourceUrl : configsUrls) {
             try (final var configStream = resourceUrl.openStream();
                  final var configReader = new BufferedReader(new InputStreamReader(configStream, StandardCharsets.UTF_8))) {
 
@@ -110,9 +109,15 @@ public final class DefaultClassPathResourcesService implements ClassPathResource
         return result;
     }
 
-    private Enumeration<URL> readConfigsFromClassPath(final String resourcePath) {
+    private Collection<URL> readConfigsFromClassPath(final IndexedClassPathLocation location) {
         try {
-            return getClass().getClassLoader().getResources(resourcePath);
+            final Map<String, URL> result = new HashMap<>();
+            for (final var cl : location.getTargetClassLoaders()) {
+                Collections.list(cl.getResources(location.getLocation()))
+                            .forEach(r -> result.putIfAbsent(r.getFile(), r));
+            }
+
+            return result.values();
         } catch (IOException e) {
             throw new IndexedClassPathStorageException("Unable to take indexed files", e);
         }

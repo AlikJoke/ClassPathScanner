@@ -42,7 +42,7 @@ final class ExecutableElementResourceFactory extends ClassPathResourceFactory<Cl
             }
 
             @Override
-            public Method asMethod() {
+            public Method asMethod(ClassLoader loader) {
                 throw new UnsupportedOperationException();
             }
 

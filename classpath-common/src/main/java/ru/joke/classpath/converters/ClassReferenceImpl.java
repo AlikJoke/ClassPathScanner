@@ -17,12 +17,12 @@ final class ClassReferenceImpl<T> implements ClassPathResource.ClassReference<T>
     }
 
     @Override
-    public Class<T> toClass() throws ClassNotFoundException {
+    public Class<T> toClass(ClassLoader loader) throws ClassNotFoundException {
         if (this.clazz == null) {
             synchronized (this) {
                 if (this.clazz == null) {
                     @SuppressWarnings("unchecked")
-                    final var loadedClass = (Class<T>) Class.forName(this.canonicalName, false, Thread.currentThread().getContextClassLoader());
+                    final var loadedClass = (Class<T>) Class.forName(this.canonicalName, false, loader);
                     return this.clazz = loadedClass;
                 }
             }

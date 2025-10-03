@@ -15,6 +15,9 @@ public final class StatelessClassPathScannerEngine extends AbsClassPathScannerEn
     @Override
     public ClassPathResources scan(ClassPathScanner scanner) {
         final var filter = buildFinalFilter(scanner);
-        return ClassPathResourcesService.getInstance().read(IndexedClassPathLocation.relativeLocation(), filter);
+        return ClassPathResourcesService.getInstance().read(
+                IndexedClassPathLocation.relativeLocation(configuration.targetClassLoaders()),
+                filter
+        );
     }
 }

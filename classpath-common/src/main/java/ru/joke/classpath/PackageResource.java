@@ -8,7 +8,12 @@ public interface PackageResource extends ClassPathResource {
         return name();
     }
 
-    Optional<Package> asPackage();
+    default Optional<Package> asPackage() {
+        final var callerClass = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE).getCallerClass();
+        return asPackage(callerClass.getClassLoader());
+    }
+
+    Optional<Package> asPackage(ClassLoader loader);
 
     @Override
     default Type type() {

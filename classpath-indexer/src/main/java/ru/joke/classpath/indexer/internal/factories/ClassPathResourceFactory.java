@@ -83,7 +83,7 @@ public abstract class ClassPathResourceFactory<T extends ClassPathResource, E ex
             }
 
             @Override
-            public Class<Object> toClass() {
+            public Class<Object> toClass(ClassLoader loader) {
                 throw new UnsupportedOperationException();
             }
 

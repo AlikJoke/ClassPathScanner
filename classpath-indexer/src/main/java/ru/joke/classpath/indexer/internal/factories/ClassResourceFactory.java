@@ -23,7 +23,7 @@ final class ClassResourceFactory extends ClassPathResourceFactory<ClassResource<
     public ClassResource<?> doCreate(TypeElement source) {
         return new ClassResource<>() {
             @Override
-            public Class<Object> asClass() {
+            public Class<Object> asClass(ClassLoader loader) {
                 throw new UnsupportedOperationException();
             }
 

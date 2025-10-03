@@ -40,13 +40,13 @@ public final class ConstructorResourceConverter extends ExecutableClassMemberRes
             }
 
             @Override
-            public Constructor<Object> asConstructor() throws ClassNotFoundException, NoSuchMethodException {
+            public Constructor<Object> asConstructor(ClassLoader loader) throws ClassNotFoundException, NoSuchMethodException {
                 if (this.constructor == null) {
                     synchronized (this) {
                         if (this.constructor == null) {
-                            final var parameterTypes = loadParameters(parameters);
+                            final var parameterTypes = loadParameters(parameters, loader);
                             @SuppressWarnings("unchecked")
-                            final var constructor = (Constructor<Object>) owner().toClass().getDeclaredConstructor(parameterTypes);
+                            final var constructor = (Constructor<Object>) owner().toClass(loader).getDeclaredConstructor(parameterTypes);
                             this.constructor = constructor;
                         }
                     }

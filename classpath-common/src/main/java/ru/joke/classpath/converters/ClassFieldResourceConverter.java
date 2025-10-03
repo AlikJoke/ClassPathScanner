@@ -43,11 +43,11 @@ public final class ClassFieldResourceConverter extends AbsClassPathResourceConve
             private volatile Field field;
 
             @Override
-            public Field asField() throws NoSuchFieldException, ClassNotFoundException {
+            public Field asField(ClassLoader loader) throws NoSuchFieldException, ClassNotFoundException {
                 if (this.field == null) {
                     synchronized (this) {
                         if (this.field == null) {
-                            this.field = owner().toClass().getDeclaredField(fieldName);
+                            this.field = owner().toClass(loader).getDeclaredField(fieldName);
                         }
                     }
                 }

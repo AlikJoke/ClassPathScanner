@@ -6,7 +6,12 @@ public interface ClassResource<T> extends ClassPathResource {
 
     String ID_SEPARATOR = ".";
 
-    Class<T> asClass() throws ClassNotFoundException;
+    default Class<T> asClass() throws ClassNotFoundException {
+        final var callerClass = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE).getCallerClass();
+        return asClass(callerClass.getClassLoader());
+    }
+
+    Class<T> asClass(ClassLoader loader) throws ClassNotFoundException;
 
     Set<ClassReference<?>> interfaces();
 

@@ -33,9 +33,8 @@ public final class PackageResourceConverter extends AbsClassPathResourceConverte
     ) {
         return new PackageResource() {
             @Override
-            public Optional<Package> asPackage() {
-                final var callerClass = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE).getCallerClass();
-                return Optional.of(callerClass.getClassLoader().getDefinedPackage(packageName));
+            public Optional<Package> asPackage(ClassLoader loader) {
+                return Optional.ofNullable(loader.getDefinedPackage(packageName));
             }
 
             @Override
