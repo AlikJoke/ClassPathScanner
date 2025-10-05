@@ -1,7 +1,7 @@
 package ru.joke.classpath.indexer;
 
-import ru.joke.classpath.ClassPathResourcesService;
-import ru.joke.classpath.IndexedClassPathLocation;
+import ru.joke.classpath.services.ClassPathResourcesService;
+import ru.joke.classpath.services.IndexedClassPathLocation;
 import ru.joke.classpath.indexer.internal.ClassPathIndexingContext;
 import ru.joke.classpath.indexer.internal.ScanningResourcesFilter;
 import ru.joke.classpath.indexer.internal.collectors.ClassPathResourcesCollector;

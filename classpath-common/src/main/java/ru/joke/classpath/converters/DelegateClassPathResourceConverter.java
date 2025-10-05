@@ -2,33 +2,30 @@ package ru.joke.classpath.converters;
 
 import ru.joke.classpath.ClassPathResource;
 
-import java.util.*;
+import java.util.Map;
+import java.util.Optional;
+import java.util.ServiceLoader;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public final class DelegateClassPathResourceConverter extends AbsClassPathResourceConverter<ClassPathResource> {
 
-    private final Map<ClassPathResource.Type, ConcreteClassPathResourceConverter<ClassPathResource>> converters;
+    private static final Map<ClassPathResource.Type, ConcreteClassPathResourceConverter<ClassPathResource>> converters = findConverters();
 
     public DelegateClassPathResourceConverter() {
-        this(findConverters());
-    }
-
-    private DelegateClassPathResourceConverter(Map<ClassPathResource.Type, ConcreteClassPathResourceConverter<ClassPathResource>> converters) {
         super(Integer.MAX_VALUE);
-        this.converters = new HashMap<>(converters);
     }
 
     @Override
     public Optional<ClassPathResource> fromString(String resource, Dictionary dictionary) {
         return detectType(resource)
-                .map(this.converters::get)
+                .map(converters::get)
                 .flatMap(c -> c.fromString(resource, dictionary));
     }
 
     @Override
     public String toString(ClassPathResource resource, Dictionary dictionary) {
-        return this.converters.get(resource.type()).toString(resource, dictionary);
+        return converters.get(resource.type()).toString(resource, dictionary);
     }
 
     private Optional<ClassPathResource.Type> detectType(final String resource) {

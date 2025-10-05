@@ -1,4 +1,4 @@
-package ru.joke.classpath;
+package ru.joke.classpath.services;
 
 import java.util.Set;
 

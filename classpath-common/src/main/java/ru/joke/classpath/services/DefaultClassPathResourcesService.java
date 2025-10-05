@@ -2,6 +2,7 @@ package ru.joke.classpath.services;
 
 import ru.joke.classpath.*;
 import ru.joke.classpath.converters.ClassPathResourceConverter;
+import ru.joke.classpath.converters.DelegateClassPathResourceConverter;
 import ru.joke.classpath.converters.Dictionary;
 
 import java.io.BufferedReader;
@@ -17,16 +18,16 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-public final class DefaultClassPathResourcesService implements ClassPathResourcesService {
+final class DefaultClassPathResourcesService implements ClassPathResourcesService {
 
     private static final String DICTIONARY_SEPARATOR = "#####";
 
     private final Map<String, ClassPathResources> resourcesByLocation;
     private final ClassPathResourceConverter<ClassPathResource> converter;
 
-    public DefaultClassPathResourcesService() {
+    DefaultClassPathResourcesService() {
         this.resourcesByLocation = new ConcurrentHashMap<>();
-        this.converter = findConverter();
+        this.converter = new DelegateClassPathResourceConverter();
     }
 
     @Override
@@ -69,11 +70,6 @@ public final class DefaultClassPathResourcesService implements ClassPathResource
                 .stream()
                 .filter(filter)
                 .collect(Collectors.toCollection(IndexedClassPathResources::new));
-    }
-
-    @SuppressWarnings("unchecked")
-    private ClassPathResourceConverter<ClassPathResource> findConverter() {
-        return ServiceLoader.load(ClassPathResourceConverter.class, ClassPathResourceConverter.class.getClassLoader()).findFirst().orElseThrow();
     }
 
     private ClassPathResources readAll(final IndexedClassPathLocation location) {

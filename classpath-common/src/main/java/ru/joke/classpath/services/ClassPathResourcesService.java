@@ -1,6 +1,8 @@
-package ru.joke.classpath;
+package ru.joke.classpath.services;
 
-import java.util.ServiceLoader;
+import ru.joke.classpath.ClassPathResource;
+import ru.joke.classpath.ClassPathResources;
+
 import java.util.function.Predicate;
 
 public interface ClassPathResourcesService {
@@ -10,6 +12,6 @@ public interface ClassPathResourcesService {
     ClassPathResources read(IndexedClassPathLocation sourceLocation, Predicate<ClassPathResource> filter);
 
     static ClassPathResourcesService getInstance() {
-        return ServiceLoader.load(ClassPathResourcesService.class, ClassPathResourcesService.class.getClassLoader()).findFirst().orElseThrow();
+        return new DefaultClassPathResourcesService();
     }
 }

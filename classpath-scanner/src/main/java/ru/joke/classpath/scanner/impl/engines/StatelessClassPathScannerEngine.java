@@ -1,8 +1,8 @@
 package ru.joke.classpath.scanner.impl.engines;
 
 import ru.joke.classpath.ClassPathResources;
-import ru.joke.classpath.ClassPathResourcesService;
-import ru.joke.classpath.IndexedClassPathLocation;
+import ru.joke.classpath.services.ClassPathResourcesService;
+import ru.joke.classpath.services.IndexedClassPathLocation;
 import ru.joke.classpath.scanner.ClassPathScanner;
 import ru.joke.classpath.scanner.ClassPathScannerEngineConfiguration;
 
