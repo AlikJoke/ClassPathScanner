@@ -1,6 +1,7 @@
 package ru.joke.classpath.scanner.impl.engines;
 
 import ru.joke.classpath.ClassPathResources;
+import ru.joke.classpath.scanner.InvalidApiUsageException;
 import ru.joke.classpath.services.ClassPathResourcesService;
 import ru.joke.classpath.services.IndexedClassPathLocation;
 import ru.joke.classpath.IndexedClassPathResources;
@@ -24,6 +25,10 @@ public final class StatefulClassPathScannerEngine extends AbsClassPathScannerEng
 
     @Override
     public ClassPathResources scan(ClassPathScanner scanner) {
+        if (scanner == null) {
+            throw new InvalidApiUsageException("Scanner must be not null");
+        }
+
         final var filter = buildFinalFilter(scanner);
         final var resources = this.scannedResourcesAccessor.get();
         return resources

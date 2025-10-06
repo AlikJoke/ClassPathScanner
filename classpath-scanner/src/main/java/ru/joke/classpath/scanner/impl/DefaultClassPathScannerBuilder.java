@@ -4,7 +4,7 @@ import ru.joke.classpath.ClassPathResource;
 import ru.joke.classpath.ClassResource;
 import ru.joke.classpath.scanner.ClassPathScanner;
 import ru.joke.classpath.scanner.ClassPathScannerBuilder;
-import ru.joke.classpath.scanner.InvalidRequestSyntaxException;
+import ru.joke.classpath.scanner.InvalidApiUsageException;
 
 import java.lang.annotation.Annotation;
 import java.util.Set;
@@ -337,7 +337,7 @@ public final class DefaultClassPathScannerBuilder implements ClassPathScannerBui
         @Override
         public ClassPathScanner build() {
             if (this.parent != null) {
-                throw new InvalidRequestSyntaxException("Query creation must be called after the end of the main begin expression");
+                throw new InvalidApiUsageException("Query creation must be called after the end of the main begin expression");
             }
 
             final var resultFilter = this.negate ? this.filter.negate() : this.filter;

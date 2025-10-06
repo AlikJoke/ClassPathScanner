@@ -9,6 +9,10 @@ public interface ClassPathScanner {
     }
 
     default ClassPathResources scan(ClassPathScannerEngine engine) {
+        if (engine == null) {
+            throw new InvalidApiUsageException("Scanner engine must be provided");
+        }
+
         return engine.scan(this);
     }
 

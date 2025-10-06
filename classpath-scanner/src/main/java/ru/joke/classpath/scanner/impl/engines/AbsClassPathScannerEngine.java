@@ -22,6 +22,7 @@ abstract sealed class AbsClassPathScannerEngine implements ClassPathScannerEngin
         return this.configuration;
     }
 
+    @Override
     public void reload() {
     }
 

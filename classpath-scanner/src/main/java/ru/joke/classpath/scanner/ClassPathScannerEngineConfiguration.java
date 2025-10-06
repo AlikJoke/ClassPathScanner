@@ -1,6 +1,7 @@
 package ru.joke.classpath.scanner;
 
 import java.util.Collections;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -11,6 +12,13 @@ public record ClassPathScannerEngineConfiguration(
         boolean enableEagerStatefulEngineInitialization,
         Set<ClassLoader> targetClassLoaders
 ) {
+
+    public ClassPathScannerEngineConfiguration {
+        Objects.requireNonNull(defaultScopeFilter);
+        if (targetClassLoaders == null || targetClassLoaders.isEmpty()) {
+            throw new InvalidApiUsageException("Class loaders must be not empty");
+        }
+    }
 
     public static ClassPathScannerEngineConfiguration defaultConfig() {
         return new ClassPathScannerEngineConfiguration(
@@ -71,7 +79,7 @@ public record ClassPathScannerEngineConfiguration(
 
         public Builder withClassLoaders(Set<ClassLoader> loaders) {
             if (loaders.isEmpty()) {
-                throw new IllegalArgumentException("Target class loaders can't be empty");
+                throw new InvalidApiUsageException("Target class loaders can't be empty");
             }
 
             this.targetClassLoaders = Set.copyOf(loaders);

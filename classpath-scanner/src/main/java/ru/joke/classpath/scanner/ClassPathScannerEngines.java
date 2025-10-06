@@ -17,15 +17,19 @@ public abstract class ClassPathScannerEngines {
     }
 
     public static Optional<ClassPathScannerEngine> getEngine(final String id) {
-        return Optional.ofNullable(engines.get(id));
+        return Optional.ofNullable(engines.get(checkEngineId(id)));
     }
 
     public static ClassPathScannerEngine createEngine(
             final String id,
             final ClassPathScannerEngineConfiguration configuration
     ) {
+        if (configuration == null) {
+            throw new InvalidApiUsageException("Configuration of engine must be not null");
+        }
+
         return engines.computeIfAbsent(
-                id,
+                checkEngineId(id),
                 k -> configuration.stateful()
                         ? new StatefulClassPathScannerEngine(configuration)
                         : new StatelessClassPathScannerEngine(configuration)
@@ -33,7 +37,15 @@ public abstract class ClassPathScannerEngines {
     }
 
     public static boolean destroyEngine(final String id) {
-        return engines.remove(id) != null;
+        return engines.remove(checkEngineId(id)) != null;
+    }
+
+    private static String checkEngineId(final String id) {
+        if (id == null || id.isEmpty()) {
+            throw new InvalidApiUsageException("Id of engine must be not empty");
+        }
+
+        return id;
     }
 
     private ClassPathScannerEngines() {}

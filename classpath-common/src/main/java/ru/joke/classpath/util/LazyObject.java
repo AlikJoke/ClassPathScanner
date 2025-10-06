@@ -2,7 +2,7 @@ package ru.joke.classpath.util;
 
 public abstract class LazyObject<T, C> {
 
-    private volatile T object;
+    protected volatile T object;
 
     public final T get(C context) throws Exception {
         T result;
