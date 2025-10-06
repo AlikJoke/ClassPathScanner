@@ -1,7 +1,8 @@
-package ru.joke.classpath.converters;
+package ru.joke.classpath.converters.internal;
 
 import ru.joke.classpath.ClassMemberResource;
 import ru.joke.classpath.ClassPathResource;
+import ru.joke.classpath.converters.Dictionary;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -14,7 +15,10 @@ abstract class ExecutableClassMemberResourceConverter<T extends ClassMemberResou
         super(COMPONENTS_COUNT);
     }
 
-    protected String createSignature(final String elementName, final String parametersStr) {
+    protected String createSignature(
+            final String elementName,
+            final String parametersStr
+    ) {
         return elementName + "(" + String.join(",", parametersStr) + ")";
     }
     
@@ -31,7 +35,10 @@ abstract class ExecutableClassMemberResourceConverter<T extends ClassMemberResou
     }
     
     @Override
-    protected String getResourceName(ClassMemberResource.Executable resource, Dictionary dictionary) {
+    protected String getResourceName(
+            final ClassMemberResource.Executable resource,
+            final Dictionary dictionary
+    ) {
         final var parameters =
                 resource.parameters()
                         .stream()
@@ -47,7 +54,10 @@ abstract class ExecutableClassMemberResourceConverter<T extends ClassMemberResou
     }
 
     @Override
-    protected String getResourceName(String resourceNameStr, Dictionary dictionary) {
+    protected String getResourceName(
+            final String resourceNameStr,
+            final Dictionary dictionary
+    ) {
         return resourceNameStr;
     }
 }

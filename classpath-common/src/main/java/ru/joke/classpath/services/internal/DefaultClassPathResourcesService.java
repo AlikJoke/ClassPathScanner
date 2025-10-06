@@ -1,9 +1,11 @@
-package ru.joke.classpath.services;
+package ru.joke.classpath.services.internal;
 
 import ru.joke.classpath.*;
 import ru.joke.classpath.converters.ClassPathResourceConverter;
 import ru.joke.classpath.converters.DelegateClassPathResourceConverter;
 import ru.joke.classpath.converters.Dictionary;
+import ru.joke.classpath.services.ClassPathResourcesService;
+import ru.joke.classpath.services.IndexedClassPathLocation;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -18,14 +20,14 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-final class DefaultClassPathResourcesService implements ClassPathResourcesService {
+public final class DefaultClassPathResourcesService implements ClassPathResourcesService {
 
     private static final String DICTIONARY_SEPARATOR = "#####";
 
     private final Map<String, ClassPathResources> resourcesByLocation;
     private final ClassPathResourceConverter<ClassPathResource> converter;
 
-    DefaultClassPathResourcesService() {
+    public DefaultClassPathResourcesService() {
         this.resourcesByLocation = new ConcurrentHashMap<>();
         this.converter = new DelegateClassPathResourceConverter();
     }

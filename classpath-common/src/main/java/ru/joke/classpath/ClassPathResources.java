@@ -5,5 +5,5 @@ import java.util.Optional;
 
 public interface ClassPathResources extends Collection<ClassPathResource> {
 
-    Optional<ClassPathResource> first();
+    Optional<ClassPathResource> any();
 }

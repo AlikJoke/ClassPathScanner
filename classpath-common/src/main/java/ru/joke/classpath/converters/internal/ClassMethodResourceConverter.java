@@ -1,18 +1,26 @@
-package ru.joke.classpath.converters;
+package ru.joke.classpath.converters.internal;
 
-import ru.joke.classpath.ClassConstructorResource;
+import ru.joke.classpath.ClassMethodResource;
 import ru.joke.classpath.ClassPathResource;
 import ru.joke.classpath.ClassResource;
+import ru.joke.classpath.IndexedClassPathException;
+import ru.joke.classpath.converters.Dictionary;
+import ru.joke.classpath.util.LazyObject;
 
-import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-public final class ConstructorResourceConverter extends ExecutableClassMemberResourceConverter<ClassConstructorResource<?>> {
+public final class ClassMethodResourceConverter extends ExecutableClassMemberResourceConverter<ClassMethodResource> {
 
     @Override
-    protected ClassConstructorResource<?> from(
+    public ClassPathResource.Type supportedType() {
+        return ClassPathResource.Type.METHOD;
+    }
+
+    @Override
+    protected ClassMethodResource from(
             final Set<ClassPathResource.Modifier> modifiers,
             final String module,
             final String packageName,
@@ -30,9 +38,15 @@ public final class ConstructorResourceConverter extends ExecutableClassMemberRes
         final var owner = new ClassReferenceImpl<>(packageName + ClassResource.ID_SEPARATOR + className);
         final var methodSignature = createSignature(methodName, nameParts[2]);
 
-        return new ClassConstructorResource<>() {
+        return new ClassMethodResource() {
 
-            private volatile Constructor<Object> constructor;
+            private final LazyObject<Method, ClassLoader> method = new LazyObject<>() {
+                @Override
+                protected Method load(ClassLoader loader) throws Exception {
+                    final var parameterTypes = loadParameters(parameters, loader);
+                    return owner().toClass(loader).getDeclaredMethod(methodName, parameterTypes);
+                }
+            };
 
             @Override
             public List<ClassReference<?>> parameters() {
@@ -40,19 +54,14 @@ public final class ConstructorResourceConverter extends ExecutableClassMemberRes
             }
 
             @Override
-            public Constructor<Object> asConstructor(ClassLoader loader) throws ClassNotFoundException, NoSuchMethodException {
-                if (this.constructor == null) {
-                    synchronized (this) {
-                        if (this.constructor == null) {
-                            final var parameterTypes = loadParameters(parameters, loader);
-                            @SuppressWarnings("unchecked")
-                            final var constructor = (Constructor<Object>) owner().toClass(loader).getDeclaredConstructor(parameterTypes);
-                            this.constructor = constructor;
-                        }
-                    }
+            public Method asMethod(ClassLoader loader) throws ClassNotFoundException, NoSuchMethodException {
+                try {
+                    return this.method.get(loader);
+                } catch (ClassNotFoundException | NoSuchMethodException e) {
+                    throw e;
+                } catch (Exception e) {
+                    throw new IndexedClassPathException(e);
                 }
-
-                return this.constructor;
             }
 
             @Override
@@ -97,23 +106,18 @@ public final class ConstructorResourceConverter extends ExecutableClassMemberRes
 
             @Override
             public int hashCode() {
-                return Objects.hash(id());
+                return Objects.hashCode(id());
             }
 
             @Override
             public boolean equals(Object obj) {
-                return obj instanceof ClassConstructorResource<?> f && f.id().equals(id());
+                return obj instanceof ClassMethodResource f && Objects.equals(f.id(), id());
             }
 
             @Override
             public String toString() {
-                return type().name() + ":" + id();
+                return ClassMethodResourceConverter.this.toStringDescription(this);
             }
         };
-    }
-
-    @Override
-    public ClassPathResource.Type supportedType() {
-        return ClassPathResource.Type.CONSTRUCTOR;
     }
 }

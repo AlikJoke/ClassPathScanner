@@ -1,6 +1,8 @@
 package ru.joke.classpath.converters;
 
 import ru.joke.classpath.ClassPathResource;
+import ru.joke.classpath.converters.internal.AbsClassPathResourceConverter;
+import ru.joke.classpath.converters.internal.ConcreteClassPathResourceConverter;
 
 import java.util.Map;
 import java.util.Optional;
@@ -17,14 +19,20 @@ public final class DelegateClassPathResourceConverter extends AbsClassPathResour
     }
 
     @Override
-    public Optional<ClassPathResource> fromString(String resource, Dictionary dictionary) {
+    public Optional<ClassPathResource> fromString(
+            final String resource,
+            final Dictionary dictionary
+    ) {
         return detectType(resource)
                 .map(converters::get)
                 .flatMap(c -> c.fromString(resource, dictionary));
     }
 
     @Override
-    public String toString(ClassPathResource resource, Dictionary dictionary) {
+    public String toString(
+            final ClassPathResource resource,
+            final Dictionary dictionary
+    ) {
         return converters.get(resource.type()).toString(resource, dictionary);
     }
 

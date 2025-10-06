@@ -1,7 +1,8 @@
-package ru.joke.classpath.converters;
+package ru.joke.classpath.converters.internal;
 
 import ru.joke.classpath.ClassPathResource;
 import ru.joke.classpath.ModuleResource;
+import ru.joke.classpath.converters.Dictionary;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -14,7 +15,6 @@ public final class ModuleResourceConverter extends AbsClassPathResourceConverter
     public ModuleResourceConverter() {
         super(COMPONENTS_COUNT);
     }
-
 
     @Override
     public ClassPathResource.Type supportedType() {
@@ -66,17 +66,17 @@ public final class ModuleResourceConverter extends AbsClassPathResourceConverter
 
             @Override
             public int hashCode() {
-                return Objects.hash(id());
+                return Objects.hashCode(id());
             }
 
             @Override
             public boolean equals(Object obj) {
-                return obj instanceof ModuleResource f && f.id().equals(id());
+                return obj instanceof ModuleResource f && Objects.equals(f.id(), id());
             }
 
             @Override
             public String toString() {
-                return type().name() + ":" + id();
+                return ModuleResourceConverter.this.toStringDescription(this);
             }
         };
     }

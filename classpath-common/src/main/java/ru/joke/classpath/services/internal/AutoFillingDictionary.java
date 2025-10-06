@@ -1,4 +1,4 @@
-package ru.joke.classpath.services;
+package ru.joke.classpath.services.internal;
 
 import ru.joke.classpath.converters.Dictionary;
 
@@ -40,6 +40,6 @@ final class AutoFillingDictionary implements Dictionary {
 
     @Override
     public Dictionary reverseDictionary() {
-        return this.dictionary.reverseDictionary();
+        return new AutoFillingDictionary(this.dictionary.reverseDictionary());
     }
 }

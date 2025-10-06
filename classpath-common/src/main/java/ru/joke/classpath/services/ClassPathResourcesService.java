@@ -2,6 +2,7 @@ package ru.joke.classpath.services;
 
 import ru.joke.classpath.ClassPathResource;
 import ru.joke.classpath.ClassPathResources;
+import ru.joke.classpath.services.internal.DefaultClassPathResourcesService;
 
 import java.util.function.Predicate;
 

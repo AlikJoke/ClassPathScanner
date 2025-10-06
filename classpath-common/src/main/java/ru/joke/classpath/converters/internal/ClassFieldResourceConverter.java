@@ -1,8 +1,11 @@
-package ru.joke.classpath.converters;
+package ru.joke.classpath.converters.internal;
 
 import ru.joke.classpath.ClassFieldResource;
 import ru.joke.classpath.ClassPathResource;
 import ru.joke.classpath.ClassResource;
+import ru.joke.classpath.IndexedClassPathException;
+import ru.joke.classpath.converters.Dictionary;
+import ru.joke.classpath.util.LazyObject;
 
 import java.lang.reflect.Field;
 import java.util.Objects;
@@ -40,19 +43,22 @@ public final class ClassFieldResourceConverter extends AbsClassPathResourceConve
 
         return new ClassFieldResource() {
 
-            private volatile Field field;
+            private final LazyObject<Field, ClassLoader> field = new LazyObject<>() {
+                @Override
+                protected Field load(ClassLoader loader) throws Exception {
+                    return owner().toClass(loader).getDeclaredField(fieldName);
+                }
+            };
 
             @Override
             public Field asField(ClassLoader loader) throws NoSuchFieldException, ClassNotFoundException {
-                if (this.field == null) {
-                    synchronized (this) {
-                        if (this.field == null) {
-                            this.field = owner().toClass(loader).getDeclaredField(fieldName);
-                        }
-                    }
+                try {
+                    return this.field.get(loader);
+                } catch (NoSuchFieldException | ClassNotFoundException e) {
+                    throw e;
+                } catch (Exception e) {
+                    throw new IndexedClassPathException(e);
                 }
-
-                return this.field;
             }
 
             @Override
@@ -97,29 +103,35 @@ public final class ClassFieldResourceConverter extends AbsClassPathResourceConve
 
             @Override
             public int hashCode() {
-                return Objects.hash(id());
+                return Objects.hashCode(id());
             }
 
             @Override
             public boolean equals(Object obj) {
-                return obj instanceof ClassFieldResource f && f.id().equals(id());
+                return obj instanceof ClassFieldResource f && Objects.equals(f.id(), id());
             }
 
             @Override
             public String toString() {
-                return type().name() + ":" + id();
+                return ClassFieldResourceConverter.this.toStringDescription(this);
             }
         };
     }
 
     @Override
-    protected String getResourceName(ClassFieldResource resource, Dictionary dictionary) {
+    protected String getResourceName(
+            final ClassFieldResource resource,
+            final Dictionary dictionary
+    ) {
         final var ownerClassSimpleName = resource.owner().canonicalName().substring(resource.packageName().length() + 1);
         return dictionary.map(ownerClassSimpleName) + MEMBER_OF_CLASS_SEPARATOR + dictionary.map(resource.name());
     }
 
     @Override
-    protected String getResourceName(String resourceNameStr, Dictionary dictionary) {
+    protected String getResourceName(
+            final String resourceNameStr,
+            final Dictionary dictionary
+    ) {
         return resourceNameStr;
     }
 }

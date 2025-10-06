@@ -1,4 +1,4 @@
-package ru.joke.classpath.services;
+package ru.joke.classpath.services.internal;
 
 import ru.joke.classpath.converters.Dictionary;
 

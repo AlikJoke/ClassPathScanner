@@ -1,7 +1,8 @@
-package ru.joke.classpath.converters;
+package ru.joke.classpath.converters.internal;
 
 import ru.joke.classpath.ClassPathResource;
 import ru.joke.classpath.PackageResource;
+import ru.joke.classpath.converters.Dictionary;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -64,17 +65,17 @@ public final class PackageResourceConverter extends AbsClassPathResourceConverte
 
             @Override
             public int hashCode() {
-                return Objects.hash(id());
+                return Objects.hashCode(id());
             }
 
             @Override
             public boolean equals(Object obj) {
-                return obj instanceof PackageResource f && f.id().equals(id());
+                return obj instanceof PackageResource f && Objects.equals(f.id(), id());
             }
 
             @Override
             public String toString() {
-                return type().name() + ":" + id();
+                return PackageResourceConverter.this.toStringDescription(this);
             }
         };
     }

@@ -1,7 +1,8 @@
-package ru.joke.classpath.converters;
+package ru.joke.classpath.converters.internal;
 
 import ru.joke.classpath.ClassPathResource;
 import ru.joke.classpath.ClassResource;
+import ru.joke.classpath.converters.Dictionary;
 
 import java.util.Objects;
 import java.util.Set;
@@ -17,14 +18,15 @@ public final class ClassResourceConverter extends AbsClassPathResourceConverter<
     }
 
     @Override
-    public String toString(ClassResource<?> resource, Dictionary dictionary) {
-        return super.toString(resource, dictionary)
-                + BLOCK_SEPARATOR
-                + transform(resource.interfaces(), dictionary)
-                + BLOCK_SEPARATOR
-                + transform(resource.superClasses(), dictionary)
-                + BLOCK_SEPARATOR
-                + resource.kind().alias();
+    protected void appendExtendedInfo(
+            final ClassResource<?> resource,
+            final Dictionary dictionary,
+            final StringBuilder builder
+    ) {
+        builder.append(BLOCK_SEPARATOR);
+        append(resource.interfaces(), dictionary, builder).append(BLOCK_SEPARATOR);
+        append(resource.superClasses(), dictionary, builder).append(BLOCK_SEPARATOR);
+        builder.append(resource.kind().alias());
     }
 
     @Override
@@ -98,17 +100,17 @@ public final class ClassResourceConverter extends AbsClassPathResourceConverter<
 
             @Override
             public int hashCode() {
-                return Objects.hash(id());
+                return Objects.hashCode(id());
             }
 
             @Override
             public boolean equals(Object obj) {
-                return obj instanceof ClassResource<?> f && f.id().equals(id());
+                return obj instanceof ClassResource<?> f && Objects.equals(f.id(), id());
             }
 
             @Override
             public String toString() {
-                return type().name() + ":" + id();
+                return ClassResourceConverter.this.toStringDescription(this);
             }
         };
     }
