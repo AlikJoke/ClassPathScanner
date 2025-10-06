@@ -1,4 +1,4 @@
-package ru.joke.classpath.indexer.internal;
+package ru.joke.classpath.indexer.internal.configs;
 
 import java.io.Serial;
 import java.io.Serializable;

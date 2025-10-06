@@ -116,7 +116,7 @@ public final class ClassMethodResourceConverter extends ExecutableClassMemberRes
 
             @Override
             public String toString() {
-                return ClassMethodResourceConverter.this.toStringDescription(this);
+                return toStringDescription();
             }
         };
     }

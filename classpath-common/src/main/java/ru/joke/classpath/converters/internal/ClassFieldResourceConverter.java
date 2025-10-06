@@ -113,7 +113,7 @@ public final class ClassFieldResourceConverter extends AbsClassPathResourceConve
 
             @Override
             public String toString() {
-                return ClassFieldResourceConverter.this.toStringDescription(this);
+                return toStringDescription();
             }
         };
     }

@@ -16,7 +16,10 @@ public final class DelegatingResourceFactory extends ClassPathResourceFactory<Cl
 
         final Map<ElementKind, ClassPathResourceFactory<? extends ClassPathResource, Element>> factories = new HashMap<>();
         createFactories(indexingContext)
-                .forEach(factory -> factory.supportedTypes().forEach(type -> factories.put(type, cast(factory))));
+                .forEach(
+                        factory -> factory.supportedTypes()
+                                                .forEach(type -> factories.put(type, cast(factory)))
+                );
 
         this.factories = Map.copyOf(factories);
     }

@@ -1,4 +1,4 @@
-package ru.joke.classpath.indexer.internal.config;
+package ru.joke.classpath.indexer.internal.configs;
 
 import java.io.BufferedReader;
 import java.io.IOException;

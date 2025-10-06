@@ -110,7 +110,7 @@ public final class ClassResourceConverter extends AbsClassPathResourceConverter<
 
             @Override
             public String toString() {
-                return ClassResourceConverter.this.toStringDescription(this);
+                return toStringDescription();
             }
         };
     }

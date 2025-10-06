@@ -1,6 +1,7 @@
 package ru.joke.classpath.indexer.internal.factories;
 
 import ru.joke.classpath.ClassFieldResource;
+import ru.joke.classpath.IndexedClassPathException;
 import ru.joke.classpath.indexer.internal.ClassPathIndexingContext;
 
 import javax.lang.model.element.ElementKind;
@@ -19,6 +20,14 @@ final class FieldResourceFactory extends ClassPathResourceFactory<ClassFieldReso
 
     @Override
     public ClassFieldResource doCreate(VariableElement source) {
+        final var ownerRef =
+                source.getEnclosingElement() instanceof QualifiedNameable n
+                        ? createClassRef(n.getQualifiedName().toString())
+                        : null;
+        if (ownerRef == null) {
+            throw new IndexedClassPathException("Unsupported type of field owner: " + source.getEnclosingElement());
+        }
+
         return new ClassFieldResource() {
             @Override
             public Field asField(ClassLoader loader) {
@@ -27,11 +36,12 @@ final class FieldResourceFactory extends ClassPathResourceFactory<ClassFieldReso
 
             @Override
             public ClassReference<?> owner() {
-                if (source.getEnclosingElement() instanceof QualifiedNameable n) {
-                    return createClassRef(n.getQualifiedName().toString());
-                }
+                return ownerRef;
+            }
 
-                throw new IllegalStateException();
+            @Override
+            public String id() {
+                return ownerRef.canonicalName() + ID_SEPARATOR + name();
             }
 
             @Override
@@ -69,17 +79,17 @@ final class FieldResourceFactory extends ClassPathResourceFactory<ClassFieldReso
 
             @Override
             public int hashCode() {
-                return Objects.hash(id());
+                return Objects.hashCode(id());
             }
 
             @Override
             public boolean equals(Object obj) {
-                return obj instanceof ClassFieldResource f && f.id().equals(id());
+                return obj instanceof ClassFieldResource f && Objects.equals(f.id(), id());
             }
 
             @Override
             public String toString() {
-                return type().name() + ":" + id();
+                return toStringDescription();
             }
         };
     }

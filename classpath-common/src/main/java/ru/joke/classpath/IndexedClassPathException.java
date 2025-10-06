@@ -6,6 +6,10 @@ public class IndexedClassPathException extends RuntimeException {
         super(ex);
     }
 
+    public IndexedClassPathException(final String msg) {
+        super(msg);
+    }
+
     public IndexedClassPathException(final String message, final Exception ex) {
         super(message, ex);
     }

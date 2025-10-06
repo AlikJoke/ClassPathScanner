@@ -3,8 +3,8 @@ package ru.joke.classpath.indexer.internal.collectors;
 import ru.joke.classpath.ClassPathIndexed;
 import ru.joke.classpath.ClassPathResource;
 import ru.joke.classpath.indexer.internal.ClassPathIndexingContext;
-import ru.joke.classpath.indexer.internal.ScannedResources;
-import ru.joke.classpath.indexer.internal.config.ClassPathIndexingConfiguration;
+import ru.joke.classpath.indexer.internal.configs.ScannedResources;
+import ru.joke.classpath.indexer.internal.configs.ClassPathIndexingConfiguration;
 import ru.joke.classpath.indexer.internal.factories.ClassPathResourceFactory;
 
 import javax.lang.model.element.*;

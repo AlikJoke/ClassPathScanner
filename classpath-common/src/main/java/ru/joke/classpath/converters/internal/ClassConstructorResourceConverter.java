@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-public final class ConstructorResourceConverter extends ExecutableClassMemberResourceConverter<ClassConstructorResource<?>> {
+public final class ClassConstructorResourceConverter extends ExecutableClassMemberResourceConverter<ClassConstructorResource<?>> {
 
     @Override
     protected ClassConstructorResource<?> from(
@@ -113,7 +113,7 @@ public final class ConstructorResourceConverter extends ExecutableClassMemberRes
 
             @Override
             public String toString() {
-                return ConstructorResourceConverter.this.toStringDescription(this);
+                return toStringDescription();
             }
         };
     }

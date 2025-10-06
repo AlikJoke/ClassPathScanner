@@ -8,11 +8,6 @@ public interface ClassMemberResource extends ClassPathResource {
 
     ClassReference<?> owner();
 
-    @Override
-    default String id() {
-        return packageName() + ID_SEPARATOR + name();
-    }
-
     interface Executable extends ClassMemberResource {
 
         List<ClassReference<?>> parameters();

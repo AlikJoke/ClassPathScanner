@@ -1,5 +1,6 @@
 package ru.joke.classpath.indexer;
 
+import ru.joke.classpath.IndexedClassPathException;
 import ru.joke.classpath.services.ClassPathResourcesService;
 import ru.joke.classpath.services.IndexedClassPathLocation;
 import ru.joke.classpath.indexer.internal.ClassPathIndexingContext;
@@ -78,7 +79,7 @@ public class ClassPathIndexer extends AbstractProcessor {
                     IndexedClassPathLocation.INDEXED_RESOURCES_FILE
             );
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new IndexedClassPathException(e);
         }
     }
 
@@ -90,7 +91,7 @@ public class ClassPathIndexer extends AbstractProcessor {
 
         final var targetOutputConfigDir = new File(outputRootDir, CONFIG_OUTPUT_DIR);
         if (!targetOutputConfigDir.mkdir() && !targetOutputConfigDir.exists()) {
-            throw new RuntimeException("Couldn't create output config dir: " + targetOutputConfigDir.getAbsolutePath());
+            throw new IndexedClassPathException("Couldn't create output config dir: " + targetOutputConfigDir.getAbsolutePath());
         }
 
         return targetOutputConfigDir;

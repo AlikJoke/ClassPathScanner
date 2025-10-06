@@ -1,13 +1,14 @@
 package ru.joke.classpath.indexer.internal.factories;
 
 import ru.joke.classpath.ClassMethodResource;
+import ru.joke.classpath.ClassPathResource;
+import ru.joke.classpath.IndexedClassPathException;
 import ru.joke.classpath.indexer.internal.ClassPathIndexingContext;
 
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.QualifiedNameable;
 import javax.lang.model.element.VariableElement;
-import javax.lang.model.type.DeclaredType;
 import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.List;
@@ -23,22 +24,31 @@ final class ExecutableElementResourceFactory extends ClassPathResourceFactory<Cl
 
     @Override
     public ClassMethodResource doCreate(ExecutableElement source) {
+        final List<ClassPathResource.ClassReference<?>> parameters =
+                source.getParameters()
+                        .stream()
+                        .map(VariableElement::asType)
+                        .map(ExecutableElementResourceFactory.this::findQualifiedName)
+                        .filter(Objects::nonNull)
+                        .map(ExecutableElementResourceFactory.this::createClassRef)
+                        .collect(Collectors.toList());
+        final var parametersStr = parameters
+                                        .stream()
+                                        .map(ClassPathResource.ClassReference::canonicalName)
+                                        .collect(Collectors.joining(","));
+        final var ownerRef =
+                source.getEnclosingElement() instanceof QualifiedNameable n
+                        ? createClassRef(n.getQualifiedName().toString())
+                        : null;
+        if (ownerRef == null) {
+            throw new IndexedClassPathException("Unsupported type of method owner: " + source.getEnclosingElement());
+        }
+
         return new ClassMethodResource() {
 
             @Override
             public List<ClassReference<?>> parameters() {
-                return source.getParameters()
-                                .stream()
-                                .map(VariableElement::asType)
-                                .filter(t -> t instanceof DeclaredType)
-                                .map(t -> (DeclaredType) t)
-                                .map(DeclaredType::asElement)
-                                .filter(t -> t instanceof QualifiedNameable)
-                                .map(t -> (QualifiedNameable) t)
-                                .map(QualifiedNameable::getQualifiedName)
-                                .map(Object::toString)
-                                .map(ExecutableElementResourceFactory.this::createClassRef)
-                                .collect(Collectors.toList());
+                return parameters;
             }
 
             @Override
@@ -58,26 +68,27 @@ final class ExecutableElementResourceFactory extends ClassPathResourceFactory<Cl
 
             @Override
             public int hashCode() {
-                return Objects.hash(id());
+                return Objects.hashCode(id());
             }
 
             @Override
             public boolean equals(Object obj) {
-                return obj instanceof Executable f && f.id().equals(id());
+                return obj instanceof Executable f && Objects.equals(f.id(), id());
             }
 
             @Override
             public String toString() {
-                return type().name() + ":" + id();
+                return toStringDescription();
             }
 
             @Override
             public ClassReference<?> owner() {
-                if (source.getEnclosingElement() instanceof QualifiedNameable n) {
-                    return createClassRef(n.getQualifiedName().toString());
-                }
+                return ownerRef;
+            }
 
-                throw new IllegalStateException();
+            @Override
+            public String id() {
+                return ownerRef.canonicalName() + ID_SEPARATOR + name() + "(" + parametersStr + ")";
             }
 
             @Override

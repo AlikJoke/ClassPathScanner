@@ -75,7 +75,7 @@ public final class PackageResourceConverter extends AbsClassPathResourceConverte
 
             @Override
             public String toString() {
-                return PackageResourceConverter.this.toStringDescription(this);
+                return toStringDescription();
             }
         };
     }

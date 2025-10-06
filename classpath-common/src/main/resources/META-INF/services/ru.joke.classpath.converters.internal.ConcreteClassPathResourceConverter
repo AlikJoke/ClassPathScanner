@@ -1,6 +1,0 @@
-ru.joke.classpath.converters.internal.ClassResourceConverter
-ru.joke.classpath.converters.internal.ModuleResourceConverter
-ru.joke.classpath.converters.internal.ClassFieldResourceConverter
-ru.joke.classpath.converters.internal.ConstructorResourceConverter
-ru.joke.classpath.converters.internal.ClassMethodResourceConverter
-ru.joke.classpath.converters.internal.PackageResourceConverter

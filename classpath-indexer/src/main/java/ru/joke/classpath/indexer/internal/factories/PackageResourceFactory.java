@@ -54,17 +54,17 @@ final class PackageResourceFactory extends ClassPathResourceFactory<PackageResou
 
             @Override
             public int hashCode() {
-                return Objects.hash(id());
+                return Objects.hashCode(id());
             }
 
             @Override
             public boolean equals(Object obj) {
-                return obj instanceof PackageResource f && f.id().equals(id());
+                return obj instanceof PackageResource f && Objects.equals(f.id(), id());
             }
 
             @Override
             public String toString() {
-                return type().name() + ":" + id();
+                return toStringDescription();
             }
         };
     }

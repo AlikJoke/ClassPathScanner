@@ -9,9 +9,12 @@ import javax.lang.model.element.QualifiedNameable;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static ru.joke.classpath.ClassResource.ID_SEPARATOR;
 
 final class ClassResourceFactory extends ClassPathResourceFactory<ClassResource<?>, TypeElement> {
 
@@ -21,6 +24,7 @@ final class ClassResourceFactory extends ClassPathResourceFactory<ClassResource<
 
     @Override
     public ClassResource<?> doCreate(TypeElement source) {
+        final var simpleName = findSimpleName(source);
         return new ClassResource<>() {
             @Override
             public Class<Object> asClass(ClassLoader loader) {
@@ -41,13 +45,13 @@ final class ClassResourceFactory extends ClassPathResourceFactory<ClassResource<
 
             @Override
             public Set<ClassReference<?>> superClasses() {
-                final Set<TypeElement> superclasses = new HashSet<>();
+                final Set<TypeElement> superclasses = new LinkedHashSet<>();
                 collectSuperclasses(superclasses, source);
 
                 return superclasses
                         .stream()
                         .map(s -> createClassRef(s.getQualifiedName().toString()))
-                        .collect(Collectors.toSet());
+                        .collect(Collectors.toCollection(LinkedHashSet::new));
             }
 
             @Override
@@ -64,14 +68,7 @@ final class ClassResourceFactory extends ClassPathResourceFactory<ClassResource<
 
             @Override
             public String name() {
-                var name = source.getSimpleName().toString();
-                var enclosedElement = source.getEnclosingElement();
-                while (enclosedElement != null && enclosedElement.getKind() != ElementKind.PACKAGE) {
-                    name = enclosedElement.getSimpleName() + ID_SEPARATOR + name;
-                    enclosedElement = enclosedElement.getEnclosingElement();
-                }
-
-                return name;
+                return simpleName;
             }
 
             @Override
@@ -104,28 +101,24 @@ final class ClassResourceFactory extends ClassPathResourceFactory<ClassResource<
 
             @Override
             public int hashCode() {
-                return Objects.hash(id());
+                return Objects.hashCode(id());
             }
 
             @Override
             public boolean equals(Object obj) {
-                return obj instanceof ClassFieldResource f && f.id().equals(id());
+                return obj instanceof ClassFieldResource f && Objects.equals(f.id(), id());
             }
 
             @Override
             public String toString() {
-                return type().name() + ":" + id();
+                return toStringDescription();
             }
 
             private void collectInterfaces(final Set<ClassReference<?>> interfaces, final TypeElement type) {
                 type.getInterfaces()
                         .stream()
-                        .filter(i -> i instanceof DeclaredType)
-                        .map(i -> ((DeclaredType) i).asElement())
-                        .filter(i -> i instanceof QualifiedNameable)
-                        .map(i -> (QualifiedNameable) i)
-                        .map(QualifiedNameable::getQualifiedName)
-                        .map(Object::toString)
+                        .map(ClassResourceFactory.this::findQualifiedName)
+                        .filter(Objects::nonNull)
                         .peek(i -> interfaces.add(createClassRef(i)))
                         .map(indexingContext.elementUtils()::getTypeElement)
                         .filter(Objects::nonNull)
@@ -156,5 +149,16 @@ final class ClassResourceFactory extends ClassPathResourceFactory<ClassResource<
     @Override
     protected Set<ElementKind> supportedTypes() {
         return Set.of(ElementKind.CLASS, ElementKind.INTERFACE, ElementKind.ENUM, ElementKind.RECORD, ElementKind.ANNOTATION_TYPE);
+    }
+
+    private String findSimpleName(final TypeElement source) {
+        var name = source.getSimpleName().toString();
+        var enclosedElement = source.getEnclosingElement();
+        while (enclosedElement != null && enclosedElement.getKind() != ElementKind.PACKAGE) {
+            name = enclosedElement.getSimpleName() + ID_SEPARATOR + name;
+            enclosedElement = enclosedElement.getEnclosingElement();
+        }
+
+        return name;
     }
 }

@@ -20,6 +20,10 @@ public interface ClassPathResource {
 
     Set<Modifier> modifiers();
 
+    default String toStringDescription() {
+        return type() + "@" + id();
+    }
+
     interface ClassReference<T> {
 
         String canonicalName();

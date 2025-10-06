@@ -76,7 +76,7 @@ public final class ModuleResourceConverter extends AbsClassPathResourceConverter
 
             @Override
             public String toString() {
-                return ModuleResourceConverter.this.toStringDescription(this);
+                return toStringDescription();
             }
         };
     }

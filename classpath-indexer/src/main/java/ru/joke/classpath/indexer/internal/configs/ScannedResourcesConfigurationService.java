@@ -1,4 +1,4 @@
-package ru.joke.classpath.indexer.internal;
+package ru.joke.classpath.indexer.internal.configs;
 
 import javax.annotation.processing.Messager;
 import javax.tools.Diagnostic;
@@ -6,14 +6,14 @@ import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
-final class ScannedResourcesConfigurationService {
+public final class ScannedResourcesConfigurationService {
 
     private static final String CONFIG_TEMP_EXT = ".sr";
 
     private final Messager messager;
     private final File targetOutputConfigDir;
 
-    ScannedResourcesConfigurationService(
+    public ScannedResourcesConfigurationService(
             final File targetOutputConfigDir,
             final Messager messager
     ) {
@@ -21,7 +21,7 @@ final class ScannedResourcesConfigurationService {
         this.messager = Objects.requireNonNull(messager, "messager");
     }
 
-    void serialize(final ScannedResources scannedResources) {
+    public void serialize(final ScannedResources scannedResources) {
         final var config = new File(this.targetOutputConfigDir, UUID.randomUUID() + CONFIG_TEMP_EXT);
         try (final var fileOutputStream = new FileOutputStream(config);
              final var objectOutputStream = new ObjectOutputStream(fileOutputStream)) {
@@ -31,7 +31,7 @@ final class ScannedResourcesConfigurationService {
         }
     }
 
-    Set<ScannedResources> deserializeAllAvailable() {
+    public Set<ScannedResources> deserializeAllAvailable() {
 
         final var scannedResourcesFiles = this.targetOutputConfigDir.listFiles(f -> f.getName().endsWith(CONFIG_TEMP_EXT));
         if (scannedResourcesFiles != null) {

@@ -1,14 +1,13 @@
 package ru.joke.classpath.converters;
 
 import ru.joke.classpath.ClassPathResource;
-import ru.joke.classpath.converters.internal.AbsClassPathResourceConverter;
-import ru.joke.classpath.converters.internal.ConcreteClassPathResourceConverter;
+import ru.joke.classpath.converters.internal.*;
 
 import java.util.Map;
 import java.util.Optional;
-import java.util.ServiceLoader;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public final class DelegateClassPathResourceConverter extends AbsClassPathResourceConverter<ClassPathResource> {
 
@@ -48,12 +47,17 @@ public final class DelegateClassPathResourceConverter extends AbsClassPathResour
 
     private static Map<ClassPathResource.Type, ConcreteClassPathResourceConverter<ClassPathResource>> findConverters() {
         @SuppressWarnings("unchecked")
-        final var converters =
-                ServiceLoader.load(ConcreteClassPathResourceConverter.class, ConcreteClassPathResourceConverter.class.getClassLoader())
-                                .stream()
-                                .map(ServiceLoader.Provider::get)
-                                .map(c -> (ConcreteClassPathResourceConverter<ClassPathResource>) c)
-                                .collect(Collectors.toMap(ConcreteClassPathResourceConverter::supportedType, Function.identity()));
-        return converters;
+        final var result =
+                Stream.of(
+                        (ConcreteClassPathResourceConverter<? extends ClassPathResource>) new ClassResourceConverter(),
+                        new ModuleResourceConverter(),
+                        new PackageResourceConverter(),
+                        new ClassFieldResourceConverter(),
+                        new ClassMethodResourceConverter(),
+                        new ClassConstructorResourceConverter()
+                )
+                .map(c -> (ConcreteClassPathResourceConverter<ClassPathResource>) c)
+                .collect(Collectors.toMap(ConcreteClassPathResourceConverter::supportedType, Function.identity()));
+        return result;
     }
 }

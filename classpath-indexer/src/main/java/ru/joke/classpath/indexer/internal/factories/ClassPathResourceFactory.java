@@ -3,11 +3,12 @@ package ru.joke.classpath.indexer.internal.factories;
 import ru.joke.classpath.ClassPathIndexed;
 import ru.joke.classpath.ClassPathResource;
 import ru.joke.classpath.indexer.internal.ClassPathIndexingContext;
-import ru.joke.classpath.indexer.internal.ScannedResources;
-import ru.joke.classpath.indexer.internal.config.ClassPathIndexingConfiguration;
+import ru.joke.classpath.indexer.internal.configs.ScannedResources;
+import ru.joke.classpath.indexer.internal.configs.ClassPathIndexingConfiguration;
 
 import javax.lang.model.element.*;
 import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeMirror;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -43,15 +44,18 @@ public abstract class ClassPathResourceFactory<T extends ClassPathResource, E ex
         element.getAnnotationMirrors()
                 .stream()
                 .map(AnnotationMirror::getAnnotationType)
-                .map(DeclaredType::asElement)
-                .filter(a -> a instanceof QualifiedNameable)
-                .map(a -> (QualifiedNameable) a)
-                .map(QualifiedNameable::getQualifiedName)
-                .map(Object::toString)
+                .map(this::findQualifiedName)
+                .filter(Objects::nonNull)
                 .filter(a -> annotations.add(createClassRef(a)))
                 .map(this.indexingContext.elementUtils()::getTypeElement)
                 .filter(Objects::nonNull)
                 .forEach(a -> collectAnnotations(a, annotations));
+    }
+
+    protected String findQualifiedName(final TypeMirror mirror) {
+        return mirror instanceof DeclaredType type && type.asElement() instanceof QualifiedNameable q
+                ? q.getQualifiedName().toString()
+                : null;
     }
 
     protected Set<String> findAliases(final Element element, final String elementId) {
@@ -66,11 +70,11 @@ public abstract class ClassPathResourceFactory<T extends ClassPathResource, E ex
             result.addAll(Arrays.asList(annotation.aliases()));
         }
         this.indexingContext.prevScannedResources()
-                        .stream()
-                        .map(ScannedResources::aliases)
-                        .filter(aliases -> aliases.containsKey(elementId))
-                        .map(aliases -> aliases.getOrDefault(elementId, Collections.emptySet()))
-                        .forEach(result::addAll);
+                            .stream()
+                            .map(ScannedResources::aliases)
+                            .filter(aliases -> aliases.containsKey(elementId))
+                            .map(aliases -> aliases.getOrDefault(elementId, Collections.emptySet()))
+                            .forEach(result::addAll);
 
         return result;
     }

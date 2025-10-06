@@ -2,8 +2,10 @@ package ru.joke.classpath.indexer.internal;
 
 import ru.joke.classpath.ClassPathResources;
 import ru.joke.classpath.IndexedClassPathResources;
-import ru.joke.classpath.indexer.internal.config.ClassPathIndexingConfiguration;
-import ru.joke.classpath.indexer.internal.config.ClassPathIndexingConfigurationService;
+import ru.joke.classpath.indexer.internal.configs.ClassPathIndexingConfiguration;
+import ru.joke.classpath.indexer.internal.configs.ClassPathIndexingConfigurationService;
+import ru.joke.classpath.indexer.internal.configs.ScannedResources;
+import ru.joke.classpath.indexer.internal.configs.ScannedResourcesConfigurationService;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
