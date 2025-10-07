@@ -36,4 +36,11 @@ public final class ScannedResources implements Serializable {
     public boolean isEmpty() {
         return this.annotations.isEmpty() && this.interfaces.isEmpty() && this.classes.isEmpty() && this.aliases.isEmpty();
     }
+
+    public void fillFrom(final ClassPathIndexingConfiguration indexingConfiguration) {
+        this.annotations.addAll(indexingConfiguration.annotations());
+        this.interfaces.addAll(indexingConfiguration.interfaces());
+        this.classes.addAll(indexingConfiguration.classes());
+        this.aliases.putAll(indexingConfiguration.aliases());
+    }
 }

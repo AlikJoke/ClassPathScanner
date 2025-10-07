@@ -33,7 +33,6 @@ public final class ClassPathResourcesCollector {
 
         final var scannedAnnotations = collectScannedAnnotations();
         collectAnnotatedResources(scannedAnnotations);
-        collectAliasesComponentsByConfiguration();
 
         final var scannedInterfaces = collectScannedInterfaces();
         collectImplementations(scannedInterfaces);
@@ -49,6 +48,7 @@ public final class ClassPathResourcesCollector {
 
         final var annotations = collectPrevScannedResources(ScannedResources::annotations);
         currentScannedResources.annotations().removeAll(annotations);
+        currentScannedResources.annotations().remove(ClassPathIndexed.class.getCanonicalName());
 
         final var interfaces = collectPrevScannedResources(ScannedResources::interfaces);
         currentScannedResources.interfaces().removeAll(interfaces);
@@ -63,12 +63,6 @@ public final class ClassPathResourcesCollector {
                                     .map(func)
                                     .flatMap(Set::stream)
                                     .collect(Collectors.toSet());
-    }
-
-    private void collectAliasesComponentsByConfiguration() {
-        this.indexingContext.indexingConfiguration()
-                            .map(ClassPathIndexingConfiguration::aliases)
-                            .ifPresent(this.indexingContext.currentScannedResources().aliases()::putAll);
     }
 
     private Set<TypeElement> collectScannedAnnotations() {

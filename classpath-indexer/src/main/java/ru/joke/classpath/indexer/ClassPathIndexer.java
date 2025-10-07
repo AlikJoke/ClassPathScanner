@@ -45,18 +45,18 @@ public class ClassPathIndexer extends AbstractProcessor {
 
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-        if (roundEnv.getRootElements().isEmpty()) {
+
+        final var noCompiledElements = roundEnv.getRootElements().isEmpty();
+        if (noCompiledElements && roundEnv.processingOver()) {
             return false;
         }
 
-        final var processingFilter = createProcessingFilter();
-        final var outputConfigDirectory = findOrCreateOutputConfigDirectory();
-        final var context = ClassPathIndexingContext.create(
-                outputConfigDirectory,
-                this.processingEnv,
-                roundEnv,
-                processingFilter
-        );
+        final var context = buildContext(roundEnv);
+        final var noScannedElementConfigs = annotations.isEmpty() && context.currentScannedResources().isEmpty() && context.prevScannedResources().isEmpty();
+        if (noScannedElementConfigs || noCompiledElements) {
+            context.flushCurrentScannedResources();
+            return false;
+        }
 
         final var classPathResourceFactory = new DelegatingResourceFactory(context);
         final var collector = new ClassPathResourcesCollector(context, classPathResourceFactory);
@@ -69,6 +69,21 @@ public class ClassPathIndexer extends AbstractProcessor {
         );
 
         return false;
+    }
+
+    private ClassPathIndexingContext buildContext(final RoundEnvironment roundEnv) {
+        final var processingFilter = createProcessingFilter();
+        final var outputConfigDirectory = findOrCreateOutputConfigDirectory();
+        final var context = ClassPathIndexingContext.create(
+                outputConfigDirectory,
+                this.processingEnv,
+                roundEnv,
+                processingFilter
+        );
+
+        context.indexingConfiguration().ifPresent(context.currentScannedResources()::fillFrom);
+
+        return context;
     }
 
     private FileObject createIndexedClassPathConfigFile() {
