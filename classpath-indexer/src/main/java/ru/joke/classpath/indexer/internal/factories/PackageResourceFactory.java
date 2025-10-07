@@ -36,7 +36,7 @@ final class PackageResourceFactory extends ClassPathResourceFactory<PackageResou
 
             @Override
             public String module() {
-                return name();
+                return indexingContext.moduleName();
             }
 
             @Override

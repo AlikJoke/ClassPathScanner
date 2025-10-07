@@ -50,11 +50,6 @@ public final class ModuleResourceConverter extends AbsClassPathResourceConverter
             }
 
             @Override
-            public String module() {
-                return module;
-            }
-
-            @Override
             public Set<ClassPathResource.ClassReference<?>> annotations() {
                 return annotations;
             }

@@ -5,7 +5,7 @@ import java.util.Optional;
 public interface PackageResource extends ClassPathResource {
     @Override
     default String id() {
-        return name();
+        return module() + "/" + name();
     }
 
     default Optional<Package> asPackage() {

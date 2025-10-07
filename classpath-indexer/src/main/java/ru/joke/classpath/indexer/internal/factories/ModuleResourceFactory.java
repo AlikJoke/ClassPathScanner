@@ -32,11 +32,6 @@ final class ModuleResourceFactory extends ClassPathResourceFactory<ModuleResourc
             }
 
             @Override
-            public String module() {
-                return name();
-            }
-
-            @Override
             public Set<ClassReference<?>> annotations() {
                 final Set<ClassReference<?>> annotations = new HashSet<>();
                 collectAnnotations(source, annotations);

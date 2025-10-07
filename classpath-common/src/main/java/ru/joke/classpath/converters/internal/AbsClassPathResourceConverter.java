@@ -40,7 +40,7 @@ public abstract class AbsClassPathResourceConverter<T extends ClassPathResource>
         final var name = getResourceName(resource, dictionary);
         sb.append(name).append(BLOCK_SEPARATOR);
 
-        appendAliases(resource.aliases(), sb).append(BLOCK_SEPARATOR);
+        appendAliases(resource.aliases(), dictionary, sb).append(BLOCK_SEPARATOR);
 
         append(resource.annotations(), dictionary, sb);
         appendExtendedInfo(resource, dictionary, sb);
@@ -124,10 +124,13 @@ public abstract class AbsClassPathResourceConverter<T extends ClassPathResource>
             final Dictionary dictionary,
             final StringBuilder builder
     ) {
-        classes.forEach(
-                c -> builder.append(dictionary.map(c.canonicalName()))
-                            .append(ELEMENTS_IN_BLOCK_DELIMITER)
-        );
+        int i = 0;
+        for (var clazz : classes) {
+            builder.append(dictionary.map(clazz.canonicalName()));
+            if (++i != classes.size()) {
+                builder.append(ELEMENTS_IN_BLOCK_DELIMITER);
+            }
+        }
 
         return builder;
     }
@@ -149,20 +152,29 @@ public abstract class AbsClassPathResourceConverter<T extends ClassPathResource>
             final Set<ClassPathResource.Modifier> modifiers,
             final StringBuilder builder
     ) {
-        modifiers.forEach(
-                m -> builder.append(m.alias()).append(ELEMENTS_IN_BLOCK_DELIMITER)
-        );
+        int i = 0;
+        for (var modifier : modifiers) {
+            builder.append(modifier.alias());
+            if (++i != modifiers.size()) {
+                builder.append(ELEMENTS_IN_BLOCK_DELIMITER);
+            }
+        }
 
         return builder;
     }
 
     protected final StringBuilder appendAliases(
             final Set<String> aliases,
+            final Dictionary dictionary,
             final StringBuilder builder
     ) {
-        aliases.forEach(
-                a -> builder.append(a).append(ELEMENTS_IN_BLOCK_DELIMITER)
-        );
+        int i = 0;
+        for (var alias : aliases) {
+            builder.append(dictionary.map(alias));
+            if (++i != aliases.size()) {
+                builder.append(ELEMENTS_IN_BLOCK_DELIMITER);
+            }
+        }
 
         return builder;
     }

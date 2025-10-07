@@ -8,6 +8,11 @@ public interface ModuleResource extends ClassPathResource {
         return name();
     }
 
+    @Override
+    default String module() {
+        return name();
+    }
+
     default Optional<Module> asModule() {
         final var callerClass = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE).getCallerClass();
         return asModule(callerClass.getModule().getLayer());

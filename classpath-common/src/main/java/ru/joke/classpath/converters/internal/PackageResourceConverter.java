@@ -35,12 +35,12 @@ public final class PackageResourceConverter extends AbsClassPathResourceConverte
         return new PackageResource() {
             @Override
             public Optional<Package> asPackage(ClassLoader loader) {
-                return Optional.ofNullable(loader.getDefinedPackage(packageName));
+                return Optional.ofNullable(loader.getDefinedPackage(name));
             }
 
             @Override
             public String name() {
-                return module;
+                return name;
             }
 
             @Override

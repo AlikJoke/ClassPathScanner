@@ -14,6 +14,10 @@ final class AutoFillingDictionary implements Dictionary {
 
     @Override
     public String map(String str) {
+        if (str == null || str.isEmpty()) {
+            return str;
+        }
+
         var result = this.dictionary.map(str);
         if (result == null || result.isEmpty()) {
             result = String.valueOf(size());

@@ -67,7 +67,7 @@ public abstract class ClassPathResourceFactory<T extends ClassPathResource, E ex
         );
         final var annotation = element.getAnnotation(ClassPathIndexed.class);
         if (annotation != null) {
-            result.addAll(Arrays.asList(annotation.aliases()));
+            result.addAll(Arrays.asList(annotation.value()));
         }
         this.indexingContext.prevScannedResources()
                             .stream()
@@ -109,6 +109,10 @@ public abstract class ClassPathResourceFactory<T extends ClassPathResource, E ex
 
 
     protected Set<ClassPathResource.Modifier> mapModifiers(final Set<Modifier> modifiers) {
+        if (modifiers.isEmpty()) {
+            return EnumSet.noneOf(ClassPathResource.Modifier.class);
+        }
+
         final var result = modifiers
                             .stream()
                             .map(this::mapModifier)

@@ -10,8 +10,8 @@ import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
 
 @Documented
 @Retention(RetentionPolicy.CLASS)
-@Target(value = { CONSTRUCTOR, FIELD, METHOD, MODULE, TYPE, ANNOTATION_TYPE })
+@Target(value = { CONSTRUCTOR, FIELD, METHOD, MODULE, TYPE, ANNOTATION_TYPE, PACKAGE })
 public @interface ClassPathIndexed {
 
-    String[] aliases() default {};
+    String[] value() default {};
 }
