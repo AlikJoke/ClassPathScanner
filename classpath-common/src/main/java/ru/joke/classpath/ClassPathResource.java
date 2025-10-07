@@ -26,7 +26,13 @@ public interface ClassPathResource {
 
     interface ClassReference<T> {
 
+        char BINARY_NESTED_ID_SEPARATOR = '$';
+
+        char CANONICAL_NAME_SEPARATOR = '.';
+
         String canonicalName();
+
+        String binaryName();
 
         default Class<T> toClass() throws ClassNotFoundException {
             final var callerClass = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE).getCallerClass();

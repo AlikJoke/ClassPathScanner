@@ -42,10 +42,15 @@ abstract class ExecutableClassMemberResourceConverter<T extends ClassMemberResou
         final var parameters =
                 resource.parameters()
                         .stream()
-                        .map(ClassPathResource.ClassReference::canonicalName)
+                        .map(ClassPathResource.ClassReference::binaryName)
                         .map(dictionary::map)
                         .collect(Collectors.joining(ELEMENTS_IN_BLOCK_DELIMITER));
-        final var ownerClassSimpleName = resource.owner().canonicalName().substring(resource.packageName().length() + 1);
+        final var packageLength = resource.packageName().length();
+        final var ownerClassSimpleName =
+                packageLength == 0
+                        ? resource.owner().binaryName()
+                        : resource.owner().binaryName().substring(packageLength + 1);
+
         return dictionary.map(ownerClassSimpleName)
                 + MEMBER_OF_CLASS_SEPARATOR
                 + dictionary.map(resource.name())

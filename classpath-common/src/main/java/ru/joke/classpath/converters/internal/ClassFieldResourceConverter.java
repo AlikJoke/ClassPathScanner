@@ -2,7 +2,6 @@ package ru.joke.classpath.converters.internal;
 
 import ru.joke.classpath.ClassFieldResource;
 import ru.joke.classpath.ClassPathResource;
-import ru.joke.classpath.ClassResource;
 import ru.joke.classpath.IndexedClassPathException;
 import ru.joke.classpath.converters.Dictionary;
 import ru.joke.classpath.util.LazyObject;
@@ -10,6 +9,8 @@ import ru.joke.classpath.util.LazyObject;
 import java.lang.reflect.Field;
 import java.util.Objects;
 import java.util.Set;
+
+import static ru.joke.classpath.ClassPathResource.ClassReference.CANONICAL_NAME_SEPARATOR;
 
 public final class ClassFieldResourceConverter extends AbsClassPathResourceConverter<ClassFieldResource> implements ConcreteClassPathResourceConverter<ClassFieldResource> {
 
@@ -39,7 +40,8 @@ public final class ClassFieldResourceConverter extends AbsClassPathResourceConve
         final var className = dictionary.map(nameParts[0]);
         final var fieldName = dictionary.map(nameParts[1]);
 
-        final var owner = new ClassReferenceImpl<>(packageName + ClassResource.ID_SEPARATOR + className);
+        final var ownerClassBinaryName = packageName +  CANONICAL_NAME_SEPARATOR + className;
+        final var owner = new ClassReferenceImpl<>(ownerClassBinaryName);
 
         return new ClassFieldResource() {
 
@@ -69,11 +71,6 @@ public final class ClassFieldResourceConverter extends AbsClassPathResourceConve
             @Override
             public String name() {
                 return fieldName;
-            }
-
-            @Override
-            public String id() {
-                return owner.canonicalName() + ID_SEPARATOR + fieldName;
             }
 
             @Override
@@ -123,8 +120,14 @@ public final class ClassFieldResourceConverter extends AbsClassPathResourceConve
             final ClassFieldResource resource,
             final Dictionary dictionary
     ) {
-        final var ownerClassSimpleName = resource.owner().canonicalName().substring(resource.packageName().length() + 1);
-        return dictionary.map(ownerClassSimpleName) + MEMBER_OF_CLASS_SEPARATOR + dictionary.map(resource.name());
+        final var packageLength = resource.packageName().length();
+        final var ownerClassSimpleName =
+                packageLength == 0
+                        ? resource.owner().binaryName()
+                        : resource.owner().binaryName().substring(packageLength + 1);
+        return dictionary.map(ownerClassSimpleName)
+                + MEMBER_OF_CLASS_SEPARATOR
+                + dictionary.map(resource.name());
     }
 
     @Override

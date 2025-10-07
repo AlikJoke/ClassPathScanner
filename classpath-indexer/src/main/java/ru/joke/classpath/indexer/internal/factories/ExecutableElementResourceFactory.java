@@ -8,7 +8,6 @@ import ru.joke.classpath.indexer.internal.ClassPathIndexingContext;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.QualifiedNameable;
-import javax.lang.model.element.VariableElement;
 import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.List;
@@ -27,18 +26,17 @@ final class ExecutableElementResourceFactory extends ClassPathResourceFactory<Cl
         final List<ClassPathResource.ClassReference<?>> parameters =
                 source.getParameters()
                         .stream()
-                        .map(VariableElement::asType)
-                        .map(ExecutableElementResourceFactory.this::findQualifiedName)
                         .filter(Objects::nonNull)
                         .map(ExecutableElementResourceFactory.this::createClassRef)
+                        .filter(Objects::nonNull)
                         .collect(Collectors.toList());
         final var parametersStr = parameters
                                         .stream()
-                                        .map(ClassPathResource.ClassReference::canonicalName)
+                                        .map(ClassPathResource.ClassReference::binaryName)
                                         .collect(Collectors.joining(","));
         final var ownerRef =
                 source.getEnclosingElement() instanceof QualifiedNameable n
-                        ? createClassRef(n.getQualifiedName().toString())
+                        ? createClassRef(n)
                         : null;
         if (ownerRef == null) {
             throw new IndexedClassPathException("Unsupported type of method owner: " + source.getEnclosingElement());
@@ -88,7 +86,7 @@ final class ExecutableElementResourceFactory extends ClassPathResourceFactory<Cl
 
             @Override
             public String id() {
-                return ownerRef.canonicalName() + ID_SEPARATOR + name() + "(" + parametersStr + ")";
+                return ownerRef.binaryName() + ID_SEPARATOR + name() + "(" + parametersStr + ")";
             }
 
             @Override

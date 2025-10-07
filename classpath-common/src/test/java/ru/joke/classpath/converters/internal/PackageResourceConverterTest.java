@@ -63,7 +63,7 @@ class PackageResourceConverterTest extends AbsClassPathResourceConverterTest<Pac
 
             @Override
             public String module() {
-                return "classpath.common";
+                return getClass().getModule().getName();
             }
 
             @Override

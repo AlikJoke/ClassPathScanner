@@ -44,7 +44,7 @@ abstract class AbsClassPathResourceConverterTest<R extends ClassPathResource, C 
     }
     
     @Test
-    void testToStringOk() throws ClassNotFoundException {
+    void testFromStringOk() throws Exception {
         final var sourceResource = createTestResource();
         final var result = this.converter.fromString(getExpectedStringRepresentation(), createDictionary(sourceResource));
         assertNotNull(result, "Result of converter must be always not null");
@@ -64,9 +64,9 @@ abstract class AbsClassPathResourceConverterTest<R extends ClassPathResource, C 
         final var resourceAnnotationsMap =
                 resource.annotations()
                         .stream()
-                        .collect(Collectors.toMap(ClassPathResource.ClassReference::canonicalName, Function.identity()));
+                        .collect(Collectors.toMap(ClassPathResource.ClassReference::binaryName, Function.identity()));
         for (final var annotation : sourceResource.annotations()) {
-            final var resourceAnnotation = resourceAnnotationsMap.get(annotation.canonicalName());
+            final var resourceAnnotation = resourceAnnotationsMap.get(annotation.binaryName());
 
             assertNotNull(resourceAnnotation, "Annotation must be not null");
             assertEquals(annotation.toClass(), resourceAnnotation.toClass(), "Annotation type must be equal");
@@ -79,7 +79,12 @@ abstract class AbsClassPathResourceConverterTest<R extends ClassPathResource, C 
 
         final Map<String, String> dictionaryMap = new HashMap<>();
         dictionaryMap.put("0", resource.module());
-        if (!resource.name().equals(resource.module())) {
+
+        if (!resource.packageName().isEmpty() && !dictionaryMap.containsValue(resource.packageName())) {
+            dictionaryMap.put(String.valueOf(dictionaryMap.size()), resource.packageName());
+        }
+
+        if (!dictionaryMap.containsValue(resource.name())) {
             dictionaryMap.put(String.valueOf(dictionaryMap.size()), resource.name());
         }
 
@@ -88,13 +93,18 @@ abstract class AbsClassPathResourceConverterTest<R extends ClassPathResource, C 
         }
 
         for (var annotation : resource.annotations()) {
-            dictionaryMap.put(String.valueOf(dictionaryMap.size()), annotation.canonicalName());
+            dictionaryMap.put(String.valueOf(dictionaryMap.size()), annotation.binaryName());
         }
+
+        fillDictionary(dictionaryMap, resource);
 
         return new TestDictionary(dictionaryMap);
     }
 
-    abstract void makeTypeSpecificChecks(R expected, R actual);
+    void fillDictionary(Map<String, String> dictionaryMap, R resource) {
+    }
+
+    abstract void makeTypeSpecificChecks(R expected, R actual) throws Exception;
 
     abstract C createConverter();
     

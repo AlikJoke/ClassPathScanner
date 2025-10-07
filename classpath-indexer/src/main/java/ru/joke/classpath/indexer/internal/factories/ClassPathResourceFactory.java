@@ -3,14 +3,17 @@ package ru.joke.classpath.indexer.internal.factories;
 import ru.joke.classpath.ClassPathIndexed;
 import ru.joke.classpath.ClassPathResource;
 import ru.joke.classpath.indexer.internal.ClassPathIndexingContext;
-import ru.joke.classpath.indexer.internal.configs.ScannedResources;
 import ru.joke.classpath.indexer.internal.configs.ClassPathIndexingConfiguration;
+import ru.joke.classpath.indexer.internal.configs.ScannedResources;
 
 import javax.lang.model.element.*;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static ru.joke.classpath.ClassPathResource.ClassReference.BINARY_NESTED_ID_SEPARATOR;
+import static ru.joke.classpath.ClassPathResource.ClassReference.CANONICAL_NAME_SEPARATOR;
 
 public abstract class ClassPathResourceFactory<T extends ClassPathResource, E extends Element> {
 
@@ -44,9 +47,11 @@ public abstract class ClassPathResourceFactory<T extends ClassPathResource, E ex
         element.getAnnotationMirrors()
                 .stream()
                 .map(AnnotationMirror::getAnnotationType)
-                .map(this::findQualifiedName)
                 .filter(Objects::nonNull)
-                .filter(a -> annotations.add(createClassRef(a)))
+                .filter(a -> a.asElement() != null)
+                .map(a -> createClassRef(findPackageName(a.asElement()), findQualifiedName(a)))
+                .filter(annotations::add)
+                .map(ClassPathResource.ClassReference::canonicalName)
                 .map(this.indexingContext.elementUtils()::getTypeElement)
                 .filter(Objects::nonNull)
                 .forEach(a -> collectAnnotations(a, annotations));
@@ -79,11 +84,35 @@ public abstract class ClassPathResourceFactory<T extends ClassPathResource, E ex
         return result;
     }
 
-    protected ClassPathResource.ClassReference<?> createClassRef(final String className) {
+    protected ClassPathResource.ClassReference<?> createClassRef(final Element element) {
+        final var packageName = findPackageName(element);
+        final var canonicalName = findQualifiedName(element.asType());
+
+        return createClassRef(packageName, canonicalName);
+    }
+
+    protected ClassPathResource.ClassReference<?> createClassRef(
+            final String packageName,
+            final String canonicalName
+    ) {
+        if (canonicalName == null) {
+            return null;
+        }
+
+        final var binaryName =
+                packageName == null || packageName.isEmpty()
+                        ? canonicalName.replace(CANONICAL_NAME_SEPARATOR, BINARY_NESTED_ID_SEPARATOR)
+                        : packageName + CANONICAL_NAME_SEPARATOR + canonicalName.substring(packageName.length() + 1).replace(CANONICAL_NAME_SEPARATOR, BINARY_NESTED_ID_SEPARATOR);
+
         return new ClassPathResource.ClassReference<>() {
             @Override
             public String canonicalName() {
-                return className;
+                return canonicalName;
+            }
+
+            @Override
+            public String binaryName() {
+                return binaryName;
             }
 
             @Override
@@ -93,7 +122,7 @@ public abstract class ClassPathResourceFactory<T extends ClassPathResource, E ex
 
             @Override
             public int hashCode() {
-                return className.hashCode();
+                return binaryName.hashCode();
             }
 
             @Override
@@ -102,7 +131,7 @@ public abstract class ClassPathResourceFactory<T extends ClassPathResource, E ex
                     return false;
                 }
 
-                return className.equals(ref.canonicalName());
+                return binaryName.equals(ref.binaryName());
             }
         };
     }

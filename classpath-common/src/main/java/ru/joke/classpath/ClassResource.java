@@ -2,9 +2,9 @@ package ru.joke.classpath;
 
 import java.util.Set;
 
-public interface ClassResource<T> extends ClassPathResource {
+import static ru.joke.classpath.ClassPathResource.ClassReference.CANONICAL_NAME_SEPARATOR;
 
-    String ID_SEPARATOR = ".";
+public interface ClassResource<T> extends ClassPathResource {
 
     default Class<T> asClass() throws ClassNotFoundException {
         final var callerClass = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE).getCallerClass();
@@ -21,7 +21,7 @@ public interface ClassResource<T> extends ClassPathResource {
 
     @Override
     default String id() {
-        return packageName() + ID_SEPARATOR + name();
+        return packageName() + CANONICAL_NAME_SEPARATOR + name();
     }
 
     @Override

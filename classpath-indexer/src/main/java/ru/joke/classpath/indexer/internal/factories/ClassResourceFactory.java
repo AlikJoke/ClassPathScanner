@@ -14,7 +14,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static ru.joke.classpath.ClassResource.ID_SEPARATOR;
+import static ru.joke.classpath.ClassPathResource.ClassReference.BINARY_NESTED_ID_SEPARATOR;
 
 final class ClassResourceFactory extends ClassPathResourceFactory<ClassResource<?>, TypeElement> {
 
@@ -24,7 +24,7 @@ final class ClassResourceFactory extends ClassPathResourceFactory<ClassResource<
 
     @Override
     public ClassResource<?> doCreate(TypeElement source) {
-        final var simpleName = findSimpleName(source);
+        final var simpleBinaryName = findSimpleBinaryName(source);
         return new ClassResource<>() {
             @Override
             public Class<Object> asClass(ClassLoader loader) {
@@ -50,7 +50,7 @@ final class ClassResourceFactory extends ClassPathResourceFactory<ClassResource<
 
                 return superclasses
                         .stream()
-                        .map(s -> createClassRef(s.getQualifiedName().toString()))
+                        .map(ClassResourceFactory.this::createClassRef)
                         .collect(Collectors.toCollection(LinkedHashSet::new));
             }
 
@@ -68,7 +68,7 @@ final class ClassResourceFactory extends ClassPathResourceFactory<ClassResource<
 
             @Override
             public String name() {
-                return simpleName;
+                return simpleBinaryName;
             }
 
             @Override
@@ -117,9 +117,12 @@ final class ClassResourceFactory extends ClassPathResourceFactory<ClassResource<
             private void collectInterfaces(final Set<ClassReference<?>> interfaces, final TypeElement type) {
                 type.getInterfaces()
                         .stream()
-                        .map(ClassResourceFactory.this::findQualifiedName)
+                        .filter(i -> i instanceof DeclaredType)
+                        .map(i -> (DeclaredType) i)
+                        .map(i -> createClassRef(i.asElement()))
                         .filter(Objects::nonNull)
-                        .peek(i -> interfaces.add(createClassRef(i)))
+                        .peek(interfaces::add)
+                        .map(ClassReference::canonicalName)
                         .map(indexingContext.elementUtils()::getTypeElement)
                         .filter(Objects::nonNull)
                         .forEach(i -> this.collectInterfaces(interfaces, i));
@@ -151,11 +154,11 @@ final class ClassResourceFactory extends ClassPathResourceFactory<ClassResource<
         return Set.of(ElementKind.CLASS, ElementKind.INTERFACE, ElementKind.ENUM, ElementKind.RECORD, ElementKind.ANNOTATION_TYPE);
     }
 
-    private String findSimpleName(final TypeElement source) {
+    private String findSimpleBinaryName(final TypeElement source) {
         var name = source.getSimpleName().toString();
         var enclosedElement = source.getEnclosingElement();
         while (enclosedElement != null && enclosedElement.getKind() != ElementKind.PACKAGE) {
-            name = enclosedElement.getSimpleName() + ID_SEPARATOR + name;
+            name = enclosedElement.getSimpleName().toString() + BINARY_NESTED_ID_SEPARATOR + name;
             enclosedElement = enclosedElement.getEnclosingElement();
         }
 

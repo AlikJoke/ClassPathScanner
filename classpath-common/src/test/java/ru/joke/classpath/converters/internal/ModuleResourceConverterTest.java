@@ -49,7 +49,7 @@ class ModuleResourceConverterTest extends AbsClassPathResourceConverterTest<Modu
 
             @Override
             public String name() {
-                return "classpath.common";
+                return getClass().getModule().getName();
             }
 
             @Override

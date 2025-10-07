@@ -2,9 +2,9 @@ package ru.joke.classpath.converters.internal;
 
 import org.junit.jupiter.api.Test;
 import ru.joke.classpath.fixtures.TestAnnotation;
+import ru.joke.classpath.fixtures.TestClass;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 class ClassReferenceImplTest {
 
@@ -29,6 +29,17 @@ class ClassReferenceImplTest {
     void testObjectType() throws ClassNotFoundException {
         final var ref = new ClassReferenceImpl<>("ru.joke.classpath.fixtures.TestAnnotation");
         assertEquals(TestAnnotation.class.getCanonicalName(), ref.canonicalName());
+        assertEquals(ref.canonicalName(), ref.binaryName());
         assertEquals(TestAnnotation.class, ref.toClass());
+    }
+
+    @Test
+    void testNestedClassType() throws ClassNotFoundException {
+        final var binaryName = "ru.joke.classpath.fixtures.TestClass$StaticNested";
+        final var ref = new ClassReferenceImpl<>(binaryName);
+        assertEquals(TestClass.StaticNested.class.getCanonicalName(), ref.canonicalName());
+        assertEquals(binaryName, ref.binaryName());
+        assertNotEquals(ref.canonicalName(), ref.binaryName());
+        assertEquals(TestClass.StaticNested.class, ref.toClass());
     }
 }

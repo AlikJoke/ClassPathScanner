@@ -2,7 +2,6 @@ package ru.joke.classpath.converters.internal;
 
 import ru.joke.classpath.ClassConstructorResource;
 import ru.joke.classpath.ClassPathResource;
-import ru.joke.classpath.ClassResource;
 import ru.joke.classpath.IndexedClassPathException;
 import ru.joke.classpath.converters.Dictionary;
 import ru.joke.classpath.util.LazyObject;
@@ -11,6 +10,8 @@ import java.lang.reflect.Constructor;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+
+import static ru.joke.classpath.ClassPathResource.ClassReference.CANONICAL_NAME_SEPARATOR;
 
 public final class ClassConstructorResourceConverter extends ExecutableClassMemberResourceConverter<ClassConstructorResource<?>> {
 
@@ -30,7 +31,8 @@ public final class ClassConstructorResourceConverter extends ExecutableClassMemb
         final var methodName = dictionary.map(nameParts[1]);
         final var parameters = List.copyOf(extractRefs(nameParts[2], dictionary));
 
-        final var owner = new ClassReferenceImpl<>(packageName + ClassResource.ID_SEPARATOR + className);
+        final var ownerClassBinaryName = packageName +  CANONICAL_NAME_SEPARATOR + className;
+        final var owner = new ClassReferenceImpl<>(ownerClassBinaryName);
         final var methodSignature = createSignature(methodName, nameParts[2]);
 
         return new ClassConstructorResource<>() {
@@ -73,7 +75,7 @@ public final class ClassConstructorResourceConverter extends ExecutableClassMemb
 
             @Override
             public String id() {
-                return owner.canonicalName() + ID_SEPARATOR + methodSignature;
+                return owner.binaryName() + ID_SEPARATOR + methodSignature;
             }
 
             @Override

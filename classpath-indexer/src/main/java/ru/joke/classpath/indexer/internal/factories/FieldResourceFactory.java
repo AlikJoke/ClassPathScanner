@@ -22,7 +22,7 @@ final class FieldResourceFactory extends ClassPathResourceFactory<ClassFieldReso
     public ClassFieldResource doCreate(VariableElement source) {
         final var ownerRef =
                 source.getEnclosingElement() instanceof QualifiedNameable n
-                        ? createClassRef(n.getQualifiedName().toString())
+                        ? createClassRef(n)
                         : null;
         if (ownerRef == null) {
             throw new IndexedClassPathException("Unsupported type of field owner: " + source.getEnclosingElement());
@@ -37,11 +37,6 @@ final class FieldResourceFactory extends ClassPathResourceFactory<ClassFieldReso
             @Override
             public ClassReference<?> owner() {
                 return ownerRef;
-            }
-
-            @Override
-            public String id() {
-                return ownerRef.canonicalName() + ID_SEPARATOR + name();
             }
 
             @Override

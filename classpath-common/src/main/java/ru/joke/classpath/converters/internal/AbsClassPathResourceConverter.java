@@ -126,7 +126,7 @@ public abstract class AbsClassPathResourceConverter<T extends ClassPathResource>
     ) {
         int i = 0;
         for (var clazz : classes) {
-            builder.append(dictionary.map(clazz.canonicalName()));
+            builder.append(dictionary.map(clazz.binaryName()));
             if (++i != classes.size()) {
                 builder.append(ELEMENTS_IN_BLOCK_DELIMITER);
             }

@@ -24,19 +24,21 @@ final class ClassReferenceImpl<T> implements ClassPathResource.ClassReference<T>
                     void.class
             ).stream().collect(Collectors.toMap(Class::getCanonicalName, Function.identity()));
 
+    private final String binaryName;
     private final String canonicalName;
     private final LazyObject<Class<T>, ClassLoader> clazz;
 
-    ClassReferenceImpl(String canonicalName) {
-        this.canonicalName = canonicalName;
+    ClassReferenceImpl(final String binaryName) {
+        this.binaryName = binaryName;
+        this.canonicalName = binaryName.replace(BINARY_NESTED_ID_SEPARATOR, CANONICAL_NAME_SEPARATOR);
         this.clazz = new LazyObject<>() {
             @Override
             protected Class<T> load(ClassLoader loader) throws Exception {
                 @SuppressWarnings("unchecked")
-                var result = (Class<T>) primitiveTypesMap.get(canonicalName);
+                var result = (Class<T>) primitiveTypesMap.get(binaryName);
                 if (result == null) {
                     @SuppressWarnings("unchecked")
-                    final var loadedClass = (Class<T>) Class.forName(canonicalName, false, loader);
+                    final var loadedClass = (Class<T>) Class.forName(binaryName, false, loader);
                     result = loadedClass;
                 }
 
@@ -48,6 +50,11 @@ final class ClassReferenceImpl<T> implements ClassPathResource.ClassReference<T>
     @Override
     public String canonicalName() {
         return this.canonicalName;
+    }
+
+    @Override
+    public String binaryName() {
+        return this.binaryName;
     }
 
     @Override
@@ -71,16 +78,16 @@ final class ClassReferenceImpl<T> implements ClassPathResource.ClassReference<T>
         }
 
         final var that = (ClassReferenceImpl<?>) o;
-        return canonicalName.equals(that.canonicalName);
+        return binaryName.equals(that.binaryName);
     }
 
     @Override
     public int hashCode() {
-        return canonicalName.hashCode();
+        return binaryName.hashCode();
     }
 
     @Override
     public String toString() {
-        return "ClassReference{" + "canonicalName='" + canonicalName + '\'' + '}';
+        return "ClassReference{" + "binaryName='" + binaryName + '\'' + '}';
     }
 }

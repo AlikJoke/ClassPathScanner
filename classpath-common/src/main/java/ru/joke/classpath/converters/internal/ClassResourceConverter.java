@@ -7,7 +7,7 @@ import ru.joke.classpath.converters.Dictionary;
 import java.util.Objects;
 import java.util.Set;
 
-import static ru.joke.classpath.ClassResource.ID_SEPARATOR;
+import static ru.joke.classpath.ClassPathResource.ClassReference.CANONICAL_NAME_SEPARATOR;
 
 public final class ClassResourceConverter extends AbsClassPathResourceConverter<ClassResource<?>> implements ConcreteClassPathResourceConverter<ClassResource<?>> {
 
@@ -44,7 +44,8 @@ public final class ClassResourceConverter extends AbsClassPathResourceConverter<
         final var superClasses = extractRefs(parts[8], dictionary);
         final var kind = ClassResource.Kind.from(parts[9]);
 
-        final var classRef = new ClassReferenceImpl<>(packageName + ID_SEPARATOR + name);
+        final var binaryName = packageName +  CANONICAL_NAME_SEPARATOR + name;
+        final var classRef = new ClassReferenceImpl<>(binaryName);
 
         return new ClassResource<>() {
 
