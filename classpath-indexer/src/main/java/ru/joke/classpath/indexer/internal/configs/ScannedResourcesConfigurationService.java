@@ -1,5 +1,7 @@
 package ru.joke.classpath.indexer.internal.configs;
 
+import ru.joke.classpath.IndexedClassPathException;
+
 import javax.annotation.processing.Messager;
 import javax.tools.Diagnostic;
 import java.io.*;
@@ -27,7 +29,7 @@ public final class ScannedResourcesConfigurationService {
              final var objectOutputStream = new ObjectOutputStream(fileOutputStream)) {
             objectOutputStream.writeObject(scannedResources);
         } catch (IOException ex) {
-            throw new RuntimeException(ex);
+            throw new IndexedClassPathException(ex);
         }
     }
 

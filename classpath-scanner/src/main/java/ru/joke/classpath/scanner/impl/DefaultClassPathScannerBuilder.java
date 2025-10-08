@@ -362,6 +362,8 @@ public final class DefaultClassPathScannerBuilder implements ClassPathScannerBui
                 case AND -> this.filter.and(this.negate ? condition.negate() : condition);
                 case NOT -> condition.negate();
             };
+            this.negate = false;
+
             return this;
         }
 
