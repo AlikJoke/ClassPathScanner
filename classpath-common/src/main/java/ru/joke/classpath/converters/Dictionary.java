@@ -15,7 +15,7 @@ public interface Dictionary {
 
     int size();
 
-    Dictionary reverseDictionary();
+    Dictionary reversedDictionary();
 
     default void fill(Set<String> mappings) {
         mappings.forEach(m -> {

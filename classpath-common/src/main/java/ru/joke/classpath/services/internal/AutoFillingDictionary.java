@@ -43,7 +43,7 @@ final class AutoFillingDictionary implements Dictionary {
     }
 
     @Override
-    public Dictionary reverseDictionary() {
-        return new AutoFillingDictionary(this.dictionary.reverseDictionary());
+    public Dictionary reversedDictionary() {
+        return new AutoFillingDictionary(this.dictionary.reversedDictionary());
     }
 }

@@ -6,7 +6,7 @@ public interface ClassFieldResource extends ClassMemberResource {
     @Override
     default String id() {
         final var module = module();
-        return (module.isEmpty() ? "" : (module + "/")) + owner().binaryName() + ID_SEPARATOR + name();
+        return (module.isEmpty() ? "" : module.concat("/")) + owner().binaryName() + ID_SEPARATOR + name();
     }
 
     default Field asField() throws ClassNotFoundException, NoSuchFieldException {

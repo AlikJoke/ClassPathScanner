@@ -4,7 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.joke.classpath.ClassPathResource;
 import ru.joke.classpath.converters.Dictionary;
-import ru.joke.classpath.converters.TestDictionary;
+import ru.joke.classpath.test_util.TestDictionary;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -32,7 +32,7 @@ abstract class AbsClassPathResourceConverterTest<R extends ClassPathResource, C 
         final var resource = createTestResource();
         final var dictionary = createDictionary(resource);
 
-        final var result = this.converter.toString(resource, dictionary.reverseDictionary());
+        final var result = this.converter.toString(resource, dictionary.reversedDictionary());
         assertEquals(getExpectedStringRepresentation(), result, "String representation of the resource must be equal");
     }
 
@@ -60,6 +60,7 @@ abstract class AbsClassPathResourceConverterTest<R extends ClassPathResource, C 
         assertEquals(sourceResource.aliases(), resource.aliases(), "Aliases must be equal");
         assertEquals(sourceResource.annotations().size(), resource.annotations().size(), "Annotations count must be equal");
         assertEquals(resource.toStringDescription(), resource.toString(), "String description must be equal to result of toString method");
+        assertEquals(sourceResource.packageName(), resource.packageName(), "Package name of the resource must be equal");
 
         final var resourceAnnotationsMap =
                 resource.annotations()
@@ -78,7 +79,9 @@ abstract class AbsClassPathResourceConverterTest<R extends ClassPathResource, C 
     protected Dictionary createDictionary(R resource) {
 
         final Map<String, String> dictionaryMap = new HashMap<>();
-        dictionaryMap.put("0", resource.module());
+        if (!resource.module().isEmpty()) {
+            dictionaryMap.put("0", resource.module());
+        }
 
         if (!resource.packageName().isEmpty() && !dictionaryMap.containsValue(resource.packageName())) {
             dictionaryMap.put(String.valueOf(dictionaryMap.size()), resource.packageName());
@@ -89,11 +92,15 @@ abstract class AbsClassPathResourceConverterTest<R extends ClassPathResource, C 
         }
 
         for (var alias : resource.aliases()) {
-            dictionaryMap.put(String.valueOf(dictionaryMap.size()), alias);
+            if (!dictionaryMap.containsValue(alias)) {
+                dictionaryMap.put(String.valueOf(dictionaryMap.size()), alias);
+            }
         }
 
         for (var annotation : resource.annotations()) {
-            dictionaryMap.put(String.valueOf(dictionaryMap.size()), annotation.binaryName());
+            if (!dictionaryMap.containsValue(annotation.binaryName())) {
+                dictionaryMap.put(String.valueOf(dictionaryMap.size()), annotation.binaryName());
+            }
         }
 
         fillDictionary(dictionaryMap, resource);

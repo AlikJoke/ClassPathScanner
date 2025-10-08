@@ -17,9 +17,14 @@ abstract class ExecutableClassMemberResourceConverter<T extends ClassMemberResou
 
     protected String createSignature(
             final String elementName,
-            final String parametersStr
+            final List<ClassPathResource.ClassReference<?>> parameters
     ) {
-        return elementName + "(" + String.join(",", parametersStr) + ")";
+        final var paramsDescription =
+                parameters
+                        .stream()
+                        .map(ClassPathResource.ClassReference::binaryName)
+                        .collect(Collectors.joining(ELEMENTS_IN_BLOCK_DELIMITER));
+        return elementName + "(" + paramsDescription + ")";
     }
     
     protected Class<?>[] loadParameters(

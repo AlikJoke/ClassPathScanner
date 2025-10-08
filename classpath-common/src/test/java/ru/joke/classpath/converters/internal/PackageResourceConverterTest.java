@@ -24,8 +24,6 @@ class PackageResourceConverterTest extends AbsClassPathResourceConverterTest<Pac
     @Override
     void makeTypeSpecificChecks(PackageResource expected, PackageResource actual) {
 
-        assertTrue(actual.packageName().isEmpty(), "Package name of the package must be empty always");
-
         final var javaPkg = actual.asPackage();
         assertNotNull(javaPkg, "Java package object must be not null");
         assertTrue(javaPkg.isPresent(), "Java package object must present'");
@@ -69,13 +67,13 @@ class PackageResourceConverterTest extends AbsClassPathResourceConverterTest<Pac
             @Override
             public Set<ClassReference<?>> annotations() {
                 final Set<ClassReference<?>> result = new LinkedHashSet<>();
-                result.add(new ClassReferenceImpl<>(TestAnnotation2.class.getCanonicalName()));
-                result.add(new ClassReferenceImpl<>(TestAnnotation.class.getCanonicalName()));
-                result.add(new ClassReferenceImpl<>(Documented.class.getCanonicalName()));
-                result.add(new ClassReferenceImpl<>(Target.class.getCanonicalName()));
-                result.add(new ClassReferenceImpl<>(Inherited.class.getCanonicalName()));
-                result.add(new ClassReferenceImpl<>(ClassPathIndexed.class.getCanonicalName()));
-                result.add(new ClassReferenceImpl<>(Retention.class.getCanonicalName()));
+                result.add(new ClassReferenceImpl<>(TestAnnotation2.class.getName()));
+                result.add(new ClassReferenceImpl<>(TestAnnotation.class.getName()));
+                result.add(new ClassReferenceImpl<>(Documented.class.getName()));
+                result.add(new ClassReferenceImpl<>(Target.class.getName()));
+                result.add(new ClassReferenceImpl<>(Inherited.class.getName()));
+                result.add(new ClassReferenceImpl<>(ClassPathIndexed.class.getName()));
+                result.add(new ClassReferenceImpl<>(Retention.class.getName()));
 
                 return result;
             }

@@ -1,5 +1,6 @@
 package ru.joke.classpath;
 
+import java.util.List;
 import java.util.Set;
 
 import static ru.joke.classpath.ClassPathResource.ClassReference.CANONICAL_NAME_SEPARATOR;
@@ -15,13 +16,13 @@ public interface ClassResource<T> extends ClassPathResource {
 
     Set<ClassReference<?>> interfaces();
 
-    Set<ClassReference<?>> superClasses();
+    List<ClassReference<?>> superClasses();
 
     Kind kind();
 
     @Override
     default String id() {
-        return packageName() + CANONICAL_NAME_SEPARATOR + name();
+        return (module().isEmpty() ? "" : module().concat("/")) + packageName() + CANONICAL_NAME_SEPARATOR + name();
     }
 
     @Override

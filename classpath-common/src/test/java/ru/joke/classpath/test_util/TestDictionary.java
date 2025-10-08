@@ -1,5 +1,8 @@
-package ru.joke.classpath.converters;
+package ru.joke.classpath.test_util;
 
+import ru.joke.classpath.converters.Dictionary;
+
+import java.util.Collections;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -22,21 +25,21 @@ public class TestDictionary implements Dictionary {
 
     @Override
     public void addMapping(String key, String value) {
-        throw new UnsupportedOperationException();
+        this.map.put(key, value);
     }
 
     @Override
     public Map<String, String> toMap() {
-        throw new UnsupportedOperationException();
+        return Collections.unmodifiableMap(this.map);
     }
 
     @Override
     public int size() {
-        throw new UnsupportedOperationException();
+        return this.map.size();
     }
 
     @Override
-    public Dictionary reverseDictionary() {
+    public Dictionary reversedDictionary() {
         final var reversedMap =
                 this.map.entrySet()
                         .stream()

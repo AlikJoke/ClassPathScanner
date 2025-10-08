@@ -7,6 +7,7 @@ import ru.joke.classpath.scanner.ClassPathScannerBuilder;
 import ru.joke.classpath.scanner.InvalidApiUsageException;
 
 import java.lang.annotation.Annotation;
+import java.util.Collection;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
@@ -365,7 +366,7 @@ public final class DefaultClassPathScannerBuilder implements ClassPathScannerBui
         }
 
         private boolean contains(
-                final Set<ClassPathResource.ClassReference<?>> refs,
+                final Collection<ClassPathResource.ClassReference<?>> refs,
                 final Class<?> type
         ) {
             for (final var ref : refs) {
@@ -391,7 +392,7 @@ public final class DefaultClassPathScannerBuilder implements ClassPathScannerBui
         }
 
         private boolean containsAny(
-                final Set<ClassPathResource.ClassReference<?>> refs,
+                final Collection<ClassPathResource.ClassReference<?>> refs,
                 final Class<?>... types
         ) {
             if (types.length == 0) {

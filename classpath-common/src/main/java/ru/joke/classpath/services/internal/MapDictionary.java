@@ -16,6 +16,10 @@ final class MapDictionary implements Dictionary {
 
     @Override
     public String map(String str) {
+        if (str == null || str.isEmpty()) {
+            return str;
+        }
+
         return this.dictionary.get(str);
     }
 
@@ -35,7 +39,7 @@ final class MapDictionary implements Dictionary {
     }
 
     @Override
-    public Dictionary reverseDictionary() {
+    public Dictionary reversedDictionary() {
         final var reversedMap =
                 this.dictionary.entrySet()
                                 .stream()

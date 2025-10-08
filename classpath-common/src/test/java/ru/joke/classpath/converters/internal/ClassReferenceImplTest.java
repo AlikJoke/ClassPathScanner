@@ -38,7 +38,7 @@ class ClassReferenceImplTest {
         final var binaryName = "ru.joke.classpath.fixtures.TestClass$StaticNested";
         final var ref = new ClassReferenceImpl<>(binaryName);
         assertEquals(TestClass.StaticNested.class.getCanonicalName(), ref.canonicalName());
-        assertEquals(binaryName, ref.binaryName());
+        assertEquals(TestClass.StaticNested.class.getName(), ref.binaryName());
         assertNotEquals(ref.canonicalName(), ref.binaryName());
         assertEquals(TestClass.StaticNested.class, ref.toClass());
     }

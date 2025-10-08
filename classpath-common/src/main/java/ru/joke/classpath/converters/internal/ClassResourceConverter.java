@@ -4,6 +4,7 @@ import ru.joke.classpath.ClassPathResource;
 import ru.joke.classpath.ClassResource;
 import ru.joke.classpath.converters.Dictionary;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -40,7 +41,7 @@ public final class ClassResourceConverter extends AbsClassPathResourceConverter<
             final String[] parts,
             final Dictionary dictionary
     ) {
-        final var interfaces = extractRefs(parts[7], dictionary);
+        final var interfaces = Set.copyOf(extractRefs(parts[7], dictionary));
         final var superClasses = extractRefs(parts[8], dictionary);
         final var kind = ClassResource.Kind.from(parts[9]);
 
@@ -60,7 +61,7 @@ public final class ClassResourceConverter extends AbsClassPathResourceConverter<
             }
 
             @Override
-            public Set<ClassReference<?>> superClasses() {
+            public List<ClassReference<?>> superClasses() {
                 return superClasses;
             }
 

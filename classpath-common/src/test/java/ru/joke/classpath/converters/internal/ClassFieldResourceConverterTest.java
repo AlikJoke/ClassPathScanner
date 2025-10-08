@@ -22,8 +22,6 @@ class ClassFieldResourceConverterTest extends AbsClassPathResourceConverterTest<
     @Override
     void makeTypeSpecificChecks(ClassFieldResource expected, ClassFieldResource actual) throws Exception {
 
-        assertEquals(expected.packageName(), actual.packageName(), "Package name of the field must be empty always");
-
         final var javaField = actual.asField();
         assertNotNull(javaField, "Java field object must be not null");
         assertEquals(expected.name(), javaField.getName(), "Name of the field must be equal");
@@ -49,7 +47,7 @@ class ClassFieldResourceConverterTest extends AbsClassPathResourceConverterTest<
 
             @Override
             public ClassReference<?> owner() {
-                return new ClassReferenceImpl<>(TestClass.class.getCanonicalName() + "$StaticNested$Inner");
+                return new ClassReferenceImpl<>(TestClass.StaticNested.Inner.class.getName());
             }
 
             @Override
@@ -75,8 +73,8 @@ class ClassFieldResourceConverterTest extends AbsClassPathResourceConverterTest<
             @Override
             public Set<ClassReference<?>> annotations() {
                 final Set<ClassReference<?>> result = new LinkedHashSet<>();
-                result.add(new ClassReferenceImpl<>(TestAnnotation2.class.getCanonicalName()));
-                result.add(new ClassReferenceImpl<>(Inherited.class.getCanonicalName()));
+                result.add(new ClassReferenceImpl<>(TestAnnotation2.class.getName()));
+                result.add(new ClassReferenceImpl<>(Inherited.class.getName()));
 
                 return result;
             }

@@ -63,7 +63,7 @@ public abstract class AbsClassPathResourceConverter<T extends ClassPathResource>
         final var packageName = dictionary.map(parts[3]);
         final var name = getResourceName(parts[4], dictionary);
         final var aliases = extractAliases(parts[5], dictionary);
-        final var annotations = extractRefs(parts[6], dictionary);
+        final var annotations = Set.copyOf(extractRefs(parts[6], dictionary));
 
         return Optional.of(from(modifiers, module, packageName, name, aliases, annotations, parts, dictionary));
     }
@@ -98,21 +98,18 @@ public abstract class AbsClassPathResourceConverter<T extends ClassPathResource>
         return dictionary.map(resource.name());
     }
 
-    protected final Set<ClassPathResource.ClassReference<?>> extractRefs(
+    protected final List<ClassPathResource.ClassReference<?>> extractRefs(
             final String classesStr,
             final Dictionary dictionary
     ) {
         if (classesStr.isBlank()) {
-            return Collections.emptySet();
+            return Collections.emptyList();
         }
 
-        final var result =
-                Set.of(classesStr.split(ELEMENTS_IN_BLOCK_DELIMITER))
-                        .stream()
+        return Arrays.stream(classesStr.split(ELEMENTS_IN_BLOCK_DELIMITER))
                         .map(dictionary::map)
                         .map(this::createClassRef)
-                        .collect(Collectors.toCollection(LinkedHashSet::new));
-        return Collections.unmodifiableSet(result);
+                        .collect(Collectors.toUnmodifiableList());
     }
 
     protected final ClassPathResource.ClassReference<?> createClassRef(final String id) {
@@ -120,7 +117,7 @@ public abstract class AbsClassPathResourceConverter<T extends ClassPathResource>
     }
 
     protected final StringBuilder append(
-            final Set<ClassPathResource.ClassReference<?>> classes,
+            final Collection<ClassPathResource.ClassReference<?>> classes,
             final Dictionary dictionary,
             final StringBuilder builder
     ) {

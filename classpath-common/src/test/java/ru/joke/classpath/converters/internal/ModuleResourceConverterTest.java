@@ -21,8 +21,6 @@ class ModuleResourceConverterTest extends AbsClassPathResourceConverterTest<Modu
     @Override
     void makeTypeSpecificChecks(ModuleResource expected, ModuleResource actual) {
 
-        assertTrue(actual.packageName().isEmpty(), "Package name of the module must be empty always");
-
         final var javaModule = actual.asModule();
         assertNotNull(javaModule, "Java module object must be not null");
         assertTrue(javaModule.isPresent(), "Java module object must present'");
@@ -60,10 +58,10 @@ class ModuleResourceConverterTest extends AbsClassPathResourceConverterTest<Modu
             @Override
             public Set<ClassReference<?>> annotations() {
                 final Set<ClassReference<?>> result = new LinkedHashSet<>();
-                result.add(new ClassReferenceImpl<>(Documented.class.getCanonicalName()));
-                result.add(new ClassReferenceImpl<>(Target.class.getCanonicalName()));
-                result.add(new ClassReferenceImpl<>(ClassPathIndexed.class.getCanonicalName()));
-                result.add(new ClassReferenceImpl<>(Retention.class.getCanonicalName()));
+                result.add(new ClassReferenceImpl<>(Documented.class.getName()));
+                result.add(new ClassReferenceImpl<>(Target.class.getName()));
+                result.add(new ClassReferenceImpl<>(ClassPathIndexed.class.getName()));
+                result.add(new ClassReferenceImpl<>(Retention.class.getName()));
 
                 return result;
             }

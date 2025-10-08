@@ -93,7 +93,7 @@ public final class DefaultClassPathResourcesService implements ClassPathResource
                 final var sourceDictionary = new MapDictionary(new HashMap<>());
                 sourceDictionary.fill(dictionaryMappings);
 
-                final var reversedDictionary = sourceDictionary.reverseDictionary();
+                final var reversedDictionary = sourceDictionary.reversedDictionary();
 
                 while (line != null) {
                     this.converter.fromString(line, reversedDictionary).ifPresent(result::add);

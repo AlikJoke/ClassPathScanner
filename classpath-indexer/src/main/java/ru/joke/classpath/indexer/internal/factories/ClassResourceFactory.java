@@ -8,10 +8,7 @@ import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.QualifiedNameable;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static ru.joke.classpath.ClassPathResource.ClassReference.BINARY_NESTED_ID_SEPARATOR;
@@ -44,14 +41,14 @@ final class ClassResourceFactory extends ClassPathResourceFactory<ClassResource<
             }
 
             @Override
-            public Set<ClassReference<?>> superClasses() {
+            public List<ClassReference<?>> superClasses() {
                 final Set<TypeElement> superclasses = new LinkedHashSet<>();
                 collectSuperclasses(superclasses, source);
 
                 return superclasses
                         .stream()
                         .map(ClassResourceFactory.this::createClassRef)
-                        .collect(Collectors.toCollection(LinkedHashSet::new));
+                        .collect(Collectors.toUnmodifiableList());
             }
 
             @Override

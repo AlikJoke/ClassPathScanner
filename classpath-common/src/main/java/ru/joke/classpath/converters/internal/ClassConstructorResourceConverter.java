@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
+import static ru.joke.classpath.ClassMemberResource.ID_SEPARATOR;
 import static ru.joke.classpath.ClassPathResource.ClassReference.CANONICAL_NAME_SEPARATOR;
 
 public final class ClassConstructorResourceConverter extends ExecutableClassMemberResourceConverter<ClassConstructorResource<?>> {
@@ -29,11 +30,12 @@ public final class ClassConstructorResourceConverter extends ExecutableClassMemb
         final var nameParts = name.split(MEMBER_OF_CLASS_SEPARATOR);
         final var className = dictionary.map(nameParts[0]);
         final var methodName = dictionary.map(nameParts[1]);
-        final var parameters = List.copyOf(extractRefs(nameParts[2], dictionary));
+        final var parameters = extractRefs(nameParts[2], dictionary);
 
         final var ownerClassBinaryName = packageName +  CANONICAL_NAME_SEPARATOR + className;
         final var owner = new ClassReferenceImpl<>(ownerClassBinaryName);
-        final var methodSignature = createSignature(methodName, nameParts[2]);
+        final var methodSignature = createSignature(methodName, parameters);
+        final var constructorId = (module.isEmpty() ? "" : module.concat("/")) + owner.binaryName() + ID_SEPARATOR + methodSignature;
 
         return new ClassConstructorResource<>() {
 
@@ -75,7 +77,7 @@ public final class ClassConstructorResourceConverter extends ExecutableClassMemb
 
             @Override
             public String id() {
-                return owner.binaryName() + ID_SEPARATOR + methodSignature;
+                return constructorId;
             }
 
             @Override

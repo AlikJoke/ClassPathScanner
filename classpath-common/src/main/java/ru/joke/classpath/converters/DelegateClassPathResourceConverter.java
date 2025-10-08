@@ -32,7 +32,8 @@ public final class DelegateClassPathResourceConverter extends AbsClassPathResour
             final ClassPathResource resource,
             final Dictionary dictionary
     ) {
-        return converters.get(resource.type()).toString(resource, dictionary);
+        final var converter = converters.get(resource.type());
+        return converter.toString(resource, dictionary);
     }
 
     private Optional<ClassPathResource.Type> detectType(final String resource) {
