@@ -14,6 +14,7 @@ import javax.lang.model.element.ModuleElement;
 import javax.lang.model.util.Elements;
 import java.io.File;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -103,6 +104,27 @@ public final class ClassPathIndexingContext {
             final RoundEnvironment roundEnvironment,
             final Predicate<Element> processingFilter
     ) {
+        final var indexingConfigurationService = new ClassPathIndexingConfigurationService(
+                processingEnvironment.getFiler(),
+                processingEnvironment.getMessager()
+        );
+
+        return create(
+                targetOutputConfigDir,
+                processingEnvironment,
+                roundEnvironment,
+                processingFilter,
+                indexingConfigurationService
+        );
+    }
+
+    public static ClassPathIndexingContext create(
+            final File targetOutputConfigDir,
+            final ProcessingEnvironment processingEnvironment,
+            final RoundEnvironment roundEnvironment,
+            final Predicate<Element> processingFilter,
+            final ClassPathIndexingConfigurationService indexingConfigurationService
+    ) {
         final var scannedResourcesConfigurationService = new ScannedResourcesConfigurationService(
                 targetOutputConfigDir,
                 processingEnvironment.getMessager()
@@ -114,13 +136,9 @@ public final class ClassPathIndexingContext {
                         .map(e -> (ModuleElement) e)
                         .map(ModuleElement::getQualifiedName)
                         .map(Object::toString)
+                        .filter(Objects::nonNull)
                         .findAny()
                         .orElse("");
-
-        final var indexingConfigurationService = new ClassPathIndexingConfigurationService(
-                processingEnvironment.getFiler(),
-                processingEnvironment.getMessager()
-        );
 
         final var indexingConfiguration = indexingConfigurationService.find().orElse(null);
 

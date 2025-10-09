@@ -153,7 +153,11 @@ final class ClassResourceFactory extends ClassPathResourceFactory<ClassResource<
 
     private String findSimpleBinaryName(final TypeElement source) {
         var name = source.getSimpleName().toString();
+        if (!source.getNestingKind().isNested()) {
+            return name;
+        }
         var enclosedElement = source.getEnclosingElement();
+
         while (enclosedElement != null && enclosedElement.getKind() != ElementKind.PACKAGE) {
             name = enclosedElement.getSimpleName().toString() + BINARY_NESTED_ID_SEPARATOR + name;
             enclosedElement = enclosedElement.getEnclosingElement();

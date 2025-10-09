@@ -46,7 +46,9 @@ final class ModuleResourceFactory extends ClassPathResourceFactory<ModuleResourc
                     modifiers.add(Modifier.OPENED);
                 }
 
-                return EnumSet.copyOf(modifiers);
+                return modifiers.isEmpty()
+                        ? EnumSet.noneOf(Modifier.class)
+                        : EnumSet.copyOf(modifiers);
             }
 
             @Override

@@ -145,8 +145,11 @@ public abstract class ClassPathResourceFactory<T extends ClassPathResource, E ex
         final var result = modifiers
                             .stream()
                             .map(this::mapModifier)
+                            .filter(Objects::nonNull)
                             .collect(Collectors.toSet());
-        return EnumSet.copyOf(result);
+        return result.isEmpty()
+                ? EnumSet.noneOf(ClassPathResource.Modifier.class)
+                : EnumSet.copyOf(result);
     }
 
     private ClassPathResource.Modifier mapModifier(final Modifier modifier) {

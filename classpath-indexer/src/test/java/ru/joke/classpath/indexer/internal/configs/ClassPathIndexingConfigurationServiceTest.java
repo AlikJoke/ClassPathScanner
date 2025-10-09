@@ -2,17 +2,16 @@ package ru.joke.classpath.indexer.internal.configs;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import ru.joke.classpath.indexer.test_util.TestJavaFileObject;
 
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.Messager;
 import javax.tools.Diagnostic;
 import javax.tools.FileObject;
-import javax.tools.SimpleJavaFileObject;
 import javax.tools.StandardLocation;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Objects;
 
@@ -103,17 +102,5 @@ class ClassPathIndexingConfigurationServiceTest {
         assertEquals(expected.interfaces(), actual.interfaces(), "Interfaces must be equal");
         assertEquals(expected.classes(), actual.classes(), "Classes must be equal");
         assertEquals(expected.aliases(), actual.aliases(), "Aliases must be equal");
-    }
-
-    private static class TestJavaFileObject extends SimpleJavaFileObject {
-
-        protected TestJavaFileObject(URI uri) {
-            super(uri, Kind.OTHER);
-        }
-
-        @Override
-        public InputStream openInputStream() throws IOException {
-            return this.uri.toURL().openStream();
-        }
     }
 }

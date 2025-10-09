@@ -9,7 +9,7 @@ import static java.lang.annotation.ElementType.*;
 import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
 
 @Documented
-@Retention(RetentionPolicy.CLASS)
+@Retention(RetentionPolicy.RUNTIME)
 @Target(value = { CONSTRUCTOR, FIELD, METHOD, MODULE, TYPE, ANNOTATION_TYPE, PACKAGE })
 public @interface ClassPathIndexed {
 
