@@ -97,8 +97,8 @@ class ClassFieldResourceFactoryTest extends AbsClassPathResourceFactoryTest<Vari
         final var fieldResource = result.get();
 
         assertEquals(field.getName(), fieldResource.name(), "Name of the field must be equal");
-        assertEquals(TestClass.class.getPackageName(), fieldResource.packageName(), "Package name must be equal");
-        assertEquals(TestClass.class.getModule().getName(), fieldResource.module(), "Module name must be equal");
+        assertEquals(ownerType.getPackageName(), fieldResource.packageName(), "Package name must be equal");
+        assertEquals(ownerType.getModule().getName(), fieldResource.module(), "Module name must be equal");
         assertEquals(ClassPathResource.Type.FIELD, fieldResource.type(), "Resource type must be equal");
         assertThrows(UnsupportedOperationException.class, fieldResource::asField);
 

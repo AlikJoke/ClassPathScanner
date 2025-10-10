@@ -2,8 +2,14 @@ package ru.joke.classpath.indexer.test_util.fixtures;
 
 import ru.joke.classpath.ClassPathIndexed;
 
+import java.io.Externalizable;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
+import java.lang.annotation.Documented;
+
 @SuppressWarnings("unused")
-public class TestClass {
+@ClassPathIndexed("top_c")
+public abstract class TestClass {
 
     @ClassPathIndexed("int_f")
     private volatile int intField;
@@ -25,7 +31,8 @@ public class TestClass {
 
     native void nativeMethod();
 
-    public static class NestedClass {
+    @ClassPathIndexed("nested_c")
+    public static class NestedClass extends TestClass {
 
         @ClassPathIndexed("string_f")
         private static final String stringField = "";
@@ -59,7 +66,7 @@ public class TestClass {
         }
     }
 
-    public interface Interface {
+    public interface Interface extends Externalizable, Cloneable {
         @Deprecated
         Class<?> ref = Interface.class;
 
@@ -70,9 +77,18 @@ public class TestClass {
         default Class<?> getRef() {
             return ref;
         }
+
+        abstract class Test extends NestedClass implements Interface {
+
+        }
+
+        @Documented
+        @interface TestAnnotation {
+
+        }
     }
 
-    public record Record(@Deprecated @ClassPathIndexed("int") int intField) {
+    public record Record(@Deprecated @ClassPathIndexed("int") int intField) implements Interface {
 
         @Deprecated
         @ClassPathIndexed("record_c")
@@ -80,6 +96,16 @@ public class TestClass {
             if (intField < 0) {
                 throw new IllegalArgumentException();
             }
+        }
+
+        @Override
+        public void writeExternal(ObjectOutput out) {
+
+        }
+
+        @Override
+        public void readExternal(ObjectInput in) {
+
         }
     }
 }

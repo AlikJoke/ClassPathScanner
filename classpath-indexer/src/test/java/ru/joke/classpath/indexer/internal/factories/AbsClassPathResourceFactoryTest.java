@@ -38,6 +38,18 @@ abstract class AbsClassPathResourceFactoryTest<E extends Element, R extends Clas
             final Map<String, Set<String>> predefinedAliasesFromConfig,
             final Element... rootElements
     ) {
+       return prepareFactory(
+               predefinedAliasesFromConfig,
+               new LoadClassFunction(),
+               rootElements
+       );
+    }
+
+    protected F prepareFactory(
+            final Map<String, Set<String>> predefinedAliasesFromConfig,
+            final Function<String, Class<?>> classLoaderFunc,
+            final Element... rootElements
+    ) {
 
         final var indexingConfig = new ClassPathIndexingConfiguration(
                 Collections.emptySet(),
@@ -58,7 +70,7 @@ abstract class AbsClassPathResourceFactoryTest<E extends Element, R extends Clas
         final var elementUtils = mock(Elements.class);
         when(elementUtils.getTypeElement(anyString())).then(i -> {
             final String typeName = i.getArgument(0);
-            return new TestTypeElement(getClass().getClassLoader().loadClass(typeName));
+            return new TestTypeElement(classLoaderFunc.apply(typeName));
         });
 
         when(processingEnv.getElementUtils()).thenReturn(elementUtils);
@@ -114,4 +126,16 @@ abstract class AbsClassPathResourceFactoryTest<E extends Element, R extends Clas
     protected abstract Function<ClassPathIndexingContext, F> factoryCreator();
 
     protected abstract Set<ElementKind> expectedSupportedKinds();
+
+    static class LoadClassFunction implements Function<String, Class<?>> {
+
+        @Override
+        public Class<?> apply(String s) {
+            try {
+                return AbsClassPathResourceFactoryTest.class.getClassLoader().loadClass(s);
+            } catch (ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
 }

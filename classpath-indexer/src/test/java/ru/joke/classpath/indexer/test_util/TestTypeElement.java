@@ -1,6 +1,7 @@
 package ru.joke.classpath.indexer.test_util;
 
 import javax.lang.model.element.*;
+import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -61,7 +62,13 @@ public final class TestTypeElement extends TestElement<Class<?>> implements Type
 
     @Override
     public NestingKind getNestingKind() {
-        throw new UnsupportedOperationException();
+        return this.source.isMemberClass()
+                    ? NestingKind.MEMBER
+                    : this.source.isLocalClass()
+                        ? NestingKind.LOCAL
+                        : this.source.isAnonymousClass()
+                            ? NestingKind.ANONYMOUS
+                            : NestingKind.TOP_LEVEL;
     }
 
     @Override
@@ -71,7 +78,9 @@ public final class TestTypeElement extends TestElement<Class<?>> implements Type
 
     @Override
     public TypeMirror getSuperclass() {
-        return new TestClassType(this.source.getSuperclass());
+        return this.source.getSuperclass() == null || this.source.getSuperclass() == Object.class
+                ? new TestNoTypeMirror(TypeKind.NONE, null)
+                : new TestClassType(this.source.getSuperclass());
     }
 
     @Override
