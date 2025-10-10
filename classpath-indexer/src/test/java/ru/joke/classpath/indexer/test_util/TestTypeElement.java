@@ -11,7 +11,7 @@ public final class TestTypeElement extends TestElement<Class<?>> implements Type
         super(
                 new TestClassType(type),
                 collectModifiers(type),
-                new TestName(type.getSimpleName()),
+                type.getSimpleName(),
                 type
         );
     }
@@ -21,24 +21,8 @@ public final class TestTypeElement extends TestElement<Class<?>> implements Type
         if (type.isSealed()) {
             modifiers.add(Modifier.SEALED);
         }
-        if (java.lang.reflect.Modifier.isPublic(type.getModifiers())) {
-            modifiers.add(Modifier.PUBLIC);
-        }
-        if (java.lang.reflect.Modifier.isFinal(type.getModifiers())) {
-            modifiers.add(Modifier.FINAL);
-        }
-        if (java.lang.reflect.Modifier.isAbstract(type.getModifiers())) {
-            modifiers.add(Modifier.ABSTRACT);
-        }
-        if (java.lang.reflect.Modifier.isPrivate(type.getModifiers())) {
-            modifiers.add(Modifier.PRIVATE);
-        }
-        if (java.lang.reflect.Modifier.isProtected(type.getModifiers())) {
-            modifiers.add(Modifier.PROTECTED);
-        }
-        if (java.lang.reflect.Modifier.isStatic(type.getModifiers())) {
-            modifiers.add(Modifier.STATIC);
-        }
+
+        modifiers.addAll(Util.collectModifiers(type.getModifiers()));
 
         return modifiers.isEmpty()
                 ? EnumSet.noneOf(Modifier.class)

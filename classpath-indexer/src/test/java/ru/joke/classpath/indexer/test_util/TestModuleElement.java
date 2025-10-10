@@ -13,7 +13,7 @@ public final class TestModuleElement extends TestElement<Module> implements Modu
         super(
                 new TestNoTypeMirror(TypeKind.MODULE, module),
                 EnumSet.noneOf(Modifier.class),
-                new TestName(module.getName()),
+                module.getName(),
                 module
         );
     }

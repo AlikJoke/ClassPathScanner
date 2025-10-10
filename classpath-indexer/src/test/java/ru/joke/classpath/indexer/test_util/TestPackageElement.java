@@ -17,7 +17,7 @@ public final class TestPackageElement extends TestElement<Package> implements Pa
         super(
                 new TestNoTypeMirror(TypeKind.PACKAGE, pkg),
                 pkg.isSealed() ? EnumSet.of(Modifier.SEALED) : EnumSet.noneOf(Modifier.class),
-                new TestName(pkg.getName()),
+                pkg.getName(),
                 pkg
         );
         this.module = module;

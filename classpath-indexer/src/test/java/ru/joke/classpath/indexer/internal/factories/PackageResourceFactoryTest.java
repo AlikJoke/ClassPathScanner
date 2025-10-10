@@ -11,6 +11,7 @@ import ru.joke.classpath.indexer.test_util.TestPackageElement;
 import ru.joke.classpath.indexer.test_util.TestTypeElement;
 import ru.joke.classpath.indexer.test_util.fixtures.TestClass;
 
+import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.PackageElement;
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
@@ -56,7 +57,8 @@ class PackageResourceFactoryTest extends AbsClassPathResourceFactoryTest<Package
         final var testPackageElement = new TestPackageElement(testPackage, moduleElement);
 
         final var aliasesFromConfig = Map.of(testPackage.getName(), Set.of("p1", "p2"));
-        final var result = prepareFactory(aliasesFromConfig, testPackageElement, moduleElement).create(testPackageElement);
+        final var factory = prepareFactory(aliasesFromConfig, testPackageElement, moduleElement);
+        final var result = factory.create(testPackageElement);
 
         assertNotNull(result, "Result must be not null");
         assertTrue(result.isPresent(), "Result must be not empty");
@@ -67,8 +69,10 @@ class PackageResourceFactoryTest extends AbsClassPathResourceFactoryTest<Package
         assertTrue(packageResource.packageName().isEmpty(), "Package of the package must be empty");
         if (clazz.getModule().isNamed()) {
             assertEquals(clazz.getModule().getName(), packageResource.module(), "Module of the resource must be equal");
+            assertEquals(packageResource.module() + "/" + packageResource.name(), packageResource.id(), "Id of the package resource must be equal");
         } else {
             assertTrue(packageResource.module().isEmpty(), "Module of the resource must be empty");
+            assertEquals(packageResource.name(), packageResource.id(), "Id of the package resource must be equal to package name in unnamed module");
         }
 
         assertEquals(ClassPathResource.Type.PACKAGE, packageResource.type(), "Type must be equal");
@@ -100,5 +104,10 @@ class PackageResourceFactoryTest extends AbsClassPathResourceFactoryTest<Package
     @Override
     protected Function<ClassPathIndexingContext, PackageResourceFactory> factoryCreator() {
         return PackageResourceFactory::new;
+    }
+
+    @Override
+    protected Set<ElementKind> expectedSupportedKinds() {
+        return Set.of(ElementKind.PACKAGE);
     }
 }

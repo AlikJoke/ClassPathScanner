@@ -1,5 +1,6 @@
 package ru.joke.classpath.indexer.internal.factories;
 
+import org.junit.jupiter.api.Test;
 import ru.joke.classpath.ClassPathResource;
 import ru.joke.classpath.indexer.internal.ClassPathIndexingContext;
 import ru.joke.classpath.indexer.internal.configs.ClassPathIndexingConfiguration;
@@ -10,6 +11,7 @@ import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
 import javax.lang.model.util.Elements;
 import java.io.File;
 import java.util.Collections;
@@ -18,11 +20,18 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 abstract class AbsClassPathResourceFactoryTest<E extends Element, R extends ClassPathResource, F extends ClassPathResourceFactory<R, E>> {
+
+    @Test
+    void testSupportedTypes() {
+        final var factory = factoryCreator().apply(mock(ClassPathIndexingContext.class));
+        assertEquals(expectedSupportedKinds(), factory.supportedTypes(), "Supported types must be equal");
+    }
 
     protected F prepareFactory(
             final Map<String, Set<String>> predefinedAliasesFromConfig,
@@ -65,4 +74,6 @@ abstract class AbsClassPathResourceFactoryTest<E extends Element, R extends Clas
     }
 
     protected abstract Function<ClassPathIndexingContext, F> factoryCreator();
+
+    protected abstract Set<ElementKind> expectedSupportedKinds();
 }

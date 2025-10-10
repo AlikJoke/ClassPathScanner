@@ -8,6 +8,7 @@ import ru.joke.classpath.indexer.internal.ClassPathIndexingContext;
 import ru.joke.classpath.indexer.test_util.TestModuleElement;
 import ru.joke.classpath.indexer.test_util.TestTypeElement;
 
+import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ModuleElement;
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Documented;
@@ -30,7 +31,8 @@ class ModuleResourceFactoryTest extends AbsClassPathResourceFactoryTest<ModuleEl
         final var testModule = getClass().getModule();
         final var testModuleElement = new TestModuleElement(testModule);
         final var aliasesFromConfig = Map.of(testModule.getName(), Set.of("m1", "m2"));
-        final var result = prepareFactory(aliasesFromConfig, testModuleElement).create(testModuleElement);
+        final var factory = prepareFactory(aliasesFromConfig, testModuleElement);
+        final var result = factory.create(testModuleElement);
 
         assertNotNull(result, "Result must be not null");
         assertTrue(result.isPresent(), "Result must be not empty");
@@ -57,7 +59,8 @@ class ModuleResourceFactoryTest extends AbsClassPathResourceFactoryTest<ModuleEl
                         .map(TestTypeElement::new)
                         .collect(Collectors.toMap(e -> e.getQualifiedName().toString(), Function.identity()));
 
-        final var result = prepareFactory(aliasesFromConfig, testModuleElement).create(testModuleElement);
+        final var factory = prepareFactory(aliasesFromConfig, testModuleElement);
+        final var result = factory.create(testModuleElement);
 
         assertNotNull(result, "Result must be not null");
         assertTrue(result.isPresent(), "Result must be not empty");
@@ -89,6 +92,7 @@ class ModuleResourceFactoryTest extends AbsClassPathResourceFactoryTest<ModuleEl
         assertEquals(testModule.getName(), moduleResource.name(), "Name of the module must be equal");
         assertTrue(moduleResource.packageName().isEmpty(), "Package of the module must be empty");
         assertEquals(moduleResource.name(), moduleResource.module(), "Name of the resource must be equal to module");
+        assertEquals(moduleResource.id(), moduleResource.module(), "Id of the resource must be equal to module name");
         assertEquals(ClassPathResource.Type.MODULE, moduleResource.type(), "Type must be equal");
         assertThrows(UnsupportedOperationException.class, moduleResource::asModule);
     }
@@ -122,5 +126,10 @@ class ModuleResourceFactoryTest extends AbsClassPathResourceFactoryTest<ModuleEl
     @Override
     protected Function<ClassPathIndexingContext, ModuleResourceFactory> factoryCreator() {
         return ModuleResourceFactory::new;
+    }
+
+    @Override
+    protected Set<ElementKind> expectedSupportedKinds() {
+        return Set.of(ElementKind.MODULE);
     }
 }

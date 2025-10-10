@@ -20,12 +20,12 @@ abstract class TestElement<T> implements Element {
     protected TestElement(
             final TypeMirror typeMirror,
             final Set<Modifier> modifiers,
-            final Name simpleName,
+            final String simpleName,
             final T source
     ) {
         this.typeMirror = typeMirror;
         this.modifiers = modifiers;
-        this.simpleName = simpleName;
+        this.simpleName = new TestName(simpleName);
         this.source = source;
     }
 

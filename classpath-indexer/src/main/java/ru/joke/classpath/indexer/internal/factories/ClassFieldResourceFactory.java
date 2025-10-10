@@ -12,9 +12,9 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-final class FieldResourceFactory extends ClassPathResourceFactory<ClassFieldResource, VariableElement> {
+public final class ClassFieldResourceFactory extends ClassPathResourceFactory<ClassFieldResource, VariableElement> {
 
-    FieldResourceFactory(final ClassPathIndexingContext indexingContext) {
+    ClassFieldResourceFactory(final ClassPathIndexingContext indexingContext) {
         super(indexingContext);
     }
 

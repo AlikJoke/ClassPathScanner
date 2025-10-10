@@ -57,7 +57,7 @@ public final class DelegatingResourceFactory extends ClassPathResourceFactory<Cl
                 new ClassResourceFactory(indexingContext),
                 new ModuleResourceFactory(indexingContext),
                 new ExecutableElementResourceFactory(indexingContext),
-                new FieldResourceFactory(indexingContext),
+                new ClassFieldResourceFactory(indexingContext),
                 new PackageResourceFactory(indexingContext)
         );
     }
