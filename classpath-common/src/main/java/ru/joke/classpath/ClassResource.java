@@ -22,7 +22,12 @@ public interface ClassResource<T> extends ClassPathResource {
 
     @Override
     default String id() {
-        return (module().isEmpty() ? "" : module().concat("/")) + packageName() + CANONICAL_NAME_SEPARATOR + name();
+        final var modulePart = module();
+        final var packagePart = packageName();
+        final var fullNamePart = packagePart == null || packagePart.isEmpty() ? name() : packagePart + CANONICAL_NAME_SEPARATOR + name();
+        return modulePart == null || modulePart.isEmpty()
+                ? fullNamePart
+                : modulePart + MODULE_SEPARATOR + fullNamePart;
     }
 
     @Override

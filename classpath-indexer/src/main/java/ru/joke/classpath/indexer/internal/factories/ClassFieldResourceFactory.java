@@ -1,6 +1,7 @@
 package ru.joke.classpath.indexer.internal.factories;
 
 import ru.joke.classpath.ClassFieldResource;
+import ru.joke.classpath.ClassPathResource;
 import ru.joke.classpath.IndexedClassPathException;
 import ru.joke.classpath.indexer.internal.ClassPathIndexingContext;
 
@@ -28,6 +29,14 @@ public final class ClassFieldResourceFactory extends ClassPathResourceFactory<Cl
             throw new IndexedClassPathException("Unsupported type of field owner: " + source.getEnclosingElement());
         }
 
+        final var name = source.getSimpleName().toString();
+
+        final var modifiers = mapModifiers(source.getModifiers());
+        final var packageName = findPackageName(source);
+
+        final Set<ClassPathResource.ClassReference<?>> annotations = new HashSet<>();
+        collectAnnotations(source, annotations);
+
         return new ClassFieldResource() {
             @Override
             public Field asField(ClassLoader loader) {
@@ -41,7 +50,7 @@ public final class ClassFieldResourceFactory extends ClassPathResourceFactory<Cl
 
             @Override
             public String name() {
-                return source.getSimpleName().toString();
+                return name;
             }
 
             @Override
@@ -56,20 +65,17 @@ public final class ClassFieldResourceFactory extends ClassPathResourceFactory<Cl
 
             @Override
             public Set<ClassReference<?>> annotations() {
-                final Set<ClassReference<?>> annotations = new HashSet<>();
-                collectAnnotations(source, annotations);
-
                 return annotations;
             }
 
             @Override
             public String packageName() {
-                return findPackageName(source);
+                return packageName;
             }
 
             @Override
             public Set<Modifier> modifiers() {
-                return mapModifiers(source.getModifiers());
+                return modifiers;
             }
 
             @Override

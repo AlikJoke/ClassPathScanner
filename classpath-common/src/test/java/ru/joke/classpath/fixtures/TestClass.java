@@ -14,10 +14,10 @@ public class TestClass {
 
             public Inner() {}
 
-            protected Inner(String v1, String v2, int v3) {
+            protected Inner(String v1, String v2, int v3, String[] v4, int... v5) {
             }
 
-            private String getVar(String v1, int v2, StaticNested v3) {
+            private String getVar(String v1, int v2, StaticNested v3, String[] v4, int... v5) {
                 return var;
             }
         }

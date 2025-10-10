@@ -4,6 +4,8 @@ import java.util.Set;
 
 public interface ClassPathResource {
 
+    String MODULE_SEPARATOR = "/";
+
     String id();
 
     String name();

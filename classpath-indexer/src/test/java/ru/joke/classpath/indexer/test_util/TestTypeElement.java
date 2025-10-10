@@ -46,9 +46,11 @@ public final class TestTypeElement extends TestElement<Class<?>> implements Type
     public Element getEnclosingElement() {
         return this.source.getEnclosingClass() != null
                 ? new TestTypeElement(this.source.getEnclosingClass())
-                : new TestPackageElement(
-                        this.source.getPackage(),
-                        new TestModuleElement(getClass().getModule())
+                : this.source.getPackage() == null
+                    ? null
+                    : new TestPackageElement(
+                            this.source.getPackage(),
+                            new TestModuleElement(getClass().getModule())
                     );
     }
 

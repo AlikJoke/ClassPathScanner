@@ -1,5 +1,6 @@
 package ru.joke.classpath.indexer.internal.factories;
 
+import ru.joke.classpath.ClassPathResource;
 import ru.joke.classpath.PackageResource;
 import ru.joke.classpath.indexer.internal.ClassPathIndexingContext;
 
@@ -18,6 +19,14 @@ final class PackageResourceFactory extends ClassPathResourceFactory<PackageResou
 
     @Override
     public PackageResource doCreate(PackageElement source) {
+        final var name = source.getQualifiedName().toString();
+        final var aliases = findAliases(source, name);
+
+        final var modifiers = mapModifiers(source.getModifiers());
+
+        final Set<ClassPathResource.ClassReference<?>> annotations = new HashSet<>();
+        collectAnnotations(source, annotations);
+
         return new PackageResource() {
             @Override
             public Optional<Package> asPackage(ClassLoader loader) {
@@ -26,12 +35,12 @@ final class PackageResourceFactory extends ClassPathResourceFactory<PackageResou
 
             @Override
             public String name() {
-                return source.getQualifiedName().toString();
+                return name;
             }
 
             @Override
             public Set<String> aliases() {
-                return findAliases(source, name());
+                return aliases;
             }
 
             @Override
@@ -41,15 +50,12 @@ final class PackageResourceFactory extends ClassPathResourceFactory<PackageResou
 
             @Override
             public Set<ClassReference<?>> annotations() {
-                final Set<ClassReference<?>> annotations = new HashSet<>();
-                collectAnnotations(source, annotations);
-
                 return annotations;
             }
 
             @Override
             public Set<Modifier> modifiers() {
-                return mapModifiers(source.getModifiers());
+                return modifiers;
             }
 
             @Override

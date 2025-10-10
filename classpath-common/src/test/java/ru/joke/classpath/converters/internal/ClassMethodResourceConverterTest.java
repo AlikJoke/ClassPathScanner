@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class ClassMethodResourceConverterTest extends AbsClassPathResourceConverterTest<ClassMethodResource, ClassMethodResourceConverter> {
 
-    private static final String EXPECTED_STR = "md|pv|0|1|6#2#7;8;9|3|4;5";
+    private static final String EXPECTED_STR = "md|pv|0|1|6#2#7,8,9,10,11|3|4;5";
 
     @Override
     void makeTypeSpecificChecks(ClassMethodResource expected, ClassMethodResource actual) throws Exception {
@@ -33,7 +33,7 @@ class ClassMethodResourceConverterTest extends AbsClassPathResourceConverterTest
         }
 
         javaMethod.setAccessible(true);
-        final String value = (String) javaMethod.invoke(new TestClass.StaticNested.Inner(), "", 0, new TestClass.StaticNested());
+        final String value = (String) javaMethod.invoke(new TestClass.StaticNested.Inner(), "", 0, new TestClass.StaticNested(), new String[0], new int[0]);
         assertEquals("v1", value,"Value of the field must be equal");
     }
 
@@ -61,7 +61,9 @@ class ClassMethodResourceConverterTest extends AbsClassPathResourceConverterTest
                 return List.of(
                         new ClassReferenceImpl<>(String.class.getName()),
                         new ClassReferenceImpl<>(int.class.getCanonicalName()),
-                        new ClassReferenceImpl<>(TestClass.StaticNested.class.getName())
+                        new ClassReferenceImpl<>(TestClass.StaticNested.class.getName()),
+                        new ClassReferenceImpl<>(String[].class.getName()),
+                        new ClassReferenceImpl<>(int[].class.getName())
                 );
             }
 
@@ -72,7 +74,8 @@ class ClassMethodResourceConverterTest extends AbsClassPathResourceConverterTest
 
             @Override
             public String id() {
-                return module() + '/' + owner().binaryName() + ID_SEPARATOR + name() + '(' + String.class.getName() + ';' + int.class.getCanonicalName() + ';' + TestClass.StaticNested.class.getName() + ")";
+                return module() + '/' + owner().binaryName() + ID_SEPARATOR + name()
+                        + '(' + String.class.getName() + ',' + int.class.getCanonicalName() + ',' + TestClass.StaticNested.class.getName() + ',' + String[].class.getName() + ',' + int[].class.getName() + ")";
             }
 
             @Override

@@ -9,22 +9,12 @@ import java.util.stream.Collectors;
 
 abstract class ExecutableClassMemberResourceConverter<T extends ClassMemberResource.Executable> extends AbsClassPathResourceConverter<T> implements ConcreteClassPathResourceConverter<T> {
 
+    protected static final String PARAMETER_TYPES_DELIMITER = ",";
+
     private static final int COMPONENTS_COUNT = 7;
 
     protected ExecutableClassMemberResourceConverter() {
         super(COMPONENTS_COUNT);
-    }
-
-    protected String createSignature(
-            final String elementName,
-            final List<ClassPathResource.ClassReference<?>> parameters
-    ) {
-        final var paramsDescription =
-                parameters
-                        .stream()
-                        .map(ClassPathResource.ClassReference::binaryName)
-                        .collect(Collectors.joining(ELEMENTS_IN_BLOCK_DELIMITER));
-        return elementName + "(" + paramsDescription + ")";
     }
     
     protected Class<?>[] loadParameters(
@@ -49,7 +39,7 @@ abstract class ExecutableClassMemberResourceConverter<T extends ClassMemberResou
                         .stream()
                         .map(ClassPathResource.ClassReference::binaryName)
                         .map(dictionary::map)
-                        .collect(Collectors.joining(ELEMENTS_IN_BLOCK_DELIMITER));
+                        .collect(Collectors.joining(PARAMETER_TYPES_DELIMITER));
         final var packageLength = resource.packageName().length();
         final var ownerClassSimpleName =
                 packageLength == 0

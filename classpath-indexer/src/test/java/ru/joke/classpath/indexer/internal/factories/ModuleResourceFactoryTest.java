@@ -6,7 +6,6 @@ import ru.joke.classpath.ClassPathResource;
 import ru.joke.classpath.ModuleResource;
 import ru.joke.classpath.indexer.internal.ClassPathIndexingContext;
 import ru.joke.classpath.indexer.test_util.TestModuleElement;
-import ru.joke.classpath.indexer.test_util.TestTypeElement;
 
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ModuleElement;
@@ -15,10 +14,10 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 import java.lang.module.ModuleDescriptor;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
@@ -30,7 +29,10 @@ class ModuleResourceFactoryTest extends AbsClassPathResourceFactoryTest<ModuleEl
     void testRealModule() {
         final var testModule = getClass().getModule();
         final var testModuleElement = new TestModuleElement(testModule);
-        final var aliasesFromConfig = Map.of(testModule.getName(), Set.of("m1", "m2"));
+        final var aliasesFromConfig = Map.of(
+                testModule.getName(), Set.of("m1", "m2"),
+                "test_module", Set.of("test")
+        );
         final var factory = prepareFactory(aliasesFromConfig, testModuleElement);
         final var result = factory.create(testModuleElement);
 
@@ -41,9 +43,17 @@ class ModuleResourceFactoryTest extends AbsClassPathResourceFactoryTest<ModuleEl
 
         makeCommonChecks(moduleResource, testModule);
 
-        assertEquals(aliasesFromConfig.get(testModule.getName()), moduleResource.aliases(), "Aliases must be equal");
         assertTrue(moduleResource.modifiers().isEmpty(), "Modifiers must be empty");
-        assertTrue(moduleResource.annotations().isEmpty(), "Annotations list must be empty");
+
+        makeAnnotationsCheck(
+                Collections.emptySet(),
+                moduleResource
+        );
+        makeAliasesCheck(
+                testModule,
+                moduleResource,
+                aliasesFromConfig.get(testModule.getName())
+        );
     }
 
     @Test
@@ -53,12 +63,6 @@ class ModuleResourceFactoryTest extends AbsClassPathResourceFactoryTest<ModuleEl
         final var testModuleElement = new TestModuleElement(testModule);
 
         final var aliasesFromConfig = Map.of(testModule.getName(), Set.of("m3"));
-        final var expectedAnnotationsMap =
-                Set.of(ClassPathIndexed.class, Deprecated.class, Documented.class, Retention.class, Target.class)
-                        .stream()
-                        .map(TestTypeElement::new)
-                        .collect(Collectors.toMap(e -> e.getQualifiedName().toString(), Function.identity()));
-
         final var factory = prepareFactory(aliasesFromConfig, testModuleElement);
         final var result = factory.create(testModuleElement);
 
@@ -70,19 +74,16 @@ class ModuleResourceFactoryTest extends AbsClassPathResourceFactoryTest<ModuleEl
         makeCommonChecks(moduleResource, testModule);
         assertEquals(1, moduleResource.modifiers().size(), "Modifiers count must be equal");
         assertTrue(moduleResource.modifiers().contains(ClassPathResource.Modifier.OPENED), "Module should be opened");
-        assertEquals(5, moduleResource.annotations().size(), "Annotations count must be equal");
 
-        final var actualAnnotations =
-                moduleResource.annotations()
-                                .stream()
-                                .map(ClassPathResource.ClassReference::canonicalName)
-                                .collect(Collectors.toSet());
-
-        assertEquals(expectedAnnotationsMap.keySet(), actualAnnotations, "Annotations must be equal");
-
-        assertEquals(3, moduleResource.aliases().size(), "Aliases count must be equal");
-        assertTrue(moduleResource.aliases().containsAll(aliasesFromConfig.get(testModule.getName())), "Aliases must contain all aliases from config");
-        assertTrue(moduleResource.aliases().containsAll(aliasesFromAnnotation), "Aliases must contain all aliases from annotation under module");
+        makeAnnotationsCheck(
+                Set.of(ClassPathIndexed.class, Deprecated.class, Documented.class, Retention.class, Target.class),
+                moduleResource
+        );
+        makeAliasesCheck(
+                testModule,
+                moduleResource,
+                aliasesFromConfig.get(testModule.getName())
+        );
     }
 
     private void makeCommonChecks(

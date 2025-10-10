@@ -1,5 +1,6 @@
 package ru.joke.classpath.indexer.internal.factories;
 
+import ru.joke.classpath.ClassMemberResource;
 import ru.joke.classpath.ClassMethodResource;
 import ru.joke.classpath.ClassPathResource;
 import ru.joke.classpath.IndexedClassPathException;
@@ -12,9 +13,11 @@ import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.Collectors;
 
-final class ExecutableElementResourceFactory extends ClassPathResourceFactory<ClassMethodResource, ExecutableElement> {
+final class ClassExecutableElementResourceFactory extends ClassPathResourceFactory<ClassMemberResource.Executable, ExecutableElement> {
 
-    ExecutableElementResourceFactory(final ClassPathIndexingContext indexingContext) {
+    private static final String CONSTRUCTOR_NAME = "<cinit>";
+
+    ClassExecutableElementResourceFactory(final ClassPathIndexingContext indexingContext) {
         super(indexingContext);
     }
 
@@ -24,13 +27,9 @@ final class ExecutableElementResourceFactory extends ClassPathResourceFactory<Cl
                 source.getParameters()
                         .stream()
                         .filter(Objects::nonNull)
-                        .map(ExecutableElementResourceFactory.this::createClassRef)
+                        .map(ClassExecutableElementResourceFactory.this::createClassRef)
                         .filter(Objects::nonNull)
                         .collect(Collectors.toList());
-        final var parametersStr = parameters
-                                        .stream()
-                                        .map(ClassPathResource.ClassReference::binaryName)
-                                        .collect(Collectors.joining(";"));
         final var ownerRef =
                 source.getEnclosingElement() instanceof QualifiedNameable n
                         ? createClassRef(n)
@@ -40,12 +39,11 @@ final class ExecutableElementResourceFactory extends ClassPathResourceFactory<Cl
         }
 
         final var module = indexingContext.moduleName();
-        final var methodName = source.getSimpleName().toString();
-        final var methodId = (module.isEmpty() ? "" : module.concat("/")) + ownerRef.binaryName()
-                + ClassMethodResource.ID_SEPARATOR + methodName + "(" + parametersStr + ")";
+        final var methodName = source.getKind() == ElementKind.CONSTRUCTOR
+                ? CONSTRUCTOR_NAME
+                : source.getSimpleName().toString();
 
         final var modifiers = mapModifiers(source.getModifiers());
-        final var aliases = findAliases(source, methodId);
         final var packageName = findPackageName(source);
 
         final Set<ClassPathResource.ClassReference<?>> annotations = new HashSet<>();
@@ -94,18 +92,13 @@ final class ExecutableElementResourceFactory extends ClassPathResourceFactory<Cl
             }
 
             @Override
-            public String id() {
-                return methodId;
-            }
-
-            @Override
             public String name() {
                 return methodName;
             }
 
             @Override
             public Set<String> aliases() {
-                return aliases;
+                return findAliases(source, id());
             }
 
             @Override

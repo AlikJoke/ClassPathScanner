@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-import static ru.joke.classpath.ClassMemberResource.ID_SEPARATOR;
 import static ru.joke.classpath.ClassPathResource.ClassReference.CANONICAL_NAME_SEPARATOR;
 
 public final class ClassMethodResourceConverter extends ExecutableClassMemberResourceConverter<ClassMethodResource> {
@@ -35,12 +34,10 @@ public final class ClassMethodResourceConverter extends ExecutableClassMemberRes
         final var nameParts = name.split(MEMBER_OF_CLASS_SEPARATOR);
         final var className = dictionary.map(nameParts[0]);
         final var methodName = dictionary.map(nameParts[1]);
-        final var parameters = extractRefs(nameParts[2], dictionary);
+        final var parameters = extractRefs(nameParts[2], dictionary, PARAMETER_TYPES_DELIMITER);
 
         final var ownerClassBinaryName = packageName +  CANONICAL_NAME_SEPARATOR + className;
         final var owner = new ClassReferenceImpl<>(ownerClassBinaryName);
-        final var methodSignature = createSignature(methodName, parameters);
-        final var methodId = module.isEmpty() ? "" : module.concat("/") + owner.binaryName() + ID_SEPARATOR + methodSignature;
 
         return new ClassMethodResource() {
 
@@ -76,11 +73,6 @@ public final class ClassMethodResourceConverter extends ExecutableClassMemberRes
             @Override
             public String name() {
                 return methodName;
-            }
-
-            @Override
-            public String id() {
-                return methodId;
             }
 
             @Override

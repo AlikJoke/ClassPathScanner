@@ -1,6 +1,7 @@
 package ru.joke.classpath.indexer.test_util;
 
 import javax.lang.model.element.Modifier;
+import javax.lang.model.type.TypeMirror;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -11,6 +12,14 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 abstract class Util {
+
+    static TypeMirror toTypeMirror(Class<?> type) {
+        return type.isPrimitive()
+                ? new TestPrimitiveType(type)
+                : type.isArray()
+                    ? new TestArrayType(type)
+                    : new TestClassType(type);
+    }
 
     static Set<Modifier> collectModifiers(final int modifiers) {
         final Set<Modifier> result = new HashSet<>();

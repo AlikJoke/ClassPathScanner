@@ -41,8 +41,8 @@ public final class ClassResourceConverter extends AbsClassPathResourceConverter<
             final String[] parts,
             final Dictionary dictionary
     ) {
-        final var interfaces = Set.copyOf(extractRefs(parts[7], dictionary));
-        final var superClasses = extractRefs(parts[8], dictionary);
+        final var interfaces = Set.copyOf(extractRefs(parts[7], dictionary, ELEMENTS_IN_BLOCK_DELIMITER));
+        final var superClasses = extractRefs(parts[8], dictionary, ELEMENTS_IN_BLOCK_DELIMITER);
         final var kind = ClassResource.Kind.from(parts[9]);
 
         final var binaryName = packageName +  CANONICAL_NAME_SEPARATOR + name;

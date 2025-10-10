@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class ClassConstructorResourceConverterTest extends AbsClassPathResourceConverterTest<ClassConstructorResource<?>, ClassConstructorResourceConverter> {
 
-    private static final String EXPECTED_STR = "cr|pd|0|1|3#2#4;4;5||";
+    private static final String EXPECTED_STR = "cr|pd|0|1|3#2#4,4,5,6,7||";
 
     @Override
     void makeTypeSpecificChecks(ClassConstructorResource<?> expected, ClassConstructorResource<?> actual) throws Exception {
@@ -30,7 +30,7 @@ class ClassConstructorResourceConverterTest extends AbsClassPathResourceConverte
         }
 
         javaConstructor.setAccessible(true);
-        assertNotNull(javaConstructor.newInstance("", "", 0));
+        assertNotNull(javaConstructor.newInstance("", "", 0, new String[0], new int[0]));
     }
 
     @Override
@@ -57,7 +57,9 @@ class ClassConstructorResourceConverterTest extends AbsClassPathResourceConverte
                 return List.of(
                         new ClassReferenceImpl<>(String.class.getName()),
                         new ClassReferenceImpl<>(String.class.getName()),
-                        new ClassReferenceImpl<>(int.class.getCanonicalName())
+                        new ClassReferenceImpl<>(int.class.getCanonicalName()),
+                        new ClassReferenceImpl<>(String[].class.getName()),
+                        new ClassReferenceImpl<>(int[].class.getName())
                 );
             }
 
@@ -68,7 +70,8 @@ class ClassConstructorResourceConverterTest extends AbsClassPathResourceConverte
 
             @Override
             public String id() {
-                return module() + '/' + owner().binaryName() + ID_SEPARATOR + name() + '(' + String.class.getName() + ';' + String.class.getName() + ';' + int.class.getCanonicalName() + ")";
+                return module() + '/' + owner().binaryName() + ID_SEPARATOR + name()
+                        + '(' + String.class.getName() + ',' + String.class.getName() + ',' + int.class.getCanonicalName() + ',' + String[].class.getName() + ',' + int[].class.getName() + ")";
             }
 
             @Override

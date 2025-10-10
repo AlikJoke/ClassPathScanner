@@ -8,7 +8,6 @@ import ru.joke.classpath.PackageResource;
 import ru.joke.classpath.indexer.internal.ClassPathIndexingContext;
 import ru.joke.classpath.indexer.test_util.TestModuleElement;
 import ru.joke.classpath.indexer.test_util.TestPackageElement;
-import ru.joke.classpath.indexer.test_util.TestTypeElement;
 import ru.joke.classpath.indexer.test_util.fixtures.TestClass;
 
 import javax.lang.model.element.ElementKind;
@@ -16,39 +15,32 @@ import javax.lang.model.element.PackageElement;
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
-import java.util.List;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static ru.joke.classpath.ClassPathResource.MODULE_SEPARATOR;
 
 class PackageResourceFactoryTest extends AbsClassPathResourceFactoryTest<PackageElement, PackageResource, PackageResourceFactory> {
 
     @Test
     void testPackageInNamedModule() {
         final var packageResource = executeTestsForPackageOfClass(TestClass.class);
-
-        final var expectedAnnotationsMap =
-                Set.of(ClassPathIndexed.class, Documented.class, Retention.class, Target.class)
-                        .stream()
-                        .map(TestTypeElement::new)
-                        .collect(Collectors.toMap(e -> e.getQualifiedName().toString(), Function.identity()));
-
-        final var actualAnnotations =
-                packageResource.annotations()
-                                .stream()
-                                .map(ClassPathResource.ClassReference::canonicalName)
-                                .collect(Collectors.toSet());
-
-        assertEquals(expectedAnnotationsMap.keySet(), actualAnnotations, "Annotations must be equal");
+        makeAnnotationsCheck(
+                Set.of(ClassPathIndexed.class, Documented.class, Retention.class, Target.class),
+                packageResource
+        );
     }
 
     @Test
     void testPackageInUnnamedModule() {
         final var packageResource = executeTestsForPackageOfClass(Answer.class);
-        assertTrue(packageResource.annotations().isEmpty(), "Annotations must be empty");
+        makeAnnotationsCheck(
+                Collections.emptySet(),
+                packageResource
+        );
     }
 
     private PackageResource executeTestsForPackageOfClass(final Class<?> clazz) {
@@ -69,7 +61,7 @@ class PackageResourceFactoryTest extends AbsClassPathResourceFactoryTest<Package
         assertTrue(packageResource.packageName().isEmpty(), "Package of the package must be empty");
         if (clazz.getModule().isNamed()) {
             assertEquals(clazz.getModule().getName(), packageResource.module(), "Module of the resource must be equal");
-            assertEquals(packageResource.module() + "/" + packageResource.name(), packageResource.id(), "Id of the package resource must be equal");
+            assertEquals(packageResource.module() + MODULE_SEPARATOR + packageResource.name(), packageResource.id(), "Id of the package resource must be equal");
         } else {
             assertTrue(packageResource.module().isEmpty(), "Module of the resource must be empty");
             assertEquals(packageResource.name(), packageResource.id(), "Id of the package resource must be equal to package name in unnamed module");
@@ -85,18 +77,11 @@ class PackageResourceFactoryTest extends AbsClassPathResourceFactoryTest<Package
             assertTrue(packageResource.modifiers().isEmpty(), "Modifiers must be empty");
         }
 
-        assertTrue(packageResource.aliases().containsAll(aliasesFromConfig.get(testPackage.getName())), "Aliases must contain all aliases from config");
-
-        final ClassPathIndexed annotation = testPackage.getAnnotation(ClassPathIndexed.class);
-        if (annotation != null) {
-            assertEquals(3, packageResource.aliases().size(), "Aliases count must be equal");
-            assertTrue(
-                    packageResource.aliases().containsAll(List.of(annotation.value())),
-                    "Aliases must contain all aliases from annotation under package"
-            );
-        } else {
-            assertEquals(2, packageResource.aliases().size(), "Aliases count must be equal");
-        }
+        makeAliasesCheck(
+                testPackage,
+                packageResource,
+                aliasesFromConfig.get(testPackage.getName())
+        );
 
         return packageResource;
     }

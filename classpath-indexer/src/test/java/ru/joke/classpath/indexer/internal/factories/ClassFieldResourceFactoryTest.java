@@ -2,6 +2,7 @@ package ru.joke.classpath.indexer.internal.factories;
 
 import org.junit.jupiter.api.Test;
 import ru.joke.classpath.ClassFieldResource;
+import ru.joke.classpath.ClassMemberResource;
 import ru.joke.classpath.ClassPathIndexed;
 import ru.joke.classpath.ClassPathResource;
 import ru.joke.classpath.indexer.internal.ClassPathIndexingContext;
@@ -15,13 +16,13 @@ import javax.lang.model.element.VariableElement;
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
-import java.util.Collections;
 import java.util.EnumSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static ru.joke.classpath.ClassPathResource.MODULE_SEPARATOR;
 
 class ClassFieldResourceFactoryTest extends AbsClassPathResourceFactoryTest<VariableElement, ClassFieldResource, ClassFieldResourceFactory> {
 
@@ -84,7 +85,10 @@ class ClassFieldResourceFactoryTest extends AbsClassPathResourceFactoryTest<Vari
         final var field = ownerType.getDeclaredField(fieldName);
         final var testFieldElement = new TestVariableElement(field);
         final var moduleElement = new TestModuleElement(ownerType.getModule());
-        final var factory = prepareFactory(Collections.emptyMap(), new TestTypeElement(ownerType), moduleElement);
+
+        final var expectedId = ownerType.getModule().getName() + MODULE_SEPARATOR + ownerType.getName() + ClassMemberResource.ID_SEPARATOR + fieldName;
+        final var aliasesFromConfig = Map.of(expectedId, Set.of("test", "f1"));
+        final var factory = prepareFactory(aliasesFromConfig, new TestTypeElement(ownerType), moduleElement);
         final var result = factory.create(testFieldElement);
 
         assertNotNull(result, "Result must be not null");
@@ -98,36 +102,21 @@ class ClassFieldResourceFactoryTest extends AbsClassPathResourceFactoryTest<Vari
         assertEquals(ClassPathResource.Type.FIELD, fieldResource.type(), "Resource type must be equal");
         assertThrows(UnsupportedOperationException.class, fieldResource::asField);
 
-        if (!expectedAnnotationTypes.isEmpty()) {
-            final var expectedAnnotationsMap =
-                    expectedAnnotationTypes
-                            .stream()
-                            .map(TestTypeElement::new)
-                            .collect(Collectors.toMap(e -> e.getQualifiedName().toString(), Function.identity()));
-
-            final var actualAnnotations =
-                    fieldResource.annotations()
-                            .stream()
-                            .map(ClassPathResource.ClassReference::canonicalName)
-                            .collect(Collectors.toSet());
-
-            assertEquals(expectedAnnotationsMap.keySet(), actualAnnotations, "Annotations must be equal");
-        } else {
-            assertTrue(fieldResource.annotations().isEmpty(), "Annotations must be empty");
-        }
-
-        final ClassPathIndexed annotation = field.getAnnotation(ClassPathIndexed.class);
-        if (annotation != null) {
-            assertEquals(Set.of(annotation.value()), fieldResource.aliases(), "Aliases must be equal");
-        } else {
-            assertTrue(fieldResource.aliases().isEmpty(), "Aliases must be empty");
-        }
+        makeAnnotationsCheck(
+                expectedAnnotationTypes,
+                fieldResource
+        );
+        makeAliasesCheck(
+                field,
+                fieldResource,
+                aliasesFromConfig.get(expectedId)
+        );
 
         assertEquals(expectedModifiers, fieldResource.modifiers(), "Modifiers must be equal");
         assertThrows(UnsupportedOperationException.class, fieldResource.owner()::toClass);
         assertEquals(ownerType.getCanonicalName(), fieldResource.owner().canonicalName(), "Owner type must be equal");
         assertEquals(ownerType.getName(), fieldResource.owner().binaryName(), "Owner type must be equal");
-        assertEquals(fieldResource.module() + "/" + fieldResource.owner().binaryName() + ClassFieldResource.ID_SEPARATOR + fieldName, fieldResource.id(), "Id must be equal");
+        assertEquals(expectedId, fieldResource.id(), "Id must be equal");
     }
 
     @Override

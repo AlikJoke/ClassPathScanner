@@ -6,7 +6,9 @@ public interface PackageResource extends ClassPathResource {
     @Override
     default String id() {
         final var module = module();
-        return (module.isEmpty() ? "" : module.concat("/")) + name();
+        return module == null || module.isEmpty()
+                ? name()
+                : module + MODULE_SEPARATOR + name();
     }
 
     default Optional<Package> asPackage() {

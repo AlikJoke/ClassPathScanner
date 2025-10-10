@@ -56,7 +56,7 @@ public final class DelegatingResourceFactory extends ClassPathResourceFactory<Cl
         return List.of(
                 new ClassResourceFactory(indexingContext),
                 new ModuleResourceFactory(indexingContext),
-                new ExecutableElementResourceFactory(indexingContext),
+                new ClassExecutableElementResourceFactory(indexingContext),
                 new ClassFieldResourceFactory(indexingContext),
                 new PackageResourceFactory(indexingContext)
         );

@@ -7,7 +7,9 @@ import ru.joke.classpath.indexer.internal.configs.ClassPathIndexingConfiguration
 import ru.joke.classpath.indexer.internal.configs.ScannedResources;
 
 import javax.lang.model.element.*;
+import javax.lang.model.type.ArrayType;
 import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.PrimitiveType;
 import javax.lang.model.type.TypeMirror;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -33,6 +35,14 @@ public abstract class ClassPathResourceFactory<T extends ClassPathResource, E ex
 
     protected String findPackageName(final Element source) {
         var enclosedElement = source.getEnclosingElement();
+
+        if (enclosedElement instanceof ExecutableElement) {
+            final var sourceType = source.asType();
+            return sourceType instanceof DeclaredType d
+                    ? findPackageName(d.asElement())
+                    : "";
+        }
+
         while (enclosedElement != null && enclosedElement.getKind() != ElementKind.PACKAGE) {
             enclosedElement = enclosedElement.getEnclosingElement();
         }
@@ -60,7 +70,20 @@ public abstract class ClassPathResourceFactory<T extends ClassPathResource, E ex
     protected String findQualifiedName(final TypeMirror mirror) {
         return mirror instanceof DeclaredType type && type.asElement() instanceof QualifiedNameable q
                 ? q.getQualifiedName().toString()
-                : null;
+                : mirror instanceof PrimitiveType p
+                    ? p.getKind().name().toLowerCase()
+                    : mirror instanceof ArrayType a
+                        ? getArrayBinaryName(a)
+                        : "";
+    }
+
+    private String getArrayBinaryName(final ArrayType type) {
+        final var componentType = type.getComponentType();
+        if (componentType.getKind().isPrimitive()) {
+            return "[" + componentType.getKind().name().charAt(0);
+        }
+
+        return "[" + findQualifiedName(componentType) + ';';
     }
 
     protected Set<String> findAliases(final Element element, final String elementId) {

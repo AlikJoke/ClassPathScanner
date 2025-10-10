@@ -63,7 +63,7 @@ public abstract class AbsClassPathResourceConverter<T extends ClassPathResource>
         final var packageName = dictionary.map(parts[3]);
         final var name = getResourceName(parts[4], dictionary);
         final var aliases = extractAliases(parts[5], dictionary);
-        final var annotations = Set.copyOf(extractRefs(parts[6], dictionary));
+        final var annotations = Set.copyOf(extractRefs(parts[6], dictionary, ELEMENTS_IN_BLOCK_DELIMITER));
 
         return Optional.of(from(modifiers, module, packageName, name, aliases, annotations, parts, dictionary));
     }
@@ -100,13 +100,14 @@ public abstract class AbsClassPathResourceConverter<T extends ClassPathResource>
 
     protected final List<ClassPathResource.ClassReference<?>> extractRefs(
             final String classesStr,
-            final Dictionary dictionary
+            final Dictionary dictionary,
+            final String separator
     ) {
         if (classesStr.isBlank()) {
             return Collections.emptyList();
         }
 
-        return Arrays.stream(classesStr.split(ELEMENTS_IN_BLOCK_DELIMITER))
+        return Arrays.stream(classesStr.split(separator))
                         .map(dictionary::map)
                         .map(this::createClassRef)
                         .collect(Collectors.toUnmodifiableList());

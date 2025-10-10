@@ -1,6 +1,7 @@
 package ru.joke.classpath.indexer.internal.factories;
 
 import org.junit.jupiter.api.Test;
+import ru.joke.classpath.ClassPathIndexed;
 import ru.joke.classpath.ClassPathResource;
 import ru.joke.classpath.indexer.internal.ClassPathIndexingContext;
 import ru.joke.classpath.indexer.internal.configs.ClassPathIndexingConfiguration;
@@ -14,13 +15,13 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.util.Elements;
 import java.io.File;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.lang.reflect.AnnotatedElement;
+import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -71,6 +72,43 @@ abstract class AbsClassPathResourceFactoryTest<E extends Element, R extends Clas
         );
 
         return factoryCreator().apply(context);
+    }
+
+    protected void makeAnnotationsCheck(
+            final Set<Class<?>> expectedAnnotationTypes,
+            final R resource
+    ) {
+        if (!expectedAnnotationTypes.isEmpty()) {
+            final var expectedAnnotationsMap =
+                    expectedAnnotationTypes
+                            .stream()
+                            .map(TestTypeElement::new)
+                            .collect(Collectors.toMap(e -> e.getQualifiedName().toString(), Function.identity()));
+
+            final var actualAnnotations =
+                    resource.annotations()
+                            .stream()
+                            .map(ClassPathResource.ClassReference::canonicalName)
+                            .collect(Collectors.toSet());
+
+            assertEquals(expectedAnnotationsMap.keySet(), actualAnnotations, "Annotations must be equal");
+        } else {
+            assertTrue(resource.annotations().isEmpty(), "Annotations must be empty");
+        }
+    }
+
+    protected void makeAliasesCheck(
+            final AnnotatedElement annotatedElement,
+            final R resource,
+            final Set<String> expectedAliasesFromConfig
+    ) {
+        final Set<String> expectedAliases = new HashSet<>(expectedAliasesFromConfig);
+        final var annotation = annotatedElement.getAnnotation(ClassPathIndexed.class);
+        if (annotation != null) {
+            expectedAliases.addAll(Set.of(annotation.value()));
+        }
+
+        assertEquals(expectedAliases, resource.aliases(), "Aliases must be equal");
     }
 
     protected abstract Function<ClassPathIndexingContext, F> factoryCreator();

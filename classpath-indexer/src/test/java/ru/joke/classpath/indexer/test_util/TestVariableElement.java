@@ -11,7 +11,7 @@ public final class TestVariableElement extends TestElement<Field> implements Var
 
     public TestVariableElement(Field source) {
         super(
-                source.getType().isPrimitive() ? new TestPrimitiveType(source.getType()) : new TestClassType(source.getType()),
+                Util.toTypeMirror(source.getType()),
                 Util.collectModifiers(source.getModifiers()),
                 source.getName(),
                 source
