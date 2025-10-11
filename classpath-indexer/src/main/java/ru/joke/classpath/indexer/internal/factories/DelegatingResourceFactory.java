@@ -11,17 +11,22 @@ public final class DelegatingResourceFactory extends ClassPathResourceFactory<Cl
 
     private final Map<ElementKind, ClassPathResourceFactory<? extends ClassPathResource, Element>> factories;
 
-    public DelegatingResourceFactory(final ClassPathIndexingContext indexingContext) {
+    DelegatingResourceFactory(
+            final ClassPathIndexingContext indexingContext,
+            final List<ClassPathResourceFactory<? extends ClassPathResource, ? extends Element>> delegateFactories
+    ) {
         super(indexingContext);
-
         final Map<ElementKind, ClassPathResourceFactory<? extends ClassPathResource, Element>> factories = new HashMap<>();
-        createFactories(indexingContext)
-                .forEach(
-                        factory -> factory.supportedTypes()
-                                                .forEach(type -> factories.put(type, cast(factory)))
-                );
+        delegateFactories.forEach(
+                factory -> factory.supportedTypes()
+                                        .forEach(type -> factories.put(type, cast(factory)))
+        );
 
         this.factories = Map.copyOf(factories);
+    }
+
+    public DelegatingResourceFactory(final ClassPathIndexingContext indexingContext) {
+        this(indexingContext, createFactories(indexingContext));
     }
 
     @Override
@@ -30,7 +35,7 @@ public final class DelegatingResourceFactory extends ClassPathResourceFactory<Cl
     }
 
     @Override
-    public ClassPathResource doCreate(Element source) {
+    protected ClassPathResource doCreate(Element source) {
         final var factory = this.factories.get(source.getKind());
         if (factory == null) {
             return null;
@@ -50,7 +55,7 @@ public final class DelegatingResourceFactory extends ClassPathResourceFactory<Cl
         return result;
     }
 
-    private List<ClassPathResourceFactory<? extends ClassPathResource, ? extends Element>> createFactories(
+    private static List<ClassPathResourceFactory<? extends ClassPathResource, ? extends Element>> createFactories(
             final ClassPathIndexingContext indexingContext
     ) {
         return List.of(

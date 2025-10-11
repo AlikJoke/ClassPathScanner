@@ -66,7 +66,7 @@ public final class ModuleResourceConverter extends AbsClassPathResourceConverter
 
             @Override
             public boolean equals(Object obj) {
-                return obj instanceof ModuleResource f && Objects.equals(f.id(), id());
+                return obj == this || obj instanceof ModuleResource m && Objects.equals(m.id(), id());
             }
 
             @Override

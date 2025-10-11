@@ -108,27 +108,28 @@ public final class ClassPathIndexingContext {
                 processingEnvironment.getFiler(),
                 processingEnvironment.getMessager()
         );
-
-        return create(
-                targetOutputConfigDir,
-                processingEnvironment,
-                roundEnvironment,
-                processingFilter,
-                indexingConfigurationService
-        );
-    }
-
-    public static ClassPathIndexingContext create(
-            final File targetOutputConfigDir,
-            final ProcessingEnvironment processingEnvironment,
-            final RoundEnvironment roundEnvironment,
-            final Predicate<Element> processingFilter,
-            final ClassPathIndexingConfigurationService indexingConfigurationService
-    ) {
         final var scannedResourcesConfigurationService = new ScannedResourcesConfigurationService(
                 targetOutputConfigDir,
                 processingEnvironment.getMessager()
         );
+
+        return create(
+                processingEnvironment,
+                roundEnvironment,
+                processingFilter,
+                indexingConfigurationService,
+                scannedResourcesConfigurationService
+        );
+    }
+
+    public static ClassPathIndexingContext create(
+            final ProcessingEnvironment processingEnvironment,
+            final RoundEnvironment roundEnvironment,
+            final Predicate<Element> processingFilter,
+            final ClassPathIndexingConfigurationService indexingConfigurationService,
+            final ScannedResourcesConfigurationService scannedResourcesConfigurationService
+    ) {
+
         final var moduleName =
                 roundEnvironment.getRootElements()
                         .stream()

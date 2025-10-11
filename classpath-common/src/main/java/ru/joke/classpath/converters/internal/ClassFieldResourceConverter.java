@@ -105,7 +105,7 @@ public final class ClassFieldResourceConverter extends AbsClassPathResourceConve
 
             @Override
             public boolean equals(Object obj) {
-                return obj instanceof ClassFieldResource f && Objects.equals(f.id(), id());
+                return obj == this || obj instanceof ClassFieldResource f && Objects.equals(f.id(), id());
             }
 
             @Override

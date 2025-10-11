@@ -54,6 +54,9 @@ class ModuleResourceFactoryTest extends AbsClassPathResourceFactoryTest<ModuleEl
                 moduleResource,
                 aliasesFromConfig.get(testModule.getName())
         );
+
+        final var result2 = factory.create(testModuleElement);
+        makeEqualityChecks(moduleResource, result2.orElse(null));
     }
 
     @Test
@@ -84,6 +87,9 @@ class ModuleResourceFactoryTest extends AbsClassPathResourceFactoryTest<ModuleEl
                 moduleResource,
                 aliasesFromConfig.get(testModule.getName())
         );
+
+        final var result2 = factory.create(testModuleElement);
+        makeEqualityChecks(moduleResource, result2.orElse(null));
     }
 
     private void makeCommonChecks(

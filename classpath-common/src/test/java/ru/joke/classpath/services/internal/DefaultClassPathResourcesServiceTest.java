@@ -112,7 +112,7 @@ class DefaultClassPathResourcesServiceTest {
 
             @Override
             public boolean equals(Object obj) {
-                return obj instanceof PackageResource f && Objects.equals(f.id(), id());
+                return obj == this || obj instanceof PackageResource f && Objects.equals(f.id(), id());
             }
         };
     }
@@ -152,7 +152,7 @@ class DefaultClassPathResourcesServiceTest {
 
             @Override
             public boolean equals(Object obj) {
-                return obj instanceof ModuleResource f && Objects.equals(f.id(), id());
+                return obj == this || obj instanceof ModuleResource f && Objects.equals(f.id(), id());
             }
         };
     }

@@ -107,7 +107,7 @@ public final class ClassMethodResourceConverter extends ExecutableClassMemberRes
 
             @Override
             public boolean equals(Object obj) {
-                return obj instanceof ClassMethodResource f && Objects.equals(f.id(), id());
+                return obj == this || obj instanceof ClassMethodResource m && Objects.equals(m.id(), id());
             }
 
             @Override

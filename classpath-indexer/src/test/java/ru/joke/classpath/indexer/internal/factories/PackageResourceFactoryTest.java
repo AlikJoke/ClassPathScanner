@@ -83,6 +83,9 @@ class PackageResourceFactoryTest extends AbsClassPathResourceFactoryTest<Package
                 aliasesFromConfig.get(testPackage.getName())
         );
 
+        final var result2 = factory.create(testPackageElement);
+        makeEqualityChecks(packageResource, result2.orElse(null));
+
         return packageResource;
     }
 

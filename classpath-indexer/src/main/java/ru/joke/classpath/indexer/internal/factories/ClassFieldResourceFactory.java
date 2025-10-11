@@ -85,7 +85,7 @@ public final class ClassFieldResourceFactory extends ClassPathResourceFactory<Cl
 
             @Override
             public boolean equals(Object obj) {
-                return obj instanceof ClassFieldResource f && Objects.equals(f.id(), id());
+                return obj == this || obj instanceof ClassFieldResource f && Objects.equals(f.id(), id());
             }
 
             @Override

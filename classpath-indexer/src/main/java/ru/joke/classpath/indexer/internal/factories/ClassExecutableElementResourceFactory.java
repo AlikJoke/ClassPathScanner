@@ -78,7 +78,7 @@ final class ClassExecutableElementResourceFactory extends ClassPathResourceFacto
 
             @Override
             public boolean equals(Object obj) {
-                return obj instanceof Executable f && Objects.equals(f.id(), id());
+                return obj == this || obj instanceof Executable e && Objects.equals(e.id(), id());
             }
 
             @Override

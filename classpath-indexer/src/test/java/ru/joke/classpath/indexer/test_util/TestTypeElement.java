@@ -57,7 +57,24 @@ public final class TestTypeElement extends TestElement<Class<?>> implements Type
 
     @Override
     public List<? extends Element> getEnclosedElements() {
-        return Collections.emptyList();
+        final List<Element> result = new ArrayList<>();
+        for (var nested : this.source.getDeclaredClasses()) {
+            result.add(new TestTypeElement(nested));
+        }
+
+        for (var field : this.source.getDeclaredFields()) {
+            result.add(new TestVariableElement(field));
+        }
+
+        for (var method : this.source.getDeclaredMethods()) {
+            result.add(new TestExecutableElement(method));
+        }
+
+        for (var constructor : this.source.getDeclaredConstructors()) {
+            result.add(new TestExecutableElement(constructor));
+        }
+
+        return result;
     }
 
     @Override

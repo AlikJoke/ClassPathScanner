@@ -76,6 +76,24 @@ abstract class TestElement<T> implements Element {
     }
 
     @Override
+    public int hashCode() {
+        return this.source.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) {
+            return true;
+        }
+
+        if (obj == null || obj.getClass() != getClass()) {
+            return false;
+        }
+
+        return ((TestElement<?>) obj).source.equals(source);
+    }
+
+    @Override
     public <R, P> R accept(ElementVisitor<R, P> v, P p) {
         throw new UnsupportedOperationException();
     }

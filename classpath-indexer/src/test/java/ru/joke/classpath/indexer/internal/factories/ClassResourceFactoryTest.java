@@ -191,6 +191,9 @@ class ClassResourceFactoryTest extends AbsClassPathResourceFactoryTest<TypeEleme
                         .map(ClassPathResource.ClassReference::binaryName)
                         .collect(Collectors.toSet());
         assertEquals(expectedInterfacesNames, actualInterfacesNames, "Interfaces must be equal");
+
+        final var result2 = factory.create(testTypeElement);
+        makeEqualityChecks(classResource, result2.orElse(null));
     }
 
     @Override

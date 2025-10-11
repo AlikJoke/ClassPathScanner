@@ -65,7 +65,7 @@ final class PackageResourceFactory extends ClassPathResourceFactory<PackageResou
 
             @Override
             public boolean equals(Object obj) {
-                return obj instanceof PackageResource f && Objects.equals(f.id(), id());
+                return obj == this || obj instanceof PackageResource p && Objects.equals(p.id(), id());
             }
 
             @Override

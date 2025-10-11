@@ -6,6 +6,7 @@ import ru.joke.classpath.ClassPathResource;
 import ru.joke.classpath.indexer.internal.ClassPathIndexingContext;
 import ru.joke.classpath.indexer.internal.configs.ClassPathIndexingConfiguration;
 import ru.joke.classpath.indexer.internal.configs.ClassPathIndexingConfigurationService;
+import ru.joke.classpath.indexer.internal.configs.ScannedResourcesConfigurationService;
 import ru.joke.classpath.indexer.test_util.TestTypeElement;
 
 import javax.annotation.processing.Messager;
@@ -20,8 +21,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -76,11 +76,11 @@ abstract class AbsClassPathResourceFactoryTest<E extends Element, R extends Clas
         when(processingEnv.getElementUtils()).thenReturn(elementUtils);
 
         final var context = ClassPathIndexingContext.create(
-                mock(File.class),
                 processingEnv,
                 roundEnv,
                 e -> true,
-                indexingConfigurationService
+                indexingConfigurationService,
+                new ScannedResourcesConfigurationService(mock(File.class), processingEnv.getMessager())
         );
 
         return factoryCreator().apply(context);
@@ -121,6 +121,17 @@ abstract class AbsClassPathResourceFactoryTest<E extends Element, R extends Clas
         }
 
         assertEquals(expectedAliases, resource.aliases(), "Aliases must be equal");
+    }
+
+    protected void makeEqualityChecks(final R firstResource, final R secondResource) {
+        assertNotNull(secondResource, "Second call result must be not null");
+        assertEquals(firstResource, secondResource, "Resources must be equal");
+
+        final Set<R> coll = new HashSet<>();
+        coll.add(firstResource);
+        coll.add(secondResource);
+
+        assertEquals(1, coll.size(), "Resources must be same for Set");
     }
 
     protected abstract Function<ClassPathIndexingContext, F> factoryCreator();

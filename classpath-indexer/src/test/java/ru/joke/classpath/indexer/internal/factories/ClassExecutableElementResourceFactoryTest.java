@@ -163,7 +163,7 @@ class ClassExecutableElementResourceFactoryTest extends AbsClassPathResourceFact
             final Set<ClassPathResource.Modifier> expectedModifiers,
             final Set<Class<?>> expectedAnnotationTypes
     ) {
-        final var testFieldElement = new TestExecutableElement(executable);
+        final var testExecutableElement = new TestExecutableElement(executable);
         final var ownerType = executable.getDeclaringClass();
         final var moduleElement = new TestModuleElement(ownerType.getModule());
 
@@ -178,7 +178,7 @@ class ClassExecutableElementResourceFactoryTest extends AbsClassPathResourceFact
 
         final var aliasesFromConfig = Map.of(expectedId, Set.of("test_" + executable.getName()));
         final var factory = prepareFactory(aliasesFromConfig, new TestTypeElement(ownerType), moduleElement);
-        final var result = factory.create(testFieldElement);
+        final var result = factory.create(testExecutableElement);
 
         assertNotNull(result, "Result must be not null");
         assertTrue(result.isPresent(), "Result must be not empty");
@@ -222,6 +222,9 @@ class ClassExecutableElementResourceFactoryTest extends AbsClassPathResourceFact
         }
 
         assertEquals(expectedId, resource.id(), "Id must be equal");
+
+        final var result2 = factory.create(testExecutableElement);
+        makeEqualityChecks(resource, result2.orElse(null));
     }
 
     @Override

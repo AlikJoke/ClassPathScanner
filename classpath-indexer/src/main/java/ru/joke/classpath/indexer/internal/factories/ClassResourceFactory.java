@@ -1,6 +1,5 @@
 package ru.joke.classpath.indexer.internal.factories;
 
-import ru.joke.classpath.ClassFieldResource;
 import ru.joke.classpath.ClassResource;
 import ru.joke.classpath.indexer.internal.ClassPathIndexingContext;
 
@@ -103,7 +102,7 @@ final class ClassResourceFactory extends ClassPathResourceFactory<ClassResource<
 
             @Override
             public boolean equals(Object obj) {
-                return obj instanceof ClassFieldResource f && Objects.equals(f.id(), id());
+                return obj == this || obj instanceof ClassResource<?> c && Objects.equals(c.id(), id());
             }
 
             @Override

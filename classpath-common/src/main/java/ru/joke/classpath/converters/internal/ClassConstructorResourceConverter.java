@@ -104,7 +104,7 @@ public final class ClassConstructorResourceConverter extends ExecutableClassMemb
 
             @Override
             public boolean equals(Object obj) {
-                return obj instanceof ClassConstructorResource<?> f && Objects.equals(f.id(), id());
+                return obj == this || obj instanceof ClassConstructorResource<?> c && Objects.equals(c.id(), id());
             }
 
             @Override

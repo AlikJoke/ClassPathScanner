@@ -117,7 +117,7 @@ public final class ClassPathResourcesCollector {
                 .filter(e -> e instanceof TypeElement)
                 .filter(e -> e.getKind() == ElementKind.INTERFACE || e.getKind().isClass())
                 .map(e -> (TypeElement) e)
-                .filter(e -> toQualifiedNames(e.getInterfaces()).anyMatch(interfaces::contains))
+                .filter(e -> collectInterfaces(e).anyMatch(interfaces::contains))
                 .peek(e -> this.resourceFactory.create(e).ifPresent(this.indexingContext.collectedResources()::add))
                 .peek(e -> {
                     if (e.getKind() == ElementKind.INTERFACE) {
@@ -137,6 +137,14 @@ public final class ClassPathResourcesCollector {
 
         if (!nestedInterfaces.isEmpty()) {
             collectImplementations(nestedInterfaces);
+        }
+    }
+
+    private Stream<String> collectInterfaces(final TypeElement type) {
+        if (type.getSuperclass() instanceof DeclaredType s && s.asElement() instanceof TypeElement st) {
+            return Stream.concat(toQualifiedNames(type.getInterfaces()), collectInterfaces(st));
+        } else {
+            return toQualifiedNames(type.getInterfaces());
         }
     }
 

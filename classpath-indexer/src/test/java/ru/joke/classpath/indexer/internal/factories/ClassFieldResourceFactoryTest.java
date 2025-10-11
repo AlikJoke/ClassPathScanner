@@ -117,6 +117,9 @@ class ClassFieldResourceFactoryTest extends AbsClassPathResourceFactoryTest<Vari
         assertEquals(ownerType.getCanonicalName(), fieldResource.owner().canonicalName(), "Owner type must be equal");
         assertEquals(ownerType.getName(), fieldResource.owner().binaryName(), "Owner type must be equal");
         assertEquals(expectedId, fieldResource.id(), "Id must be equal");
+
+        final var result2 = factory.create(testFieldElement);
+        makeEqualityChecks(fieldResource, result2.orElse(null));
     }
 
     @Override
