@@ -26,7 +26,7 @@ public final class ClassConstructorResourceConverter extends ExecutableClassMemb
             final String[] parts,
             final Dictionary dictionary
     ) {
-        final var nameParts = name.split(MEMBER_OF_CLASS_SEPARATOR);
+        final var nameParts = name.split(MEMBER_OF_CLASS_SEPARATOR, 3);
         final var className = dictionary.map(nameParts[0]);
         final var methodName = dictionary.map(nameParts[1]);
         final var parameters = extractRefs(nameParts[2], dictionary, PARAMETER_TYPES_DELIMITER);

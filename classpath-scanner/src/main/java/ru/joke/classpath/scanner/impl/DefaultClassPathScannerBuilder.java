@@ -330,6 +330,10 @@ public final class DefaultClassPathScannerBuilder implements ClassPathScannerBui
 
         @Override
         public LogicalOperations end() {
+            if (this.parent == null) {
+                return this;
+            }
+
             this.parent.appendCondition(this.filter);
             this.negate = false;
             return this.parent;
