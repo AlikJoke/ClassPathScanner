@@ -1,5 +1,6 @@
 package ru.joke.classpath.services;
 
+import java.util.Objects;
 import java.util.Set;
 
 public interface IndexedClassPathLocation {
@@ -23,6 +24,19 @@ public interface IndexedClassPathLocation {
             @Override
             public Set<ClassLoader> getTargetClassLoaders() {
                 return targetClassLoaders;
+            }
+
+            @Override
+            public int hashCode() {
+                return Objects.hash(getLocation(), getTargetClassLoaders());
+            }
+
+            @Override
+            public boolean equals(Object obj) {
+                return obj == this
+                        || obj instanceof IndexedClassPathLocation l
+                                && Objects.equals(l.getLocation(), getLocation())
+                                && Objects.equals(l.getTargetClassLoaders(), getTargetClassLoaders());
             }
         };
     }

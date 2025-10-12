@@ -42,6 +42,9 @@ public final class StatefulClassPathScannerEngine extends AbsClassPathScannerEng
         synchronized (this.scannedResourcesAccessor) {
             this.scannedResourcesAccessor.resources = null;
         }
+        if (this.configuration.enableEagerStatefulEngineInitialization()) {
+            this.scannedResourcesAccessor.get();
+        }
     }
 
     private class DefaultEngineScopeLoader implements Supplier<ClassPathResources> {

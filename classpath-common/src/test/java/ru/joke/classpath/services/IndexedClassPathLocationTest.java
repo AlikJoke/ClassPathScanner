@@ -4,8 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
 class IndexedClassPathLocationTest {
@@ -30,5 +29,7 @@ class IndexedClassPathLocationTest {
         assertEquals(2, location.getTargetClassLoaders().size(), "Loaders count must be equal");
         assertTrue(location.getTargetClassLoaders().contains(loader1), "Loader must present in collection of loaders");
         assertTrue(location.getTargetClassLoaders().contains(loader2), "Loader must present in collection of loaders");
+        assertNotEquals(location, IndexedClassPathLocation.relativeLocation(Set.of(loader1)), "Locations must be not equal");
+        assertEquals(location, IndexedClassPathLocation.relativeLocation(Set.of(loader1, loader2)), "Locations must be equal");
     }
 }
