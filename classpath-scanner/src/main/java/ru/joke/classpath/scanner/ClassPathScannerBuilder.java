@@ -131,15 +131,6 @@ public interface ClassPathScannerBuilder {
         ClassPathScanner build();
     }
 
-    enum Operator {
-
-        OR,
-
-        AND,
-
-        NOT
-    }
-
     static ClassPathScannerBuilder create() {
         return new DefaultClassPathScannerBuilder();
     }

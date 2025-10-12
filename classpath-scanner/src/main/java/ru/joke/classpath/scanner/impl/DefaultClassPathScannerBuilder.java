@@ -19,13 +19,13 @@ public final class DefaultClassPathScannerBuilder implements ClassPathScannerBui
         return new CompoundFilter(null, overrideDefaultEngineScope);
     }
 
-    private static class CompoundFilter implements Begin, LogicalOperations, End {
+    static class CompoundFilter implements Begin, LogicalOperations, End {
 
         private final CompoundFilter parent;
         private final boolean overrideDefaultEngineScope;
 
         private Predicate<ClassPathResource> filter = r -> true;
-        private ClassPathScannerBuilder.Operator operator = ClassPathScannerBuilder.Operator.AND;
+        private Operator operator = Operator.AND;
         private boolean negate;
 
         private CompoundFilter(final CompoundFilter parent, final boolean overrideDefaultEngineScope) {
@@ -65,8 +65,8 @@ public final class DefaultClassPathScannerBuilder implements ClassPathScannerBui
         public LogicalOperations excludeResourcesInPackage(boolean exactMatch, String packageName) {
             return appendCondition(
                     r -> exactMatch
-                            ? !r.packageName().startsWith(packageName)
-                            : !r.packageName().equals(packageName)
+                            ? !r.packageName().equals(packageName)
+                            : !r.packageName().startsWith(packageName)
             );
         }
 
@@ -317,14 +317,14 @@ public final class DefaultClassPathScannerBuilder implements ClassPathScannerBui
         @Override
         public Begin and() {
             this.negate = false;
-            this.operator = ClassPathScannerBuilder.Operator.AND;
+            this.operator = Operator.AND;
             return this;
         }
 
         @Override
         public Begin or() {
             this.negate = false;
-            this.operator = ClassPathScannerBuilder.Operator.OR;
+            this.operator = Operator.OR;
             return this;
         }
 
@@ -458,6 +458,12 @@ public final class DefaultClassPathScannerBuilder implements ClassPathScannerBui
             }
 
             return false;
+        }
+
+        private enum Operator {
+            OR,
+            AND,
+            NOT
         }
     }
 }
