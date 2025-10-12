@@ -4,11 +4,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.joke.classpath.ClassPathIndexed;
 import ru.joke.classpath.ClassPathResource;
+import ru.joke.classpath.ClassResource;
 import ru.joke.classpath.scanner.ClassPathScannerBuilder;
 
+import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Documented;
-import java.util.Set;
+import java.lang.constant.Constable;
+import java.util.*;
 import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -37,6 +40,9 @@ class DefaultClassPathScannerBuilderTest {
 
         when(resource.packageName()).thenReturn(packageName + ".sub");
         checkFilterNotMatch(scanner, resource);
+
+        when(resource.packageName()).thenReturn("");
+        checkFilterNotMatch(scanner, resource);
     }
 
     @Test
@@ -55,6 +61,9 @@ class DefaultClassPathScannerBuilderTest {
 
         when(resource.packageName()).thenReturn("ru");
         checkFilterNotMatch(scanner, resource);
+
+        when(resource.packageName()).thenReturn("");
+        checkFilterNotMatch(scanner, resource);
     }
 
     @Test
@@ -70,6 +79,9 @@ class DefaultClassPathScannerBuilderTest {
 
         when(resource.packageName()).thenReturn("ru.joke.sub");
         checkFilterMatch(scanner, resource);
+
+        when(resource.packageName()).thenReturn("");
+        checkFilterNotMatch(scanner, resource);
     }
 
     @Test
@@ -87,6 +99,9 @@ class DefaultClassPathScannerBuilderTest {
         checkFilterMatch(scanner, resource);
 
         when(resource.packageName()).thenReturn("ru.joke.test");
+        checkFilterNotMatch(scanner, resource);
+
+        when(resource.packageName()).thenReturn("");
         checkFilterNotMatch(scanner, resource);
     }
 
@@ -106,6 +121,9 @@ class DefaultClassPathScannerBuilderTest {
 
         when(resource.packageName()).thenReturn("ru.joke.test");
         checkFilterMatch(scanner, resource);
+
+        when(resource.packageName()).thenReturn("");
+        checkFilterNotMatch(scanner, resource);
     }
 
     @Test
@@ -124,6 +142,9 @@ class DefaultClassPathScannerBuilderTest {
 
         when(resource.packageName()).thenReturn(packageName);
         checkFilterNotMatch(scanner, resource);
+
+        when(resource.packageName()).thenReturn("");
+        checkFilterMatch(scanner, resource);
     }
 
     @Test
@@ -145,6 +166,9 @@ class DefaultClassPathScannerBuilderTest {
 
         when(resource.packageName()).thenReturn("ru.test");
         checkFilterMatch(scanner, resource);
+
+        when(resource.packageName()).thenReturn("");
+        checkFilterMatch(scanner, resource);
     }
 
     @Test
@@ -162,6 +186,9 @@ class DefaultClassPathScannerBuilderTest {
         checkFilterNotMatch(scanner, resource);
 
         when(resource.packageName()).thenReturn("ru.joke.sub");
+        checkFilterMatch(scanner, resource);
+
+        when(resource.packageName()).thenReturn("");
         checkFilterMatch(scanner, resource);
     }
 
@@ -184,6 +211,9 @@ class DefaultClassPathScannerBuilderTest {
 
         when(resource.packageName()).thenReturn("ru.example");
         checkFilterMatch(scanner, resource);
+
+        when(resource.packageName()).thenReturn("");
+        checkFilterMatch(scanner, resource);
     }
 
     @Test
@@ -199,6 +229,9 @@ class DefaultClassPathScannerBuilderTest {
 
         when(resource.packageName()).thenReturn("ru.test");
         checkFilterMatch(scanner, resource);
+
+        when(resource.packageName()).thenReturn("");
+        checkFilterMatch(scanner, resource);
     }
 
     @Test
@@ -213,6 +246,9 @@ class DefaultClassPathScannerBuilderTest {
         checkFilterMatch(scanner, resource);
 
         when(resource.module()).thenReturn("ru.joke.test");
+        checkFilterNotMatch(scanner, resource);
+
+        when(resource.module()).thenReturn("");
         checkFilterNotMatch(scanner, resource);
     }
 
@@ -235,6 +271,9 @@ class DefaultClassPathScannerBuilderTest {
 
         when(resource.module()).thenReturn("ru.joke.test2");
         checkFilterNotMatch(scanner, resource);
+
+        when(resource.module()).thenReturn("");
+        checkFilterNotMatch(scanner, resource);
     }
 
     @Test
@@ -250,6 +289,9 @@ class DefaultClassPathScannerBuilderTest {
 
         when(resource.module()).thenReturn("com.test");
         checkFilterNotMatch(scanner, resource);
+
+        when(resource.module()).thenReturn("");
+        checkFilterNotMatch(scanner, resource);
     }
 
     @Test
@@ -264,6 +306,9 @@ class DefaultClassPathScannerBuilderTest {
         checkFilterNotMatch(scanner, resource);
 
         when(resource.module()).thenReturn("ru.joke.example");
+        checkFilterMatch(scanner, resource);
+
+        when(resource.module()).thenReturn("");
         checkFilterMatch(scanner, resource);
     }
 
@@ -283,6 +328,9 @@ class DefaultClassPathScannerBuilderTest {
 
         when(resource.module()).thenReturn("ru.joke.example");
         checkFilterNotMatch(scanner, resource);
+
+        when(resource.module()).thenReturn("");
+        checkFilterMatch(scanner, resource);
     }
 
     @Test
@@ -299,6 +347,9 @@ class DefaultClassPathScannerBuilderTest {
 
         when(resource.module()).thenReturn("com.test");
         checkFilterMatch(scanner, resource);
+
+        when(resource.module()).thenReturn("");
+        checkFilterMatch(scanner, resource);
     }
 
     @Test
@@ -313,6 +364,9 @@ class DefaultClassPathScannerBuilderTest {
         checkFilterMatch(scanner, resource);
 
         when(resource.annotations()).thenReturn(Set.of(createClassRef(ClassPathIndexed.class)));
+        checkFilterNotMatch(scanner, resource);
+
+        when(resource.annotations()).thenReturn(Set.of());
         checkFilterNotMatch(scanner, resource);
     }
 
@@ -332,6 +386,9 @@ class DefaultClassPathScannerBuilderTest {
         checkFilterMatch(scanner, resource);
 
         when(resource.annotations()).thenReturn(Set.of(createClassRef(Documented.class)));
+        checkFilterNotMatch(scanner, resource);
+
+        when(resource.annotations()).thenReturn(Set.of());
         checkFilterNotMatch(scanner, resource);
     }
 
@@ -355,6 +412,9 @@ class DefaultClassPathScannerBuilderTest {
 
         when(resource.annotations()).thenReturn(Set.of(createClassRef(Documented.class)));
         checkFilterNotMatch(scanner, resource);
+
+        when(resource.annotations()).thenReturn(Set.of());
+        checkFilterNotMatch(scanner, resource);
     }
 
     @Test
@@ -369,6 +429,9 @@ class DefaultClassPathScannerBuilderTest {
         checkFilterMatch(scanner, resource);
 
         when(resource.aliases()).thenReturn(Set.of("test2"));
+        checkFilterNotMatch(scanner, resource);
+
+        when(resource.aliases()).thenReturn(Set.of());
         checkFilterNotMatch(scanner, resource);
     }
 
@@ -385,6 +448,9 @@ class DefaultClassPathScannerBuilderTest {
 
         when(resource.aliases()).thenReturn(Set.of("test"));
         checkFilterNotMatch(scanner, resource);
+
+        when(resource.aliases()).thenReturn(Set.of());
+        checkFilterNotMatch(scanner, resource);
     }
 
     @Test
@@ -400,12 +466,14 @@ class DefaultClassPathScannerBuilderTest {
 
         when(resource.aliases()).thenReturn(Set.of("test1", "test2"));
         checkFilterMatch(scanner, resource);
+
+        when(resource.aliases()).thenReturn(Set.of());
+        checkFilterNotMatch(scanner, resource);
     }
 
     @Test
     void testWithAnyOfAliases() {
-        final var aliases = new String[] { "test1", "test2" };
-        final var ops = filter.withAnyOfAliases(aliases);
+        final var ops = filter.withAnyOfAliases("test1", "test2");
         makeAppendedConditionResultCheck(ops);
 
         final var scanner = (PredicateBasedClassPathScanner) ops.build();
@@ -415,12 +483,14 @@ class DefaultClassPathScannerBuilderTest {
 
         when(resource.aliases()).thenReturn(Set.of("test"));
         checkFilterNotMatch(scanner, resource);
+
+        when(resource.aliases()).thenReturn(Set.of());
+        checkFilterNotMatch(scanner, resource);
     }
 
     @Test
     void testWithAllOfAliases() {
-        final var aliases = new String[] { "test1", "test2" };
-        final var ops = filter.withAllOfAliases(aliases);
+        final var ops = filter.withAllOfAliases("test1", "test2");
         makeAppendedConditionResultCheck(ops);
 
         final var scanner = (PredicateBasedClassPathScanner) ops.build();
@@ -433,116 +503,393 @@ class DefaultClassPathScannerBuilderTest {
 
         when(resource.aliases()).thenReturn(Set.of("test"));
         checkFilterNotMatch(scanner, resource);
+
+        when(resource.aliases()).thenReturn(Set.of());
+        checkFilterNotMatch(scanner, resource);
     }
 
     @Test
     void testImplementsInterface() {
-        fail();
+        final var ops = filter.implementsInterface(Serializable.class);
+        makeAppendedConditionResultCheck(ops);
+
+        final var scanner = (PredicateBasedClassPathScanner) ops.build();
+        final var resource = mock(ClassResource.class);
+        when(resource.interfaces()).thenReturn(Set.of(createClassRef(Serializable.class), createClassRef(Comparable.class)));
+        checkFilterMatch(scanner, resource);
+
+        when(resource.interfaces()).thenReturn(Set.of(createClassRef(Comparable.class)));
+        checkFilterNotMatch(scanner, resource);
+
+        when(resource.interfaces()).thenReturn(Set.of());
+        checkFilterNotMatch(scanner, resource);
     }
 
     @Test
     void testImplementsAnyOfInterfaces() {
-        fail();
+        final var ops = filter.implementsAnyOfInterfaces(Serializable.class, Comparable.class);
+        makeAppendedConditionResultCheck(ops);
+
+        final var scanner = (PredicateBasedClassPathScanner) ops.build();
+        final var resource = mock(ClassResource.class);
+        when(resource.interfaces()).thenReturn(Set.of(createClassRef(Serializable.class), createClassRef(Constable.class)));
+        checkFilterMatch(scanner, resource);
+
+        when(resource.interfaces()).thenReturn(Set.of(createClassRef(Constable.class)));
+        checkFilterNotMatch(scanner, resource);
+
+        when(resource.interfaces()).thenReturn(Set.of());
+        checkFilterNotMatch(scanner, resource);
     }
 
     @Test
     void testImplementsAllOfInterfaces() {
-        fail();
+        final var ops = filter.implementsAllOfInterfaces(Serializable.class, Comparable.class);
+        makeAppendedConditionResultCheck(ops);
+
+        final var scanner = (PredicateBasedClassPathScanner) ops.build();
+        final var resource = mock(ClassResource.class);
+        when(resource.interfaces()).thenReturn(Set.of(createClassRef(Serializable.class), createClassRef(Comparable.class), createClassRef(Constable.class)));
+        checkFilterMatch(scanner, resource);
+
+        when(resource.interfaces()).thenReturn(Set.of(createClassRef(Serializable.class)));
+        checkFilterNotMatch(scanner, resource);
+
+        when(resource.interfaces()).thenReturn(Set.of());
+        checkFilterNotMatch(scanner, resource);
     }
 
     @Test
     void testExtendsBy() {
-        fail();
+        final var ops = filter.extendsBy(AbstractCollection.class);
+        makeAppendedConditionResultCheck(ops);
+
+        final var scanner = (PredicateBasedClassPathScanner) ops.build();
+        final var resource = mock(ClassResource.class);
+        when(resource.superClasses()).thenReturn(List.of(createClassRef(AbstractCollection.class), createClassRef(AbstractList.class)));
+        checkFilterMatch(scanner, resource);
+
+        when(resource.superClasses()).thenReturn(List.of(createClassRef(AbstractList.class)));
+        checkFilterNotMatch(scanner, resource);
+
+        when(resource.superClasses()).thenReturn(List.of());
+        checkFilterNotMatch(scanner, resource);
     }
 
     @Test
     void testExtendsByAnyOf() {
-        fail();
+        final var ops = filter.extendsByAnyOf(AbstractCollection.class, AbstractList.class);
+        makeAppendedConditionResultCheck(ops);
+
+        final var scanner = (PredicateBasedClassPathScanner) ops.build();
+        final var resource = mock(ClassResource.class);
+        when(resource.superClasses()).thenReturn(List.of(createClassRef(AbstractCollection.class), createClassRef(AbstractList.class)));
+        checkFilterMatch(scanner, resource);
+
+        when(resource.superClasses()).thenReturn(List.of(createClassRef(AbstractList.class)));
+        checkFilterMatch(scanner, resource);
+
+        when(resource.superClasses()).thenReturn(List.of(createClassRef(AbstractSet.class)));
+        checkFilterNotMatch(scanner, resource);
+
+        when(resource.superClasses()).thenReturn(List.of());
+        checkFilterNotMatch(scanner, resource);
     }
 
     @Test
     void testIncludeResourceType() {
-        fail();
+        final var ops = filter.includeResourceType(ClassPathResource.Type.CONSTRUCTOR);
+        makeAppendedConditionResultCheck(ops);
+
+        final var scanner = (PredicateBasedClassPathScanner) ops.build();
+        final var resource = mock(ClassPathResource.class);
+        when(resource.type()).thenReturn(ClassPathResource.Type.CONSTRUCTOR);
+        checkFilterMatch(scanner, resource);
+
+        when(resource.type()).thenReturn(ClassPathResource.Type.CLASS);
+        checkFilterNotMatch(scanner, resource);
     }
 
     @Test
     void testIncludeResourceTypes() {
-        fail();
+        final var ops = filter.includeResourceTypes(ClassPathResource.Type.CONSTRUCTOR, ClassPathResource.Type.METHOD);
+        makeAppendedConditionResultCheck(ops);
+
+        final var scanner = (PredicateBasedClassPathScanner) ops.build();
+        final var resource = mock(ClassPathResource.class);
+        when(resource.type()).thenReturn(ClassPathResource.Type.CONSTRUCTOR);
+        checkFilterMatch(scanner, resource);
+
+        when(resource.type()).thenReturn(ClassPathResource.Type.CLASS);
+        checkFilterNotMatch(scanner, resource);
+
+        when(resource.type()).thenReturn(ClassPathResource.Type.METHOD);
+        checkFilterMatch(scanner, resource);
     }
 
     @Test
     void testExcludeResourceType() {
-        fail();
+        final var ops = filter.excludeResourceType(ClassPathResource.Type.CONSTRUCTOR);
+        makeAppendedConditionResultCheck(ops);
+
+        final var scanner = (PredicateBasedClassPathScanner) ops.build();
+        final var resource = mock(ClassPathResource.class);
+        when(resource.type()).thenReturn(ClassPathResource.Type.CONSTRUCTOR);
+        checkFilterNotMatch(scanner, resource);
+
+        when(resource.type()).thenReturn(ClassPathResource.Type.CLASS);
+        checkFilterMatch(scanner, resource);
     }
 
     @Test
     void testExcludeResourceTypes() {
-        fail();
+        final var ops = filter.excludeResourceTypes(ClassPathResource.Type.CONSTRUCTOR, ClassPathResource.Type.METHOD);
+        makeAppendedConditionResultCheck(ops);
+
+        final var scanner = (PredicateBasedClassPathScanner) ops.build();
+        final var resource = mock(ClassPathResource.class);
+        when(resource.type()).thenReturn(ClassPathResource.Type.CONSTRUCTOR);
+        checkFilterNotMatch(scanner, resource);
+
+        when(resource.type()).thenReturn(ClassPathResource.Type.CLASS);
+        checkFilterMatch(scanner, resource);
+
+        when(resource.type()).thenReturn(ClassPathResource.Type.METHOD);
+        checkFilterNotMatch(scanner, resource);
     }
 
     @Test
     void testHasModifier() {
-        fail();
+        final var ops = filter.hasModifier(ClassPathResource.Modifier.DEFAULT);
+        makeAppendedConditionResultCheck(ops);
+
+        final var scanner = (PredicateBasedClassPathScanner) ops.build();
+        final var resource = mock(ClassPathResource.class);
+        when(resource.modifiers()).thenReturn(Set.of(ClassPathResource.Modifier.DEFAULT, ClassPathResource.Modifier.FINAL));
+        checkFilterMatch(scanner, resource);
+
+        when(resource.modifiers()).thenReturn(Set.of(ClassPathResource.Modifier.ABSTRACT));
+        checkFilterNotMatch(scanner, resource);
+
+        when(resource.modifiers()).thenReturn(Set.of());
+        checkFilterNotMatch(scanner, resource);
     }
 
     @Test
     void testHasAllOfModifiers() {
-        fail();
+        final var ops = filter.hasAllOfModifiers(ClassPathResource.Modifier.DEFAULT, ClassPathResource.Modifier.FINAL);
+        makeAppendedConditionResultCheck(ops);
+
+        final var scanner = (PredicateBasedClassPathScanner) ops.build();
+        final var resource = mock(ClassPathResource.class);
+        when(resource.modifiers()).thenReturn(Set.of(ClassPathResource.Modifier.DEFAULT, ClassPathResource.Modifier.FINAL));
+        checkFilterMatch(scanner, resource);
+
+        when(resource.modifiers()).thenReturn(Set.of(ClassPathResource.Modifier.DEFAULT));
+        checkFilterNotMatch(scanner, resource);
+
+        when(resource.modifiers()).thenReturn(Set.of());
+        checkFilterNotMatch(scanner, resource);
     }
 
     @Test
     void testHasAnyOfModifiers() {
-        fail();
+        final var ops = filter.hasAnyOfModifiers(ClassPathResource.Modifier.DEFAULT, ClassPathResource.Modifier.FINAL);
+        makeAppendedConditionResultCheck(ops);
+
+        final var scanner = (PredicateBasedClassPathScanner) ops.build();
+        final var resource = mock(ClassPathResource.class);
+        when(resource.modifiers()).thenReturn(Set.of(ClassPathResource.Modifier.DEFAULT, ClassPathResource.Modifier.FINAL));
+        checkFilterMatch(scanner, resource);
+
+        when(resource.modifiers()).thenReturn(Set.of(ClassPathResource.Modifier.DEFAULT, ClassPathResource.Modifier.ABSTRACT));
+        checkFilterMatch(scanner, resource);
+
+        when(resource.modifiers()).thenReturn(Set.of());
+        checkFilterNotMatch(scanner, resource);
     }
 
     @Test
     void testExcludeClassKind() {
-        fail();
+        final var ops = filter.excludeClassKind(ClassResource.Kind.INTERFACE);
+        makeAppendedConditionResultCheck(ops);
+
+        final var scanner = (PredicateBasedClassPathScanner) ops.build();
+        final var resource = mock(ClassResource.class);
+        when(resource.kind()).thenReturn(ClassResource.Kind.CLASS);
+        checkFilterMatch(scanner, resource);
+
+        when(resource.kind()).thenReturn(ClassResource.Kind.INTERFACE);
+        checkFilterNotMatch(scanner, resource);
     }
 
     @Test
     void testExcludeClassKinds() {
-        fail();
+        final var ops = filter.excludeClassKinds(ClassResource.Kind.INTERFACE, ClassResource.Kind.CLASS);
+        makeAppendedConditionResultCheck(ops);
+
+        final var scanner = (PredicateBasedClassPathScanner) ops.build();
+        final var resource = mock(ClassResource.class);
+        when(resource.kind()).thenReturn(ClassResource.Kind.CLASS);
+        checkFilterNotMatch(scanner, resource);
+
+        when(resource.kind()).thenReturn(ClassResource.Kind.INTERFACE);
+        checkFilterNotMatch(scanner, resource);
+
+        when(resource.kind()).thenReturn(ClassResource.Kind.ANNOTATION);
+        checkFilterMatch(scanner, resource);
     }
 
     @Test
     void testIncludeClassKind() {
-        fail();
+        final var ops = filter.includeClassKind(ClassResource.Kind.INTERFACE);
+        makeAppendedConditionResultCheck(ops);
+
+        final var scanner = (PredicateBasedClassPathScanner) ops.build();
+        final var resource = mock(ClassResource.class);
+        when(resource.kind()).thenReturn(ClassResource.Kind.CLASS);
+        checkFilterNotMatch(scanner, resource);
+
+        when(resource.kind()).thenReturn(ClassResource.Kind.INTERFACE);
+        checkFilterMatch(scanner, resource);
     }
 
     @Test
     void testIncludeClassKinds() {
-        fail();
-    }
+        final var ops = filter.includeClassKinds(ClassResource.Kind.INTERFACE, ClassResource.Kind.CLASS);
+        makeAppendedConditionResultCheck(ops);
 
-    @Test
-    void testCustomFilter() {
-        fail();
+        final var scanner = (PredicateBasedClassPathScanner) ops.build();
+        final var resource = mock(ClassResource.class);
+        when(resource.kind()).thenReturn(ClassResource.Kind.CLASS);
+        checkFilterMatch(scanner, resource);
+
+        when(resource.kind()).thenReturn(ClassResource.Kind.INTERFACE);
+        checkFilterMatch(scanner, resource);
+
+        when(resource.kind()).thenReturn(ClassResource.Kind.ANNOTATION);
+        checkFilterNotMatch(scanner, resource);
     }
 
     @Test
     void testAll() {
-        fail();
+        final var ops = filter.all();
+        makeAppendedConditionResultCheck(ops);
+
+        final var scanner = (PredicateBasedClassPathScanner) ops.build();
+        final var resource = mock(ClassPathResource.class);
+        checkFilterMatch(scanner, resource);
     }
 
     @Test
     void testNotOperation() {
-        fail();
+        final var ops = filter.not().includeClassKind(ClassResource.Kind.INTERFACE);
+        makeAppendedConditionResultCheck(ops);
+
+        final var scanner = (PredicateBasedClassPathScanner) ops.build();
+        final var resource = mock(ClassResource.class);
+        when(resource.kind()).thenReturn(ClassResource.Kind.CLASS);
+        checkFilterMatch(scanner, resource);
+
+        when(resource.kind()).thenReturn(ClassResource.Kind.INTERFACE);
+        checkFilterNotMatch(scanner, resource);
     }
 
     @Test
     void testOrOperation() {
-        fail();
+        final var ops = filter.includeClassKind(ClassResource.Kind.INTERFACE)
+                                .or()
+                              .withAlias("test");
+        makeAppendedConditionResultCheck(ops);
+
+        final var scanner = (PredicateBasedClassPathScanner) ops.build();
+        final var resource = mock(ClassResource.class);
+        when(resource.kind()).thenReturn(ClassResource.Kind.INTERFACE);
+        when(resource.aliases()).thenReturn(Set.of("test1"));
+        checkFilterMatch(scanner, resource);
+
+        when(resource.kind()).thenReturn(ClassResource.Kind.CLASS);
+        when(resource.aliases()).thenReturn(Set.of("test"));
+        checkFilterMatch(scanner, resource);
+
+        when(resource.kind()).thenReturn(ClassResource.Kind.CLASS);
+        when(resource.aliases()).thenReturn(Set.of("test1"));
+        checkFilterNotMatch(scanner, resource);
+
+        when(resource.kind()).thenReturn(ClassResource.Kind.INTERFACE);
+        when(resource.aliases()).thenReturn(Set.of("test"));
+        checkFilterMatch(scanner, resource);
     }
 
     @Test
     void testAndOperation() {
-        fail();
+        final var ops = filter.includeClassKind(ClassResource.Kind.INTERFACE)
+                                .and()
+                              .withAlias("test");
+        makeAppendedConditionResultCheck(ops);
+
+        final var scanner = (PredicateBasedClassPathScanner) ops.build();
+        final var resource = mock(ClassResource.class);
+        when(resource.kind()).thenReturn(ClassResource.Kind.INTERFACE);
+        when(resource.aliases()).thenReturn(Set.of("test1"));
+        checkFilterNotMatch(scanner, resource);
+
+        when(resource.kind()).thenReturn(ClassResource.Kind.CLASS);
+        when(resource.aliases()).thenReturn(Set.of("test"));
+        checkFilterNotMatch(scanner, resource);
+
+        when(resource.kind()).thenReturn(ClassResource.Kind.CLASS);
+        checkFilterNotMatch(scanner, resource);
+
+        when(resource.kind()).thenReturn(ClassResource.Kind.INTERFACE);
+        when(resource.aliases()).thenReturn(Set.of("test"));
+        checkFilterMatch(scanner, resource);
+    }
+
+    @Test
+    void testCustomFilter() {
+        final var ops = filter.filter(r -> r.type() == ClassPathResource.Type.CLASS);
+        makeAppendedConditionResultCheck(ops);
+
+        final var scanner = (PredicateBasedClassPathScanner) ops.build();
+        final var resource = mock(ClassPathResource.class);
+        when(resource.type()).thenReturn(ClassPathResource.Type.CLASS);
+        checkFilterMatch(scanner, resource);
+
+        for (var type : EnumSet.complementOf(EnumSet.of(ClassPathResource.Type.CLASS))) {
+            when(resource.type()).thenReturn(type);
+            checkFilterNotMatch(scanner, resource);
+        }
     }
 
     @Test
     void testCompoundOperation() {
-        fail();
+        final var ops = filter.begin()
+                                .includeClassKind(ClassResource.Kind.INTERFACE)
+                                    .and()
+                                .withAlias("test")
+                              .end()
+                              .and()
+                                .not()
+                                    .hasModifier(ClassPathResource.Modifier.PUBLIC)
+                              .end();
+        makeAppendedConditionResultCheck(ops);
+
+        final var scanner = (PredicateBasedClassPathScanner) ops.build();
+        final var resource = mock(ClassResource.class);
+        when(resource.kind()).thenReturn(ClassResource.Kind.INTERFACE);
+        when(resource.aliases()).thenReturn(Set.of("test1"));
+        checkFilterNotMatch(scanner, resource);
+
+        when(resource.kind()).thenReturn(ClassResource.Kind.INTERFACE);
+        when(resource.aliases()).thenReturn(Set.of("test"));
+        when(resource.modifiers()).thenReturn(Set.of());
+        checkFilterMatch(scanner, resource);
+
+        when(resource.kind()).thenReturn(ClassResource.Kind.INTERFACE);
+        when(resource.aliases()).thenReturn(Set.of("test"));
+        when(resource.modifiers()).thenReturn(Set.of(ClassPathResource.Modifier.PUBLIC));
+        checkFilterNotMatch(scanner, resource);
     }
 
     private void makeAppendedConditionResultCheck(ClassPathScannerBuilder.LogicalOperations ops) {

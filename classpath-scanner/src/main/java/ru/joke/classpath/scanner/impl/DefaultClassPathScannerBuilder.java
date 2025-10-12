@@ -139,7 +139,7 @@ public final class DefaultClassPathScannerBuilder implements ClassPathScannerBui
 
         @Override
         public LogicalOperations withAllOfAliases(Pattern aliasesPattern) {
-            return appendCondition(r -> r.aliases().stream().allMatch(a -> aliasesPattern.matcher(a).matches()));
+            return appendCondition(r -> !r.aliases().isEmpty() && r.aliases().stream().allMatch(a -> aliasesPattern.matcher(a).matches()));
         }
 
         @Override
@@ -364,7 +364,7 @@ public final class DefaultClassPathScannerBuilder implements ClassPathScannerBui
             this.filter = switch (this.operator) {
                 case OR -> this.filter.or(this.negate ? condition.negate() : condition);
                 case AND -> this.filter.and(this.negate ? condition.negate() : condition);
-                case NOT -> condition.negate();
+                case NOT -> throw new InvalidApiUsageException("Unsupported operator");
             };
             this.negate = false;
 
