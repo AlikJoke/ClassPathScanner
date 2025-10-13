@@ -1,7 +1,7 @@
-package ru.joke.classpath.converters;
+package ru.joke.classpath.converters.internal;
 
 import ru.joke.classpath.ClassPathResource;
-import ru.joke.classpath.converters.internal.*;
+import ru.joke.classpath.converters.Dictionary;
 
 import java.util.Map;
 import java.util.Optional;
@@ -9,10 +9,27 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * A default implementation of a classpath resource converter, which delegates conversion
+ * to specific converter implementations that encapsulate the conversion logic for
+ * a particular resource type.
+ *
+ * @author Alik
+ * @see ru.joke.classpath.converters.ClassPathResourceConverter
+ * @see ModuleResourceConverter
+ * @see PackageResourceConverter
+ * @see ClassResourceConverter
+ * @see ClassFieldResourceConverter
+ * @see ClassMethodResourceConverter
+ * @see ClassConstructorResourceConverter
+ */
 public final class DelegateClassPathResourceConverter extends AbsClassPathResourceConverter<ClassPathResource> {
 
     private static final Map<ClassPathResource.Type, ConcreteClassPathResourceConverter<ClassPathResource>> converters = findConverters();
 
+    /**
+     * Constructs the converter.
+     */
     public DelegateClassPathResourceConverter() {
         super(Integer.MAX_VALUE);
     }

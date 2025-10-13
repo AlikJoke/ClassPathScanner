@@ -1,4 +1,4 @@
-package ru.joke.classpath.util;
+package ru.joke.classpath.converters.internal;
 
 import org.junit.jupiter.api.Test;
 

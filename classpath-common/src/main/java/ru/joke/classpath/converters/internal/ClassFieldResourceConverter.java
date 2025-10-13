@@ -4,7 +4,6 @@ import ru.joke.classpath.ClassFieldResource;
 import ru.joke.classpath.ClassPathResource;
 import ru.joke.classpath.IndexedClassPathException;
 import ru.joke.classpath.converters.Dictionary;
-import ru.joke.classpath.util.LazyObject;
 
 import java.lang.reflect.Field;
 import java.util.Objects;
@@ -12,11 +11,11 @@ import java.util.Set;
 
 import static ru.joke.classpath.ClassPathResource.ClassReference.CANONICAL_NAME_SEPARATOR;
 
-public final class ClassFieldResourceConverter extends AbsClassPathResourceConverter<ClassFieldResource> implements ConcreteClassPathResourceConverter<ClassFieldResource> {
+final class ClassFieldResourceConverter extends AbsClassPathResourceConverter<ClassFieldResource> implements ConcreteClassPathResourceConverter<ClassFieldResource> {
 
     private static final int COMPONENTS_COUNT = 7;
 
-    public ClassFieldResourceConverter() {
+    ClassFieldResourceConverter() {
         super(COMPONENTS_COUNT);
     }
 

@@ -7,7 +7,7 @@ import ru.joke.classpath.converters.Dictionary;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public abstract class AbsClassPathResourceConverter<T extends ClassPathResource> implements ClassPathResourceConverter<T> {
+abstract class AbsClassPathResourceConverter<T extends ClassPathResource> implements ClassPathResourceConverter<T> {
 
     protected static final String BLOCK_SEPARATOR = "|";
     protected static final String ELEMENTS_IN_BLOCK_DELIMITER = ";";
@@ -22,7 +22,7 @@ public abstract class AbsClassPathResourceConverter<T extends ClassPathResource>
     @Override
     public String toString(
             final T resource,
-            final Dictionary dictionary
+            final ru.joke.classpath.converters.Dictionary dictionary
     ) {
 
         final StringBuilder sb = new StringBuilder();
@@ -51,7 +51,7 @@ public abstract class AbsClassPathResourceConverter<T extends ClassPathResource>
     @Override
     public Optional<T> fromString(
             final String resource,
-            final Dictionary dictionary
+            final ru.joke.classpath.converters.Dictionary dictionary
     ) {
         final var parts = resource.split("\\" + BLOCK_SEPARATOR, this.componentsCount);
         if (parts.length < this.componentsCount) {
@@ -79,28 +79,28 @@ public abstract class AbsClassPathResourceConverter<T extends ClassPathResource>
             final Set<String> aliases,
             final Set<ClassPathResource.ClassReference<?>> annotations,
             final String[] parts,
-            final Dictionary dictionary
+            final ru.joke.classpath.converters.Dictionary dictionary
     ) {
         throw new UnsupportedOperationException();
     }
 
     protected String getResourceName(
             final String resourceNameStr,
-            final Dictionary dictionary
+            final ru.joke.classpath.converters.Dictionary dictionary
     ) {
         return dictionary.map(resourceNameStr);
     }
 
     protected String getResourceName(
             final T resource,
-            final Dictionary dictionary
+            final ru.joke.classpath.converters.Dictionary dictionary
     ) {
         return dictionary.map(resource.name());
     }
 
     protected final List<ClassPathResource.ClassReference<?>> extractRefs(
             final String classesStr,
-            final Dictionary dictionary,
+            final ru.joke.classpath.converters.Dictionary dictionary,
             final String separator
     ) {
         if (classesStr.isBlank()) {
@@ -119,7 +119,7 @@ public abstract class AbsClassPathResourceConverter<T extends ClassPathResource>
 
     protected final StringBuilder append(
             final Collection<ClassPathResource.ClassReference<?>> classes,
-            final Dictionary dictionary,
+            final ru.joke.classpath.converters.Dictionary dictionary,
             final StringBuilder builder
     ) {
         int i = 0;
@@ -163,7 +163,7 @@ public abstract class AbsClassPathResourceConverter<T extends ClassPathResource>
 
     protected final StringBuilder appendAliases(
             final Set<String> aliases,
-            final Dictionary dictionary,
+            final ru.joke.classpath.converters.Dictionary dictionary,
             final StringBuilder builder
     ) {
         int i = 0;

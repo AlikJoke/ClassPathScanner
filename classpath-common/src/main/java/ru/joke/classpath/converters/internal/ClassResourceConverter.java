@@ -10,11 +10,11 @@ import java.util.Set;
 
 import static ru.joke.classpath.ClassPathResource.ClassReference.CANONICAL_NAME_SEPARATOR;
 
-public final class ClassResourceConverter extends AbsClassPathResourceConverter<ClassResource<?>> implements ConcreteClassPathResourceConverter<ClassResource<?>> {
+final class ClassResourceConverter extends AbsClassPathResourceConverter<ClassResource<?>> implements ConcreteClassPathResourceConverter<ClassResource<?>> {
 
     private static final int COMPONENTS_COUNT = 10;
 
-    public ClassResourceConverter() {
+    ClassResourceConverter() {
         super(COMPONENTS_COUNT);
     }
 

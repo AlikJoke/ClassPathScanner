@@ -4,7 +4,6 @@ import ru.joke.classpath.ClassConstructorResource;
 import ru.joke.classpath.ClassPathResource;
 import ru.joke.classpath.IndexedClassPathException;
 import ru.joke.classpath.converters.Dictionary;
-import ru.joke.classpath.util.LazyObject;
 
 import java.lang.reflect.Constructor;
 import java.util.List;
@@ -13,7 +12,7 @@ import java.util.Set;
 
 import static ru.joke.classpath.ClassPathResource.ClassReference.CANONICAL_NAME_SEPARATOR;
 
-public final class ClassConstructorResourceConverter extends ExecutableClassMemberResourceConverter<ClassConstructorResource<?>> {
+final class ClassConstructorResourceConverter extends ExecutableClassMemberResourceConverter<ClassConstructorResource<?>> {
 
     @Override
     protected ClassConstructorResource<?> from(

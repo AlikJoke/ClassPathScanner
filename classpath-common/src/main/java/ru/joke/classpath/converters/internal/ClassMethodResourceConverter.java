@@ -4,7 +4,6 @@ import ru.joke.classpath.ClassMethodResource;
 import ru.joke.classpath.ClassPathResource;
 import ru.joke.classpath.IndexedClassPathException;
 import ru.joke.classpath.converters.Dictionary;
-import ru.joke.classpath.util.LazyObject;
 
 import java.lang.reflect.Method;
 import java.util.List;
@@ -13,7 +12,7 @@ import java.util.Set;
 
 import static ru.joke.classpath.ClassPathResource.ClassReference.CANONICAL_NAME_SEPARATOR;
 
-public final class ClassMethodResourceConverter extends ExecutableClassMemberResourceConverter<ClassMethodResource> {
+final class ClassMethodResourceConverter extends ExecutableClassMemberResourceConverter<ClassMethodResource> {
 
     @Override
     public ClassPathResource.Type supportedType() {

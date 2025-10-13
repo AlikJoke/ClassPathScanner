@@ -2,7 +2,6 @@ package ru.joke.classpath.converters.internal;
 
 import ru.joke.classpath.ClassPathResource;
 import ru.joke.classpath.IndexedClassPathException;
-import ru.joke.classpath.util.LazyObject;
 
 import java.util.Map;
 import java.util.Set;

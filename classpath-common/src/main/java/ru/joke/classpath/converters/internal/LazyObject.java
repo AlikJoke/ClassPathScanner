@@ -1,6 +1,6 @@
-package ru.joke.classpath.util;
+package ru.joke.classpath.converters.internal;
 
-public abstract class LazyObject<T, C> {
+abstract class LazyObject<T, C> {
 
     protected volatile T object;
 

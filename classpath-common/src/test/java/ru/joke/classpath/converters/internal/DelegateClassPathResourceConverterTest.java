@@ -1,14 +1,11 @@
-package ru.joke.classpath.converters;
+package ru.joke.classpath.converters.internal;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.joke.classpath.*;
-import ru.joke.classpath.converters.internal.ClassFieldResourceConverter;
-import ru.joke.classpath.converters.internal.ClassResourceConverter;
-import ru.joke.classpath.converters.internal.ModuleResourceConverter;
-import ru.joke.classpath.converters.internal.PackageResourceConverter;
-import ru.joke.classpath.test_util.TestDictionary;
+import ru.joke.classpath.converters.Dictionary;
 import ru.joke.classpath.fixtures.TestClass;
+import ru.joke.classpath.test_util.TestDictionary;
 
 import java.lang.reflect.Field;
 import java.util.*;

@@ -8,11 +8,11 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
-public final class ModuleResourceConverter extends AbsClassPathResourceConverter<ModuleResource> implements ConcreteClassPathResourceConverter<ModuleResource> {
+final class ModuleResourceConverter extends AbsClassPathResourceConverter<ModuleResource> implements ConcreteClassPathResourceConverter<ModuleResource> {
 
     private static final int COMPONENTS_COUNT = 7;
 
-    public ModuleResourceConverter() {
+    ModuleResourceConverter() {
         super(COMPONENTS_COUNT);
     }
 

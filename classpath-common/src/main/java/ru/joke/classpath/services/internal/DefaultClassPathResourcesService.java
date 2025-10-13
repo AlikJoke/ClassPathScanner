@@ -1,8 +1,10 @@
 package ru.joke.classpath.services.internal;
 
-import ru.joke.classpath.*;
+import ru.joke.classpath.ClassPathResource;
+import ru.joke.classpath.ClassPathResources;
+import ru.joke.classpath.IndexedClassPathResources;
+import ru.joke.classpath.IndexedClassPathStorageException;
 import ru.joke.classpath.converters.ClassPathResourceConverter;
-import ru.joke.classpath.converters.DelegateClassPathResourceConverter;
 import ru.joke.classpath.converters.Dictionary;
 import ru.joke.classpath.services.ClassPathResourcesService;
 import ru.joke.classpath.services.IndexedClassPathLocation;
@@ -20,6 +22,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+/**
+ * Default implementation of the service {@link ClassPathResourcesService} for working with index.
+ *
+ * @author Alik
+ * @see ClassPathResourcesService
+ */
 public final class DefaultClassPathResourcesService implements ClassPathResourcesService {
 
     private static final String DICTIONARY_SEPARATOR = "#####";
@@ -27,9 +35,12 @@ public final class DefaultClassPathResourcesService implements ClassPathResource
     private final Map<String, ClassPathResources> resourcesByLocation;
     private final ClassPathResourceConverter<ClassPathResource> converter;
 
+    /**
+     * Constructs the service.
+     */
     public DefaultClassPathResourcesService() {
         this.resourcesByLocation = new ConcurrentHashMap<>();
-        this.converter = new DelegateClassPathResourceConverter();
+        this.converter = ClassPathResourceConverter.getInstance();
     }
 
     @Override
