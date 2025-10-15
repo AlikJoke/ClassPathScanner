@@ -37,6 +37,7 @@ import java.util.function.Predicate;
  *     <li><i>excludedFromScanElements</i>: Allows explicitly excluding resources from indexing. The specification
  *     format is the same as for the <i>includedToScanElements</i> parameter.</li>
  * </ul>
+ * This class is thread-safe.
  *
  * @author Alik
  * @see AbstractProcessor

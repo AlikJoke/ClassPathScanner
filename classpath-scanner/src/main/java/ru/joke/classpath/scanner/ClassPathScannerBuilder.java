@@ -2,7 +2,7 @@ package ru.joke.classpath.scanner;
 
 import ru.joke.classpath.ClassPathResource;
 import ru.joke.classpath.ClassResource;
-import ru.joke.classpath.scanner.impl.DefaultClassPathScannerBuilder;
+import ru.joke.classpath.scanner.internal.DefaultClassPathScannerBuilder;
 
 import java.lang.annotation.Annotation;
 import java.util.function.Predicate;

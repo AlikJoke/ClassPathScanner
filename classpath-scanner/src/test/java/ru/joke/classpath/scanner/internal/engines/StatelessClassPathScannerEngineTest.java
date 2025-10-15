@@ -1,4 +1,4 @@
-package ru.joke.classpath.scanner.impl.engines;
+package ru.joke.classpath.scanner.internal.engines;
 
 import org.junit.jupiter.api.Test;
 import ru.joke.classpath.ClassPathResource;
@@ -6,7 +6,7 @@ import ru.joke.classpath.IndexedClassPathResources;
 import ru.joke.classpath.scanner.ClassPathScanner;
 import ru.joke.classpath.scanner.ClassPathScannerEngine;
 import ru.joke.classpath.scanner.ClassPathScannerEngineConfiguration;
-import ru.joke.classpath.scanner.impl.PredicateBasedClassPathScanner;
+import ru.joke.classpath.scanner.internal.PredicateBasedClassPathScanner;
 import ru.joke.classpath.services.ClassPathResourcesService;
 import ru.joke.classpath.services.IndexedClassPathLocation;
 

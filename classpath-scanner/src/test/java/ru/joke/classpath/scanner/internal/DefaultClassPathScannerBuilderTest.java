@@ -1,4 +1,4 @@
-package ru.joke.classpath.scanner.impl;
+package ru.joke.classpath.scanner.internal;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

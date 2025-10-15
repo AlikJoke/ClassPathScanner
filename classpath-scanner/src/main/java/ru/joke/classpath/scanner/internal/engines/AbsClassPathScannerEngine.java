@@ -1,10 +1,10 @@
-package ru.joke.classpath.scanner.impl.engines;
+package ru.joke.classpath.scanner.internal.engines;
 
 import ru.joke.classpath.ClassPathResource;
 import ru.joke.classpath.scanner.ClassPathScanner;
 import ru.joke.classpath.scanner.ClassPathScannerEngine;
 import ru.joke.classpath.scanner.ClassPathScannerEngineConfiguration;
-import ru.joke.classpath.scanner.impl.PredicateBasedClassPathScanner;
+import ru.joke.classpath.scanner.internal.PredicateBasedClassPathScanner;
 
 import java.util.function.Predicate;
 

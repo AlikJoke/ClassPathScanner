@@ -1,4 +1,4 @@
-package ru.joke.classpath.scanner.impl;
+package ru.joke.classpath.scanner.internal;
 
 import ru.joke.classpath.ClassPathResource;
 import ru.joke.classpath.ClassResource;
@@ -12,6 +12,13 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
+/**
+ * Default implementation of the classpath resource scanner builder.
+ *
+ * @author Alik
+ * @see ClassPathScannerBuilder
+ * @see ClassPathScanner
+ */
 public final class DefaultClassPathScannerBuilder implements ClassPathScannerBuilder {
 
     @Override
