@@ -22,6 +22,26 @@ import java.io.IOException;
 import java.util.Set;
 import java.util.function.Predicate;
 
+/**
+ * An annotation processor implementation that indexes classpath resources which are either
+ * annotated or specified in the indexing configuration.<br>
+ * As essential operational parameters, it requires the specification of the following information:
+ * <ul>
+ *     <li><i>rootProjectOutputDir</i>: The path to the root project's build output directory (e.g., target, out, build, or another).
+ *     For a multi-module project, this must point to the root (parent) project. If not specified, the path to the
+ *     temporary directory from {@literal java.io.tmpdir} property will be used.</li>
+ *     <li><i>includedToScanElements</i>: Specifies a set of resource/element masks that are to be indexed. This
+ *     parameter allows only resources matching these masks to be included in the index. The masks must be valid
+ *     Java regular expressions, separated by a semicolon ({@literal ;}). If this parameter is absent, all resources
+ *     found via indexing settings or those annotated with {@link ru.joke.classpath.ClassPathIndexed} will be indexed.</li>
+ *     <li><i>excludedFromScanElements</i>: Allows explicitly excluding resources from indexing. The specification
+ *     format is the same as for the <i>includedToScanElements</i> parameter.</li>
+ * </ul>
+ *
+ * @author Alik
+ * @see AbstractProcessor
+ * @see ru.joke.classpath.ClassPathIndexed
+ */
 @SupportedAnnotationTypes(ClassPathIndexer.ANY_ANNOTATIONS)
 @SupportedOptions({
         ClassPathIndexer.ROOT_OUTPUT_DIR_PROPERTY,

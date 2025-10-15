@@ -1,3 +1,6 @@
+/**
+ * Contains the implementation of an annotation processor that indexes classpath resources.
+ */
 module classpath.indexer {
     requires classpath.common;
     requires java.compiler;

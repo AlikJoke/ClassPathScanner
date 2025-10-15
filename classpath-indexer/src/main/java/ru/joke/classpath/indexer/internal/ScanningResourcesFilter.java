@@ -9,12 +9,24 @@ import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+/**
+ * A scanned resource filter for inclusion in the index. It enables specifying inclusion
+ * and exclusion rules for indexable resources.
+ *
+ * @author Alik
+ */
 public final class ScanningResourcesFilter implements Predicate<Element> {
 
     private static final String SEPARATOR = ";";
 
     private final Predicate<Element> predicate;
 
+    /**
+     * Constructs the filter by the included elements mask and excluded elements mask.
+     *
+     * @param includedToScanElements mask of included to index elements; can be {@code null}.
+     * @param excludedFromScanElements mask of excluded from index elements; can be {@code null}.
+     */
     public ScanningResourcesFilter(
             final String includedToScanElements,
             final String excludedFromScanElements

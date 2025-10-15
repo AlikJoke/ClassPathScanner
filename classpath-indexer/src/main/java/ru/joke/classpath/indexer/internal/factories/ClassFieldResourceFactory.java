@@ -13,7 +13,7 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-public final class ClassFieldResourceFactory extends ClassPathResourceFactory<ClassFieldResource, VariableElement> {
+final class ClassFieldResourceFactory extends ClassPathResourceFactory<ClassFieldResource, VariableElement> {
 
     ClassFieldResourceFactory(final ClassPathIndexingContext indexingContext) {
         super(indexingContext);
