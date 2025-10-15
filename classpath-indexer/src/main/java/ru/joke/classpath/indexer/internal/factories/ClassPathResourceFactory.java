@@ -17,6 +17,15 @@ import java.util.stream.Collectors;
 import static ru.joke.classpath.ClassPathResource.ClassReference.BINARY_NESTED_ID_SEPARATOR;
 import static ru.joke.classpath.ClassPathResource.ClassReference.CANONICAL_NAME_SEPARATOR;
 
+/**
+ * An abstract classpath resource factory that provides API to create a {@link ClassPathResource} based
+ * on a program element of type {@link Element}.<br>
+ *
+ * @author Alik
+ * @see ClassPathResource
+ * @param <T> concrete type of the classpath resource
+ * @param <E> concrete type of the program element
+ */
 public abstract class ClassPathResourceFactory<T extends ClassPathResource, E extends Element> {
 
     protected final ClassPathIndexingContext indexingContext;
@@ -25,6 +34,12 @@ public abstract class ClassPathResourceFactory<T extends ClassPathResource, E ex
         this.indexingContext = indexingContext;
     }
 
+    /**
+     * Creates the classpath resource based on the provided program element.
+     *
+     * @param source provided program element; cannot be {@code null}.
+     * @return cannot be {@code null}.
+     */
     public Optional<T> create(E source) {
         return Optional.of(doCreate(source));
     }

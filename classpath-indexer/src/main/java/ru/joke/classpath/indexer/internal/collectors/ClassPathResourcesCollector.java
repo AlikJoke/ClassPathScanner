@@ -16,11 +16,24 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * An indexable resource collector based on the indexing context.
+ *
+ * @author Alik
+ * @see ClassPathResourceFactory
+ * @see ClassPathIndexingContext
+ */
 public final class ClassPathResourcesCollector {
 
     private final ClassPathIndexingContext indexingContext;
     private final ClassPathResourceFactory<ClassPathResource, Element> resourceFactory;
 
+    /**
+     * Constructs the collector with provided context and resource factory.
+     *
+     * @param indexingContext indexing context; cannot be {@code null}.
+     * @param resourceFactory resource factory; cannot be {@code null}.
+     */
     public ClassPathResourcesCollector(
             final ClassPathIndexingContext indexingContext,
             final ClassPathResourceFactory<ClassPathResource, Element> resourceFactory
@@ -29,6 +42,9 @@ public final class ClassPathResourcesCollector {
         this.resourceFactory = resourceFactory;
     }
 
+    /**
+     * Collects resources to index.
+     */
     public void collect() {
 
         final var scannedAnnotations = collectScannedAnnotations();

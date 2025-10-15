@@ -24,7 +24,7 @@ public final class ScanningResourcesFilter implements Predicate<Element> {
     /**
      * Constructs the filter by the included elements mask and excluded elements mask.
      *
-     * @param includedToScanElements mask of included to index elements; can be {@code null}.
+     * @param includedToScanElements   mask of included to index elements; can be {@code null}.
      * @param excludedFromScanElements mask of excluded from index elements; can be {@code null}.
      */
     public ScanningResourcesFilter(

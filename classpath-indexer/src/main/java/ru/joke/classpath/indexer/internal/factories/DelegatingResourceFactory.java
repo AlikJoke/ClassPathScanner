@@ -7,6 +7,15 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import java.util.*;
 
+/**
+ * A classpath resource factory that creates a {@link ClassPathResource} based on a program element of type {@link Element}.<br>
+ * This implementation creates the resource by delegating the call to a specific factory capable of handling
+ * the given type of program element.
+ *
+ * @author Alik
+ * @see ClassPathResourceFactory
+ * @see ClassPathResource
+ */
 public final class DelegatingResourceFactory extends ClassPathResourceFactory<ClassPathResource, Element> {
 
     private final Map<ElementKind, ClassPathResourceFactory<? extends ClassPathResource, Element>> factories;
@@ -25,6 +34,12 @@ public final class DelegatingResourceFactory extends ClassPathResourceFactory<Cl
         this.factories = Map.copyOf(factories);
     }
 
+    /**
+     * Constructs the factory with specified indexing context.
+     *
+     * @param indexingContext indexing context; cannot be {@code null}.
+     * @see ClassPathIndexingContext
+     */
     public DelegatingResourceFactory(final ClassPathIndexingContext indexingContext) {
         this(indexingContext, createFactories(indexingContext));
     }

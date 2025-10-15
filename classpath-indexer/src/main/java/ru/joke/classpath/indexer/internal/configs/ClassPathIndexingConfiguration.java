@@ -8,6 +8,22 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Indexing configuration, formed based on a configuration file from the library's consumer module.
+ *
+ * @param annotations annotations that should be indexed; resources annotated by these annotations are also indexed;
+ *                    if an annotation is annotated, the same indexing rules apply to the child annotation recursively;
+ *                    cannot be {@code null}.
+ * @param interfaces  interfaces that should be indexed; all implementations of these interfaces and all interfaces
+ *                    extending them (recursively) are also indexed; cannot be {@code null}.
+ * @param aliases     resources with specified aliases; only the resources themselves are indexed, without recursive
+ *                    application of indexing rules; cannot be {@code null}.
+ * @param classes     classes that should be indexed; all subclasses of these classes (at any level of inheritance)
+ *                    are also indexed; cannot be {@code null}.
+ *
+ * @author Alik
+ * @see ClassPathIndexingConfigurationService
+ */
 public record ClassPathIndexingConfiguration (
         Set<String> annotations,
         Set<String> interfaces,
@@ -25,6 +41,13 @@ public record ClassPathIndexingConfiguration (
     private static final int CLASSES_TYPE = 2;
     private static final int ALIASES_TYPE = 3;
 
+    /**
+     * Parses the configuration file into an indexing configuration object.
+     *
+     * @param configStream configuration file stream; cannot be {@code null}.
+     * @return created configuration object; cannot be {@code null}.
+     * @throws IOException in case of I/O errors when working with the file stream
+     */
     public static ClassPathIndexingConfiguration parse(final InputStream configStream) throws IOException {
         final Set<String> annotations = new HashSet<>();
         final Set<String> interfaces = new HashSet<>();
