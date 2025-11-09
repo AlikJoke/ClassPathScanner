@@ -66,6 +66,9 @@ public final class DefaultClassPathResourcesService implements ClassPathResource
                         + resourcesOutputData;
 
         try {
+            final var parentDir = targetPath.getParent().toFile();
+            parentDir.mkdirs();
+
             Files.writeString(
                     targetPath,
                     result,
